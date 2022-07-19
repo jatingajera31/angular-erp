@@ -1,0 +1,90 @@
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Amend Client's Info</h6>
+    </div>
+    <div class="card-body">
+    	<div class="form-group row">
+				<label class="col-md-2 control-label">
+					Client:
+				</label>
+				<div class="col-md-3 mt8">
+					<select class="form-control" [(ngModel)]="client_id" name="client_id" (change)="getShortCode();getLocation();getProject()">
+				  	<option [value]="null">-- Select Client --</option>
+						<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group row" *ngIf="!isNotValid(client_id)">
+				<label class="col-md-2 control-label">
+					Short Code:
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="text" class="form-control" [(ngModel)]="short_code" name="short_code">
+				</div>
+			</div>
+			<div class="form-group row" *ngIf="!isNotValid(client_id)">
+				<label class="col-md-2 control-label">
+					Sales Executive:
+				</label>
+				<div class="col-md-3 mt8">
+					<select class="form-control" [(ngModel)]="sales_executive_id" name="sales_executive_id">
+				  	<option [value]="null">-- Select Sales Executive --</option>
+						<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.last_name}} {{itm.father_name}}</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group row mt-4" *ngIf="!isNotValid(client_id)">
+				<div class="col-md-4">
+					<div class="row mt-2" *ngFor="let loc of locations; let lix = index;">
+						<label class="col-md-3 control-label">
+							Location:
+						</label>
+						<div class="col-md-6 mt8">
+							<input type="text" class="form-control" [(ngModel)]="loc.name" name="locName{{lix}}">
+						</div>
+						<label class="col-md-3 text-right control-label">
+							<button type="button" class="btn btn-xs btn-save">Amend</button>
+						</label>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="row mt-2" *ngFor="let proj of projects; let pix = index;">
+						<label class="col-md-4 control-label">
+							Project Name:
+						</label>
+						<div class="col-md-5 mt8">
+							<input type="text" class="form-control" [(ngModel)]="proj.name" name="proName{{pix}}">
+						</div>
+						<label class="col-md-3 text-right control-label">
+							<button type="button" class="btn btn-xs btn-save">Amend</button>
+						</label>
+					</div>
+				</div>
+				<div class="col-md-4" *ngIf="projects.length">
+					<div class="row mt-2">
+						<label class="col-md-4 control-label">
+							Away From Me:
+						</label>
+						<div class="col-md-5 mt8">
+							<input type="text" class="form-control" name="short_code">
+						</div>
+						<label class="col-md-3 text-right control-label">
+							<button type="button" class="btn btn-xs btn-save">Amend</button>
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="pt-3 text-right border-top pl-3 mt-4">
+					<button type="button" [disabled]="(isNotValid(client_id) || isNotValid(short_code) || isNotValid(sales_executive_id))" class="mr-2 btn btn-sm btn-save">Apply</button>
+					<button type="button" class="mr-2 btn btn-sm btn-undo">Close</button>
+				</div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Merge Client's Info</h6>
+    </div>
+    <div class="card-body p-0">
+    </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

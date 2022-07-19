@@ -1,0 +1,463 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<div class="float-right f-16 pt-1">You are in {{(editMode) ? 'EDIT' : 'DISPATCH'}} Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">SAMPLE DEMAND DISPATCH</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-1">
+						<div *ngIf="createMode" class="pl-2 mb-1"><b>Dispatch Pending List</b></div>
+						<div *ngIf="createMode" class="table-responsive mb-2">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="70">Select</th>
+						        <th width="180">Demand By</th>
+						        <th width="180">Client</th>
+						        <th width="160">Location | Project</th>
+						        <th width="190">Sample Demand No.</th>
+						        <th width="90">Date</th>
+						        <th width="60">Days</th>
+						        <th>Remarks</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let item of sampleDemands;let i = index;" [class.bg-secondary]="(purchaseForm.value.id == item.id)">
+										<td class="text-center">
+											<input type="radio" (change)="setRow(item)" name="SelectRadio">
+										</td>
+										<td>{{item.demandby.first_name}} {{item.demandby.father_name}} {{item.demandby.last_name}}</td>
+										<td>{{item.client.account_name}}</td>
+										<td>{{item.location.name}} | {{item.project.name}}</td>
+										<td>{{item.sample_no}}</td>
+										<td class="text-center">{{item.sample_date | date: 'dd/MM/y'}}</td>
+										<td class="text-center">{{item.sample_days}}</td>
+										<td>{{item.remarks}}</td>
+									</tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="pl-2 mb-1"><b>Sample Demand & Dispatch Details</b></div>
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sample Dispatch Challan No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_dispatch_no.invalid" [class.invalid-box]="purchaseForm.controls.sample_dispatch_no.invalid">
+										<input type="text" disabled class="form-control" value="{{purchaseForm.value.sample_dispatch_no}}" placeholder="Dispatch Demand No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Dispatch Date | Time
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_dispatch_date.invalid" [class.invalid-box]="purchaseForm.controls.sample_dispatch_date.invalid">
+										<input type="text" disabled [value]="purchaseForm.value.sample_dispatch_date | date: 'dd/MM/y'" class="form-control" placeholder="Date">
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pl-0 mt8">
+										<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_dispatch_time.invalid" [class.invalid-box]="purchaseForm.controls.sample_dispatch_time.invalid">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input type="text" disabled class="form-control" [value]="purchaseForm.value.sample_dispatch_time" placeholder="Time">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" value="{{purchaseForm.value.client}}" placeholder="Client">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sales Executive
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" [value]="getExecutiveName()" class="form-control" disabled>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.location}}" placeholder="Location">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										Project
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.project}}" placeholder="Project">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sample Demand No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.sample_no}}" placeholder="Demand No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sample Demand Date | Time.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.sample_date | date: 'dd/MM/y'}} | {{purchaseForm.value.sample_time}}" placeholder="Date | Time">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Demand Approved By.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" value="{{purchaseForm.value.approved_by}}" placeholder="Approved By">
+									</div>
+								</div>
+							</div>
+							<!-- <div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sample Demand Approved No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.sample_no}}" placeholder="Demand No.">
+									</div>
+								</div>
+							</div> -->
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sample Demand Approved Date | Time.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.status_date | date: 'dd/MM/y'}} | {{purchaseForm.value.status_time}}" placeholder="Date | Time">
+									</div>
+								</div>
+							</div>
+							
+							<!-- <div class="col-md-6"> -->
+								<!-- <div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Approved Date | Time.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" disabled class="form-control">
+									</div>
+								</div> -->
+							<!-- </div> -->
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Store OUT by, Name
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8"[class.form-invalid]="invalidForm && purchaseForm.controls.store_out_id.invalid" [class.invalid-box]="purchaseForm.controls.store_out_id.invalid">
+										<select class="form-control" formControlName="store_out_id">
+											<option [value]="null">-- Select Store By --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Delivered (To Client by, Name)
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8"[class.form-invalid]="invalidForm && purchaseForm.controls.delivered_id.invalid" [class.invalid-box]="purchaseForm.controls.delivered_id.invalid">
+										<select class="form-control" formControlName="delivered_id">
+											<option [value]="null">-- Select Delivered By --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Item List - Dispatch Pending
+		    		</div>
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="60">Srl</th>
+						        <th width="200">Prod. Group</th>
+						        <th width="200">Model No.</th>
+						        <th>Product Description</th>
+						        <th width="110">Demand, Qty</th>
+						        <th width="110">Dispatched, Qty</th>
+						        <th width="110">Pending, Qty</th>
+						        <th width="50"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of productDetails;let i = index;" [class.pending-qty]="(prod.pending_qty > 0)">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td><input type="text" disabled class="form-control" value="{{prod.group.name}}"></td>
+							    	<td><input type="text" disabled class="form-control" value="{{prod.product.model_no}}"></td>
+							    	<td><textarea disabled class="form-control border-0" rows="2" [innerHTML]="prod.description"></textarea></td>
+							    	<td class="text-center" [class.form-invalid]="(prod.error && isNotValid(prod.qty))"><input type="number" class="form-control text-center" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Qty" (change)="changeQty(prod.qty, i)"></td>
+							    	<td><input type="text" disabled class="form-control text-center" value="{{(prod.qty - prod.pending_qty)}}"></td>
+							    	<td><input type="text" disabled class="form-control text-center" value="{{prod.pending_qty}}"></td>
+							    	<td class="text-center position-relative">
+							    		<div class="adminActionsDemannd" id="adminActions">
+												<a class="adminButton" (click)="setFalseDataD(i);prod.show = !prod.show"><i class="fa fa-folder-open"></i></a>
+												<div class="adminButtons" [class.checked]="(prod.show)" *ngIf="prod.show && isFocus2">
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewProductDetailModal(prod);prod.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="row mr-0 mb-3 py-2" style="background: #b1d8f9;" *ngIf="showItemBox">
+							<div class="col-md-12">
+								<div class="text-white px-2 py-1 text-center mb-2">
+				    			ADD ITEM TO DELIVER
+				    		</div>
+							</div>
+							<div class="col-md-6 text-right pr-0">
+								<div class="form-group row mr-0">
+									<div class="col-md-12 mt8 lhpx text-center">
+										<label class="mr-3 mb-0"><input type="radio" [disabled]="!productNonCodedDispatched" [(ngModel)]="coded_item" [ngModelOptions]="{standalone: true}" value="Non-Coded"><span class="checkbox-text">If, Non-Coded Item</span></label>
+									</div>
+								</div>
+								<!-- <div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+										Group Name:
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<select [disabled]="(coded_item == 'Coded')" class="form-control" [(ngModel)]="group_id" [ngModelOptions]="{standalone: true}" (change)="getModels()">
+											<option [value]="null">-- Select Group --</option>
+											<option *ngFor="let itm of productGroups" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+									
+								</div> -->
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+										Model Name:
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<select [disabled]="(coded_item == 'Coded')" class="form-control" [(ngModel)]="product_id" [ngModelOptions]="{standalone: true}" (change)="setGroupId()">
+											<option [value]="null">-- Select Model --</option>
+											<option [class.d-none]="(itm.qr_code)" *ngFor="let itm of products" [value]="itm.id">{{itm.model_no}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+										Qty:
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input [disabled]="(coded_item == 'Coded')" type="number" class="form-control" [(ngModel)]="qty" [ngModelOptions]="{standalone: true}" placeholder="Enter Qty">
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 text-center">
+										<button type="button" (click)="getQrCode()" class=" btn-sm btn-undo-close">Add</button>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<div class="col-md-12 mt8 lhpx text-center">
+										<label class="mr-3 mb-0"><input type="radio" [disabled]="!productCodedDispatched" [(ngModel)]="coded_item" [ngModelOptions]="{standalone: true}" value="Coded"><span class="checkbox-text">If, Coded Item</span></label>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+										Insert QR Code:
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input [disabled]="(coded_item == 'Non-Coded')" type="text" [(ngModel)]="qr_code" [ngModelOptions]="{standalone: true}" class="form-control" placeholder="Enter QR Code">
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 text-right">
+										<button type="button" (click)="getQrCode()" class=" btn-sm btn-undo-close">Add</button>
+									</div>
+								</div>
+								<!-- <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 text-left">
+									<button type="button" style="visibility: hidden;" class="btn-sm btn-undo-close">Close</button>
+								</div> -->
+								<div class="form-group row mr-0">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
+										<button type="button" (click)="undoBox()" class="btn-sm btn-undo-close mr-2">Undo</button>
+										<button type="button" (click)="closeBox()" class="btn-sm btn-undo-close">Close</button>
+									</div>
+								</div>
+							</div>
+							<!-- <div class="col-md-1"></div>
+							<div class="col-md-1"></div>
+							<div class="col-md-10">
+								<div class="bg-info text-white d-inline-block px-2 py-1 f-14 pointer mb-1">
+				    			LIST OF ITEM TO DELIVER
+				    		</div>
+				    		<table class="table">
+				    			<tr class="text-center">
+				    				<th>Srl</th>
+				    				<th>Group Name</th>
+				    				<th>Model No</th>
+				    				<th>Quantity</th>
+				    				<th>QR Code</th>
+				    			</tr>
+				    			<tr class="text-center" *ngFor="let atm of deliver_items;let i = index">
+				    				<th>{{(i + 1)}}</th>
+				    				<th>{{atm.group.name}}</th>
+				    				<th>{{atm.product.model_no}}</th>
+				    				<th>{{atm.qty}}</th>
+				    				<th>{{atm.qr_code}}</th>
+				    			</tr>
+				    		</table>
+				    		<div class="py-2 text-right col-md-12">
+									<button type="button" (click)="undoItems()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+									<button type="button" (click)="deliverItems()" class=" btn btn-sm btn-undo">Add</button>
+								</div>
+							</div>
+							<div class="col-md-1"></div> -->
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Dispatch Details
+		    		</div>
+		    		<div class="right-title float-right text-right pointer pr-3">
+		    			<button [disabled]="countQty()" type="button" (click)="showBox()" class="btn btn-xs add-item-btn"><i class="fa fa-plus"></i> ADD ITEM</button>
+		    		</div>
+		    		<div class="table-responsive mb-3" style="overflow-x:unset;">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="50" class="px-0">Srl</th>
+						        <th width="150">QR Code</th>
+						        <th width="220">Prod. Group</th>
+						        <th width="220">Model No.</th>
+						        <th>Product Description</th>
+						        <th width="120">Dispatched, Qnty</th>
+						        <th width="35"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let itm of delivered_products;let i = index;">
+							    	<td class="text-center">{{(i + 1)}}</td>
+							    	<td class="text-center">{{itm.qr_code || 0}}</td>
+							    	<td>{{itm.group.name}}</td>
+							    	<td>{{itm.product.model_no}}</td>
+							    	<td><textarea disabled class="form-control border-0" rows="2" [innerHtml]="itm.description"></textarea></td>
+							    	<td class="text-center">{{itm.qty}}</td>
+							    	<td class="text-center position-relative">
+							    		<div class="adminActions" id="adminActions">
+												<a class="adminButton" (click)="setFalseData(i);itm.show = !itm.show"><i class="fa fa-folder-open"></i></a>
+												<div class="adminButtons" [class.checked]="(itm.show)" *ngIf="itm.show && isFocus">
+													<a *ngIf="!editMode" (click)="viewRemoveModal(itm, i);itm.show = false" title="Remove Product">Delete <i class="fa fa-trash"></i></a>
+													<a *ngIf="!isNotValid(itm.product_id)" (click)="viewProductDetailModal(itm);itm.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sample Dispatch</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-4 text-right control-label">
+								<span class="text-danger">*</span>Client
+							</label>
+							<div class="col-md-8">
+								<select class="form-control" [(ngModel)]="clientId" name="clientId" (change)="getDispatched()">
+									<option [value]="null">-- Select Client --</option>
+									<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-4 text-right control-label">
+								<span class="text-danger">*</span>Sample Dispatch Challan No.
+							</label>
+							<div class="col-md-8">
+								<select class="form-control" [(ngModel)]="dispatchId" name="dispatchId">
+									<option [value]="null">-- Select Sample Dispatch Challan No. --</option>
+									<option *ngFor="let itm of dispatchedDemands" [value]="itm.id">{{itm.sample_dispatch_no}} | {{itm.sample_dispatch_date | date: 'dd/MM/y'}} | {{itm.location?.name}} | {{itm.project?.name}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" [disabled]="(isNotValid(clientId) || isNotValid(dispatchId))" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showRemoveModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showRemoveModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are you sure to delete this product?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showRemoveModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="removeProduct()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>
+<app-product-view *ngIf="selectedProductId" [ProductId]="selectedProductId" (closeView)="selectedProductId = null"></app-product-view>

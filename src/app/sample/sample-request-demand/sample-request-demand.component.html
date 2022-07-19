@@ -1,0 +1,370 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary">SAMPLE-REQUEST DEMAND</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0" [class.disable-inputs]="(isApproved || isCancel)">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-10">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Client
+											</label>
+											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.client_id.invalid" [class.invalid-box]="purchaseForm.controls.client_id.invalid">
+												<select class="form-control" formControlName="client_id" (change)="getSampleDemandNo();getLocation();setInitDate()">
+													<option [value]="null">-- Select Client --</option>
+		    									<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-md-5 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Sales Executive
+											</label>
+											<div class="col-md-7 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.executive_id.invalid" [class.invalid-box]="purchaseForm.controls.executive_id.invalid">
+												<input type="text" [value]="getExecutiveName()" class="form-control" disabled>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Location
+											</label>
+											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.location_id.invalid" [class.invalid-box]="purchaseForm.controls.location_id.invalid">
+												<select class="form-control" formControlName="location_id" (change)="getProject()">
+													<option [value]="null">-- Select Location --</option>
+													<option *ngFor="let itm of locations" [value]="itm.id">{{itm.name}}</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-md-5 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Project
+											</label>
+											<div class="col-md-7 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.project_id.invalid" [class.invalid-box]="purchaseForm.controls.project_id.invalid">
+												<select class="form-control" formControlName="project_id">
+													<option [value]="null">-- Select Project --</option>
+													<option *ngFor="let itm of projects" [value]="itm.id">{{itm.name}}</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Sample Demand No.
+											</label>
+											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_no.invalid" [class.invalid-box]="purchaseForm.controls.sample_no.invalid">
+												<input type="text" disabled class="form-control" [value]="purchaseForm.value.sample_no" placeholder="Sample Demand No.">
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-md-5 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Date | Time
+											</label>
+											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_date.invalid" [class.invalid-box]="purchaseForm.controls.sample_date.invalid">
+												<input type="text" disabled [value]="purchaseForm.value.sample_date | date: 'dd/MM/y'" class="form-control" placeholder="Date">
+											</div>
+											<div class="col-md-4 col-xs-12 pl-0 mt8">
+												<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_time.invalid" [class.invalid-box]="purchaseForm.controls.sample_time.invalid">
+													<div class="input-group-append">
+														<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+													</div>
+													<input type="text" disabled class="form-control" [value]="purchaseForm.value.sample_time" placeholder="Time">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Sample Demand, By
+											</label>
+											<div class="col-md-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.demand_by.invalid" [class.invalid-box]="purchaseForm.controls.demand_by.invalid">
+												<input type="text" [value]="getDemandBy()" class="form-control" disabled>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group row mr-0">
+											<label class="col-md-3 text-right col-xs-12 control-label pr-1">
+												Remarks
+											</label>
+											<div class="col-md-9 col-xs-12 mt8" style="padding-left: 9px;">
+												<textarea class="form-control" formControlName="remarks" rows="3" placeholder="Enter Remarks"></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Sample Days
+											</label>
+											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_days.invalid" [class.invalid-box]="purchaseForm.controls.sample_days.invalid">
+												<input type="number" class="form-control" formControlName="sample_days" placeholder="Enter Days" (blur)="setReturnDate()">
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group row mr-0">
+											<label class="col-md-5 text-right col-xs-12 control-label">
+												<span class="text-danger">*</span>Sample Return by, Date
+											</label>
+											<div class="col-md-7 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sample_return_date.invalid" [class.invalid-box]="purchaseForm.controls.sample_return_date.invalid">
+												<input type="text" disabled class="form-control" [value]="purchaseForm.value.sample_return_date | date : 'dd/MM/y'" placeholder="Enter Date">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2 text-center" *ngIf="editMode && !isCancel">
+								<button type="button" class="btn-sm btn-save-outline mb-3" (click)="cancelDemand()">Conceal</button>
+							</div>
+							<div class="col-md-2 text-center" *ngIf="editMode && isCancel">
+								<button type="button" class="btn-sm btn-save-outline mb-3" (click)="exposeDemand()">Expose</button>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			PRODUCT DETAIL
+		    		</div>
+		    		<div class="right-title float-right text-right pointer pr-3" *ngIf="!isApproved && !isCancel">
+		    			<button type="button" class="btn btn-xs add-item-btn" (click)="addProdDetail()"><i class="fa fa-plus"></i> ADD ITEM</button>
+		    		</div>
+		    		<div class="table-responsive mb-3" style="overflow-x:unset;">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="60">Srl</th>
+						        <th width="225">Prod. Group</th>
+						        <th width="225">Model No.</th>
+						        <th>Description</th>
+						        <th width="100">Qty</th>
+						        <th width="50"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of productDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td [class.form-invalid]="(prod.error && isNotValid(prod.group_id))">
+							    		<select class="form-control" [(ngModel)]="prod.group_id" [ngModelOptions]="{standalone: true}" (change)="getModels(prod.group_id, i, null)">
+												<option [value]="null">-- Product Group --</option>
+												<option *ngFor="let itm of productGroups" [value]="itm.id">{{itm.name}}</option>
+											</select>
+							    	</td>
+							    	<td [class.form-invalid]="(prod.error && isNotValid(prod.product_id))">
+							    		<select class="form-control" [(ngModel)]="prod.product_id" [ngModelOptions]="{standalone: true}" (change)="changeModel(prod.product_id, i)">
+												<option [value]="null">-- Model No --</option>
+												<option *ngFor="let itm of prod.products" [value]="itm.id">{{itm.model_no}}</option>
+											</select>
+										</td>
+							    	<td>
+							    		<textarea disabled class="form-control border-0" rows="2" [innerHTML]="prod.description"></textarea>
+							    	</td>
+							    	<td class="text-center" [class.form-invalid]="(prod.error && isNotValid(prod.qty))"><input type="number" class="form-control text-center" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Qty" (change)="changeQty(prod.qty, i)"></td>
+							    	<td class="text-center position-relative">
+							    		<div class="adminActions" id="adminActions">
+												<a class="adminButton" (click)="setFalseData(i);prod.show = !prod.show"><i class="fa fa-folder-open"></i></a>
+												<div class="adminButtons" [class.checked]="(prod.show)" *ngIf="prod.show && isFocus">
+													<a *ngIf="(productDetails.length > 1 && !isApproved && !isCancel)" (click)="viewRemoveModal(prod, i);prod.show = false" title="Remove Product">Delete <i class="fa fa-trash"></i></a>
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewProductDetailModal(prod, i);prod.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" *ngIf="!isApproved && !isCancel" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" *ngIf="!isApproved && !isCancel" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Sample Demand</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Sample Demand?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sample Demand</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Client
+							</label>
+							<div class="col-md-9">
+								<select class="form-control" [(ngModel)]="clientId" (change)="getSampleDemand()">
+									<option [value]="null">-- Select Client --</option>
+									<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Sample Demand No
+							</label>
+							<div class="col-md-9">
+								<select class="form-control" [(ngModel)]="demandId">
+									<option [value]="null">-- Select Sample Demand No --</option>
+									<option *ngFor="let itm of sampleDemands" [value]="itm.id">{{itm.sample_no}} | {{itm.sample_date | date: 'dd/MM/y'}} | {{itm.location?.name}} | {{itm.project?.name}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" [disabled]="(isNotValid(clientId) || isNotValid(demandId))" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showProductDetailModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content" *ngIf="selectedModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Model No.: {{selectedModal.model_no}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showProductDetailModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+    		<div class="row" *ngIf="selectedModal">
+    			<div class="col-md-4">
+    				<ng-container *ngIf="productImage">
+	            <img [src]="productImage" class="img-fluid pointer" />
+	        	</ng-container>
+	        	<h5 class="text-uppercase mt-2">Product Group</h5>
+	        	<p><i class="fa fa-shopping-bag mr-2"></i>{{selectedModal.group.name}}</p>
+    			</div>
+    			<div class="col-md-8">
+    				<div class="form-horizontal">
+	              <div class="form-group">
+	                  <span class="bold">HSN Code: </span>{{selectedModal.hsn_code}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Product Code: </span>{{selectedModal.product_code}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Product Remark: </span>{{selectedModal.remarks}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Sold: </span>0
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">In Stock: </span>5
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">UOM: </span>Nos.
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Brand: </span>{{selectedModal.brand.name}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Prod. Description: </span><br> {{selectedModal.description}}
+	              </div>
+	              <div class="form-group">
+	                  
+	              </div>
+	          </div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showProductDetailModal = false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showRemoveModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showRemoveModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are you sure to delete this product?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showRemoveModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="removeProduct()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showNotificationModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body pt-4">
+      	<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showNotificationModal = false" style="position: absolute;right: 7px;top: -5px;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      	<div class="d-inline-block pr-2" style="width:65%;vertical-align: top;color:#1566ff;"><div>Gentleman !</div> <strong>{{productName}}</strong> <span class="text-danger"> {{stock}} Nos.</span> available in STOCK. You can not create it's <strong>Sample Demand </strong>. Please confirm about availibility with Purchase  Authority.</div>
+      	<div class="d-inline-block" style="width:35%;">
+      		<div class="text-center p-2 border">
+						<a href="http://erp.livotechnology.com/#/purchase/purchase-notification" target="_blank" class="text-save d-block"><img src="./assets/images/bell.png" width="70" class="pointer"></a>
+						<div class="text-save" style="color:#1566ff;">Purchase Notification</div>
+						<button (click)="showNotificationModal = false" type="button" class="btn-xs btn-save-outline mt-2">Cancel</button>
+					</div>
+      	</div>
+      </div>
+    </div>
+  </div>
+</div>
+<app-confirm-dialog *ngIf="MessageText" [MessageText]="MessageText" [MessageTitle]="MessageTitle" [ActionType]="ActionType" [SaveBtn]="SaveBtn" [CancelBtn]="CancelBtn" (saveAction)="confirmedAction($event)"></app-confirm-dialog>  
+<ngx-ui-loader></ngx-ui-loader>

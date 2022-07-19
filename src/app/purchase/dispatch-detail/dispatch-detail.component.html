@@ -1,0 +1,457 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off" class="dispatch-detail">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} DISPATCH DETAIL</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Supplier
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.supplier_id.invalid" [class.invalid-box]="purchaseForm.controls.supplier_id.invalid">
+										<select *ngIf="!editMode" class="form-control" formControlName="supplier_id" (change)="getPurchaseOrder();">
+											<option [value]="null">-- Supplier --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+										</select>
+										<input disabled type="text" *ngIf="editMode" class="form-control" value="{{getName()}}">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>P.I.No
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.pi_id.invalid" [class.invalid-box]="purchaseForm.controls.pi_id.invalid">
+										<select *ngIf="!editMode" class="form-control" formControlName="pi_id" (change)="showPOData();getPurchaseDispatchNo()">
+											<option [value]="null">-- Select PI --</option>
+											<option *ngFor="let itm of purchaseOrders" [value]="itm.id">{{itm.purchase_info_no}} | {{itm.pi_date | date : 'dd/MM/y'}} | {{itm.final_amount | number: '1.2-2'}}</option>
+										</select>
+										<input disabled type="text" *ngIf="editMode && purchaseOrders.length" class="form-control" value="{{purchaseOrders[0].purchase_info_no}} | {{purchaseOrders[0].pi_date | date : 'dd/MM/y'}} | {{purchaseOrders[0].final_amount | number: '1.2-2'}}">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Dispatch No
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.dispatch_no.invalid" [class.invalid-box]="purchaseForm.controls.dispatch_no.invalid">
+										<input type="text" disabled class="form-control" [value]="purchaseForm.value.dispatch_no" placeholder="Dispatch No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Dispatched On
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.dispatched_on_date.invalid" [class.invalid-box]="purchaseForm.controls.dispatched_on_date.invalid">
+										<input type="text" class="form-control" formControlName="t_dispatched_on_date" placeholder="Enter Dispatched On" id="dispatched_on_date" (change)="changeDate('t_dispatched_on_date', 'dispatched_on_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Invoice No
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="invoice_no" placeholder="Enter Invoice No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Invoice Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_invoice_date" class="form-control" placeholder="Enter Invoice Date" id="invoice_date" (change)="changeDate('t_invoice_date', 'invoice_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Expected Date of Delivery
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_expected_date" class="form-control" placeholder="Enter Expected Date of Delivery" id="expected_date" (change)="changeDate('t_expected_date', 'expected_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<!-- <div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label"><span class="text-danger">*</span>Goods Dispatched</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8 lhpx pr-0"  [class.form-invalid]="invalidForm && purchaseForm.controls.goods_dispatched.invalid" [class.invalid-box]="purchaseForm.controls.goods_dispatched.invalid">
+										<label class="mr-2 mb-0"><input type="radio" formControlName="goods_dispatched" value="All"><span class="checkbox-text">All</span></label>
+										<label class="mr-0 mb-0"><input type="radio" formControlName="goods_dispatched" value="Partial"><span class="checkbox-text">Partial</span></label>
+									</div>
+									<label *ngIf="purchaseForm.value.goods_dispatched == 'Partial'" class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">Amount</label>
+									<div *ngIf="purchaseForm.value.goods_dispatched == 'Partial'" class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="partial_amount" placeholder="Enter Amount" appFormatInput>
+									</div>
+								</div> -->
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										e-Way Bill No.
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="e_way_bill_no" placeholder="Enter e-Way Bill No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										e-Way Bill Date/Time
+									</label>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pr-0 mt8">
+										<input type="text" class="form-control" formControlName="t_e_way_date" class="form-control" placeholder="Date" id="e_way_date" (change)="changeDate('t_e_way_date', 'e_way_date')">
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pl-0 mt8">
+										<div class="input-group">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input type="text" class="form-control" [value]="purchaseForm.value.e_way_time" placeholder="Time" id="e_way_time">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Valid From
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_valid_from" class="form-control" placeholder="Enter Valid From" id="valid_from" (change)="changeDate('t_valid_from', 'valid_from')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Valid Until
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_valid_until" class="form-control" placeholder="Enter Valid Until" id="valid_until" (change)="changeDate('t_valid_until', 'valid_until')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">
+										Place of Dispatch
+									</label>
+									<div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 mt8">
+										<textarea class="form-control" formControlName="place_of_dispatch" rows="2" placeholder="Enter Place of Dispatch"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Transporter Name
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<div class="input-group"  [class.form-invalid]="invalidForm && (!purchaseForm.value.transporter_id || purchaseForm.value.transporter_id == 'null')">
+									  	<select class="form-control" formControlName="transporter_id">
+									  		<option [value]="null">-- Select Transporter --</option>
+												<option *ngFor="let itm of transportList" [value]="itm.id">{{itm.name}}</option>
+					    				</select>
+										  <div class="input-group-append">
+										    <span class="input-group-text custom-info" (click)="showDeliveredModal = true">ADD</span>
+										  </div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Materials Pick Up Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_pick_up_date" class="form-control" placeholder="Enter Materials Pick Up Date" id="pick_up_date" (change)="changeDate('t_pick_up_date', 'pick_up_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Vehicle No.
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="vehicle_no" placeholder="Vehicle No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										No of Cartons
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="number" class="form-control" formControlName="no_of_cartons" placeholder="Enter No of Cartons">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Docket No
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="track_consignment" placeholder="Track Consignment">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Docket Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_docket_date" class="form-control" placeholder="Enter Docket Date" id="docket_date" (change)="changeDate('t_docket_date', 'docket_date')">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			PRODUCT DETAIL
+		    		</div>
+		    		<div class="table-responsive mb-3" [class.disable-content]="isNotValid(purchaseForm.value.pi_id)">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="60">Srl</th>
+						        <th width="200">Prod. Group/Model No.</th>
+						        <th>Product Description</th>
+						        <th width="110">Qnty/Rate</th>
+						        <th width="110">Disc.,%/Amt</th>
+						        <th width="100">Total, Rs.</th>
+						        <th width="110">GST, %/Total</th>
+						        <th width="120">Total w/GST, Rs.</th>
+						        <!-- <th width="35" *ngIf="purchaseForm.value.goods_dispatched == 'Partial'"></th> -->
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of productDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td>
+							    		<div>
+							    			<input type="text" disabled class="form-control" [value]="prod.group_name">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="text" disabled class="form-control" [value]="prod.product_name">
+							    		</div>
+							    	</td>
+							    	<td style="height:90px;" data-toggle="tooltip" data-placement="top" data-html="true" title="{{prod.tdescription}}">
+							    		<textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea>
+							    	</td>
+							    	<td>
+							    		<!-- <div *ngIf="purchaseForm.value.goods_dispatched == 'Partial'">
+							    			<input type="number" class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity" (keyup)="calculate()">
+							    		</div>
+							    		<div *ngIf="purchaseForm.value.goods_dispatched != 'Partial'"> -->
+							    		<div>
+							    			{{prod.qty}}
+							    		</div>
+							    		<div class="mt-2">
+							    			{{prod.rate}}
+							    		</div>
+							    	</td>
+							    	<td>
+							    		<div>
+							    			{{prod.discount_percentage}}
+							    		</div>
+							    		<div class="mt-2">
+							    			{{prod.discount_amount | number: '1.2-2'}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">
+							    		{{prod.sub_total | number: '1.2-2'}}
+							    	</td>
+							    	<td>
+							    		<div>
+							    			{{prod.gst_percentage}}
+							    		</div>
+							    		<div class="mt-2 text-right">
+							    			{{prod.gst_amount | number: '1.2-2'}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">
+							    		{{prod.total_amount | number: '1.2-2'}}
+							    	</td>
+							    	<!-- <td *ngIf="purchaseForm.value.goods_dispatched == 'Partial'">
+							    		<i class="fas fa-trash" (click)="viewRemoveModal(prod, i);"></i>
+							    	</td> -->
+							    </tr>
+							    <tr class="total">
+							    	<td class="text-center"></td>
+							    	<td class="text-center"></td>
+							    	<td class="text-center"></td>
+							    	<td class="text-right">
+							    		<span>{{qty_rate_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{discount_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{sub_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{gst_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{total_amount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<!-- <td *ngIf="purchaseForm.value.goods_dispatched == 'Partial'">
+							    	</td> -->
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Purchase Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Purchase Order?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeliveredModal">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+		<h5 class="modal-title">Transporter</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeliveredModal = false">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		</div>
+		<div class="modal-body">
+		<div class="form-group row mb-0">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Transporter Name
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="TransportName" [(ngModel)]="TransportName" placeholder="Transporter Name">
+			</div>
+		</div>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-sm btn-save" (click)="saveDelivered()">Save</button>
+		<button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeliveredModal = false">Close</button>
+		</div>
+	</div>
+	</div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Purchase Dispatch</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Supplier
+							</label>
+							<div class="col-md-9">
+								<select class="form-control" [(ngModel)]="supplierId" (change)="getPurchaseDispatch()">
+									<option [value]="null">-- Select Supplier --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Dispatch No.
+							</label>
+							<div class="col-md-9">
+								<select class="form-control" [(ngModel)]="purchaseId">
+									<option [value]="null">-- Select Dispatch No. --</option>
+									<option *ngFor="let itm of purchaseDispatch" [value]="itm.id">{{itm.dispatch_no}} | {{itm.dispatched_on_date | date : 'dd/MM/y'}} | {{itm.total_amount | number : '1.2-2'}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showRemoveModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showRemoveModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are you sure to delete this product?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showRemoveModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="removeProduct()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

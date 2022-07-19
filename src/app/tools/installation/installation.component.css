@@ -1,0 +1,60 @@
+.table-content {max-width: 80%;}
+.main-title {max-width: 100%;}
+.main-title .left-title {
+	width: 75%;
+	display: inline-block;
+}
+.main-title .left-title span {
+	background-color: #b1d8f9 !important;
+    margin-bottom: 0;
+    padding: 6px;
+    border-radius: 0px !important;
+    color: #1c575d !important;
+    font-size: 13px;
+    font-family: Calibri;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin-top: 0;
+    display: inline-block;
+}
+.main-title .right-title {
+	color: #1c575d !important;
+    font-size: 13px;
+    font-family: Calibri;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 20%;
+    display: inline-block;
+}
+
+table th {
+	color: #1c575d !important;
+    font-size: 14px !important;
+    background-color: #b1d8f9 !important;
+    font-weight: normal !important;
+}
+
+table tbody {
+  display: block;
+  height: calc(100vh - 317px);
+}
+
+table thead, table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table thead {
+  position: sticky; top: 0;
+}
+
+.card-body-scroll {
+  height: calc(100vh - 155px);
+  /*max-width: 80%;*/
+}
+.row-line{background-color: rgba(177, 216, 249, 1);font-weight: normal;color: #3b4354;}

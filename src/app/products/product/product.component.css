@@ -1,0 +1,12 @@
+.product-image:hover img { opacity: 0.3;  }
+.edit-photo { position: absolute; top: 45%; left: 48%; font-size: 20px; color: #000; display: none; cursor: pointer;}
+.product-image:hover .edit-photo { display: block;  }
+.add-align {position: relative;top: -2px;}
+.cst-view {
+	padding: 0px 5px !important;
+  border-radius: 0 !important;
+  background-color: #7ec1ff;
+  color: #262b36;
+  display: inline-block;
+  border-color: #7ec1ff;
+}

@@ -1,0 +1,1608 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="quotaionMode == 'N'" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="quotaionMode == 'R'" class="float-right f-16 pt-1">You are in ADD REVISE Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" id="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary">QUOTATION</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-7">
+								<div class="form-group row mr-0" [class.disable-content-v]="(purchaseForm.value.quotation_type == 'Archived')">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.client_id.invalid" [class.invalid-box]="purchaseForm.controls.client_id.invalid">
+										<select class="form-control" formControlName="client_id" (change)="getLocation();getAttentions()">
+											<option [value]="null">-- Select Client --</option>
+											<option *ngFor="let itm of accounts" [value]="itm.id">{{itm.account_name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0" [class.disable-content-v]="(purchaseForm.value.quotation_type == 'Archived')">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.location_id.invalid" [class.invalid-box]="purchaseForm.controls.location_id.invalid">
+										<div class="input-group">
+									  	<select class="form-control" formControlName="location_id" (change)="getProject();">
+									  		<option [value]="null">-- Location --</option>
+											<option *ngFor="let itm of locations" [value]="itm.id">{{itm.name}}</option>
+					    				</select>
+									  	<div class="input-group-append" *ngIf="!isNotValid(purchaseForm.value.location_id)">
+									    	<span class="input-group-text custom-info" (click)="addLocation()">EDIT</span>
+									  	</div>
+									  	<div class="input-group-append" *ngIf="isNotValid(purchaseForm.value.location_id)">
+									    	<span class="input-group-text custom-info" (click)="addLocation()">ADD</span>
+									  	</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Project
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.disable-content-v]="(purchaseForm.value.quotation_type == 'Archived')">
+										<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.project_id.invalid" [class.invalid-box]="purchaseForm.controls.project_id.invalid">
+									  	<select class="form-control" formControlName="project_id" (change)="getDistance();getQuotations();">
+									  		<option [value]="null">-- Project --</option>
+												<option *ngFor="let itm of projects" [value]="itm.id">{{itm.name}}</option>
+					    				</select>
+									  	<div class="input-group-append" *ngIf="!isNotValid(purchaseForm.value.project_id)">
+									    	<span class="input-group-text custom-info" (click)="addProject()">EDIT</span>
+									  	</div>
+									  	<div class="input-group-append" *ngIf="isNotValid(purchaseForm.value.project_id)">
+									    	<span class="input-group-text custom-info" (click)="addProject()">ADD</span>
+									  	</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0" [class.disable-content-v]="readonlyMode" *ngIf="editMode || quotaionMode == 'R'">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Away from ME
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.away_from_me.invalid" [class.invalid-box]="purchaseForm.controls.away_from_me.invalid">
+											<input type="number" class="form-control" formControlName="away_from_me" placeholder="Enter Away from ME KM" (change)="formValueChange()">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info">KM</span>
+												<span class="input-group-text">
+													<a href="https://www.google.com/maps/dir///@22.7627351,70.8572058,12.29z" target="_blank">
+														<img src="./assets/images/marker.png" class="img-fluid" width="20">
+													</a>
+												</span>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+
+								<div class="form-group row mr-0" *ngIf="quotaionMode == 'R' || editMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Quotation Type
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8 pr-0 lhpx">
+										<label class="mr-3 mb-0"><input type="radio" formControlName="quotation_type" (change)="getQuotations()" value="Approved"><span class="checkbox-text">Approved <span *ngIf="totalQuote.approved > 0">({{totalQuote.approved}})</span></span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="quotation_type" (change)="getQuotations()" value="Non-Approved"><span class="checkbox-text">Non-Approved <span *ngIf="totalQuote.nonapproved > 0">({{totalQuote.nonapproved}})</span></span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="quotation_type" (change)="getQuotations()" value="Archived"><span class="checkbox-text">Archived <span *ngIf="totalQuote.archived > 0">({{totalQuote.archived}})</span></span></label>
+									</div>
+								</div>
+								<div class="form-group row mr-0" *ngIf="quotaionMode == 'R' || editMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>
+										<span *ngIf="quotaionMode == 'R'">Select Quotation, to Revise</span>
+										<span *ngIf="editMode">Select Quotation, to Edit</span>
+									</label>
+									<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 mt8" [class.form-invalid]="invalidForm && !purchaseForm.value.quotation_id">
+										<select class="form-control" formControlName="quotation_id" (change)="changeQuotation();">
+											<option [value]="null">-- Select Quotation No --</option>
+											<option *ngFor="let itm of quotations" [value]="itm.id">{{itm.quotation_no}}</option>
+										</select>
+									</div>
+									<label class="col-lg-1 col-md-1 col-sm-1 text-left col-xs-12 control-label pl-0">
+										<span class="text-danger">*</span>Date
+									</label>
+									<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 pl-0" [class.form-invalid]="invalidForm && !quotation_date">
+										<input disabled type="text" class="form-control" placeholder="Date" [value]="quotation_date | date : 'dd/MM/y'">
+									</div>
+								</div>
+								<div class="form-group row mr-0" [class.d-none]="editMode" [class.disable-content-v]="readonlyMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span *ngIf="quotaionMode != 'R'"><span class="text-danger">*</span>Quotation No</span>
+										<span *ngIf="quotaionMode == 'R'"><span class="text-danger">*</span>Quotation No., Revised</span>
+									</label>
+									<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.quotation_no.invalid" [class.invalid-box]="purchaseForm.controls.quotation_no.invalid">
+										<input type="text" disabled class="form-control" [value]="purchaseForm.value.quotation_no" Placeholder="Quotation No">
+									</div>
+									<label class="col-lg-1 col-md-1 col-sm-1 text-left col-xs-12 control-label pl-0">
+										<span class="text-danger">*</span>Date
+									</label>
+									<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 pl-0" [class.form-invalid]="invalidForm && purchaseForm.controls.quotation_date.invalid" [class.invalid-box]="purchaseForm.controls.quotation_date.invalid">
+										<input type="text" class="form-control" disabled [value]="purchaseForm.value.quotation_date | date : 'dd/MM/y'" placeholder="Enter Date" id="quotation_date" (change)="changeDate('t_quotation_date', 'quotation_date');formValueChange()">
+									</div>
+								</div>
+
+								<div class="form-group row mr-0" [class.d-none]="!editMode" [class.disable-content-v]="readonlyMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span *ngIf="quotaionMode != 'R'"><span class="text-danger">*</span>Quotation done, by</span>
+									</label>
+									<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.quotation_no.invalid" [class.invalid-box]="purchaseForm.controls.quotation_no.invalid">
+										<input type="text" [value]="getExecutiveName()" class="form-control" disabled>
+									</div>
+								</div>
+
+
+								<div class="form-group row mr-0" [class.disable-content-v]="readonlyMode" *ngIf="!editMode && quotaionMode != 'R'">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Away from ME
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.away_from_me.invalid" [class.invalid-box]="purchaseForm.controls.away_from_me.invalid">
+											<input type="number" class="form-control" formControlName="away_from_me" placeholder="Enter Away from ME KM" (change)="formValueChange()">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info">KM</span>
+												<span class="input-group-text">
+													<a href="https://www.google.com/maps/dir///@22.7627351,70.8572058,12.29z" target="_blank">
+														<img src="./assets/images/marker.png" class="img-fluid" width="20">
+													</a>
+												</span>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row mr-0" [class.d-none]="!editMode" [class.disable-content-v]="(purchaseForm.value.quotation_type == 'Archived')">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<input type="checkbox" formControlName="approved_pre_demand"> Additional Warrenty For,
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.client_id.invalid" [class.invalid-box]="purchaseForm.controls.client_id.invalid">
+										<select class="form-control" formControlName="months">
+											<option value='Select Month'>-- Select Month --</option>
+											<option *ngFor="let month of months" [value]="month">{{month}}</option>
+										</select>
+										<!-- <label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+											Month
+										</label> -->
+									</div>
+								</div>
+								
+							</div>
+						
+
+							<div class="col-md-5">
+								<div class="form-group row mr-0" [class.disable-content-v]="readonlyMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sales Executive
+									</label>
+									<div class="col-md-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sales_executive_id.invalid" [class.invalid-box]="purchaseForm.controls.sales_executive_id.invalid">
+										<input type="text" [value]="getExecutiveName()" class="form-control" disabled>
+										<!-- <select class="form-control" formControlName="sales_executive_id" (change)="formValueChange()">
+											<option [value]="null">-- Select Sales Executive --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.last_name}} {{itm.father_name}}</option>
+										</select> -->
+									</div>
+								</div>
+								<div class="form-group row mr-0" [class.disable-content-v]="readonlyMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Attention To
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<div class="input-group">
+									  	<select class="form-control" formControlName="attention_to_id" (change)="formValueChange();changeAtt()">
+									  		<option [value]="null">-- Select Attention To --</option>
+												<option *ngFor="let itm of attentions" [value]="itm.id">{{itm.first_name}} {{itm.last_name}}</option>
+					    				</select>
+									  	<div class="input-group-append">
+									    	<span class="input-group-text custom-info" (click)="showContactFormModal()">ADD</span>
+									  	</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0" [class.disable-content-v]="readonlyMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Contact No
+									</label>
+									<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 pr-0">
+										<input type="text" class="form-control" formControlName="contact_code" placeholder="Code" (change)="formValueChange()">
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8 pl-0">
+										<input type="text" class="form-control" formControlName="contact_number" placeholder="Account Contact" (change)="formValueChange()">
+									</div>
+								</div>
+								<div class="form-group row mr-0" [class.disable-content-v]="readonlyMode">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Email
+									</label>
+									<div class="col-md-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="email" placeholder="Enter Email" (change)="formValueChange()">
+									</div>
+								</div>
+								<div class="form-group row mr-0" [class.disable-content-v]="(readonlyMode || editMode || this.quotaionMode == 'R')">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Transaction Type
+									</label>
+									<div class="col-md-8 col-xs-12 mt8 lhpx"  [class.form-invalid]="invalidForm && purchaseForm.controls.transaction_type.invalid">
+										<label class="mr-3 mb-0"><input type="radio" formControlName="transaction_type" (change)="formValueChange()" value="New Lead"><span class="checkbox-text">New Lead</span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="transaction_type" (change)="formValueChange()" value="Repeat Business"><span class="checkbox-text">Repeat Business</span></label>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label"></label>
+									<div class="col-md-8 col-xs-12 mt8" [class.disable-control]="readonlyMode && pre_sale_demand_id != 0">
+										<label class="mr-1 mb-0"><input type="checkbox" formControlName="approved_pre_demand" (change)="changeApproved();formValueChange()"><span class="checkbox-text">Approved for Pre-Sales Demand</span></label>
+										<button *ngIf="purchaseForm.value.approved_pre_demand" (click)="viewTerms()" type="button" class="btn btn-xs btn-save" style="min-width: 30px;padding: 2px 5px !important;"><i class="fa fa-edit"></i></button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			PART-I PRODUCT SUPPLY
+		    		</div>
+		    		<div class="right-title float-right text-right pointer pr-3" *ngIf="!readonlyMode">
+		    			<button type="button" class="btn btn-xs add-item-btn" (click)="addRow('Product')"><i class="fa fa-plus"></i> ADD ITEM</button>
+		    		</div>
+		    		<div class="table-responsive mb-3" style="overflow: unset;">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="30">Srl</th>
+						        <th width="150">Prod. Group/Model No.</th>
+						        <th width="200">Product Description</th>
+						        <th width="80">Qnty/Rate</th>
+						        <th width="100">Disc.,%/Amt</th>
+						        <th width="90">Total, Rs.	</th>
+						        <th width="80">GST, %/Total</th>
+						        <th width="90">Total w/GST, Rs.</th>
+						        <th width="35"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr [class.disable-content-v]="readonlyMode" *ngFor="let prod of productDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td>
+							    		<div *ngIf="!prod.is_paired" [class.form-invalid]="(prod.error && isNotValid(prod.group_id))">
+							    			<select class="form-control" [(ngModel)]="prod.group_id" [ngModelOptions]="{standalone: true}" (change)="getModels(prod, i, null);formValueChange()" [class.form-invalid]="(prod.error && isNotValid(prod.group_id))">
+													<option [value]="null">-- Product Group --</option>
+													<option *ngFor="let itm of productGroups" [value]="itm.id">{{itm.name}}</option>
+												</select>
+							    		</div>
+							    		<div *ngIf="prod.is_paired" [class.form-invalid]="(prod.error && isNotValid(prod.product_id))">
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.group_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    		<div class="mt-2" *ngIf="!prod.is_paired" [class.form-invalid]="(prod.error && isNotValid(prod.product_id))">
+							    			<select class="form-control" [(ngModel)]="prod.product_id" [ngModelOptions]="{standalone: true}" (change)="changeModel(prod.product_id, prod, false);formValueChange()">
+													<option [value]="null">-- Model No --</option>
+													<option *ngFor="let itm of prod.products" [value]="itm.id">{{itm.model_no}}</option>
+												</select>
+							    		</div>
+							    		<div class="mt-2" *ngIf="prod.is_paired" [class.form-invalid]="(prod.error && isNotValid(prod.product_id))">
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.product_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    	</td>
+							    	<td><textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea></td>
+							    	<td class="text-right">
+							    		<div [class.form-invalid]="checkValidQty(prod)" [class.form-invalid]="(prod.error && isNotValid(prod.qty))">
+							    			<input type="number"  *ngIf="!prod.is_paired" class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity" (keyup)="calculate()" (change)="changeMainProductQty(prod);formValueChange()">
+							    			<input type="number"  *ngIf="prod.is_paired && !isNotValid(prod.qty)" class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity" (keyup)="calculate()" (change)="checkValidQtyErr(prod, false);formValueChange()">
+							    			<button type="button" *ngIf="prod.is_paired && isNotValid(prod.qty)" (click)="showPairedModal(prod, i)" class="btn btn-sm btn-save">Add Qnty</button>
+							    		</div>
+							    		<div class="mt-2" [class.form-invalid]="(prod.error && isNotValid(prod.rate))">
+							    			{{prod.rate | number: '1.2-2'}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" [disabled]="(prod.is_paired)" [value]="toFixed(prod.discount_percentage)" class="form-control text-right" [(ngModel)]="prod.discount_percentage" [ngModelOptions]="{standalone: true}" placeholder="%" (keyup)="calculate()" (change)="formValueChange()" appFormatInput>
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="number" disabled class="form-control text-right" [value]="toFixed(prod.discount_amount)" placeholder="0.00">
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{prod.sub_total | number: '1.2-2'}}</td>
+							    	<td class="text-right">
+							    		<div [class.form-invalid]="(prod.error && !prod.is_paired && isNotValid(prod.gst_percentage))">
+							    			<input type="number" [disabled]="(prod.is_paired)" class="form-control text-right" [(ngModel)]="prod.gst_percentage" [ngModelOptions]="{standalone: true}" placeholder="TAX" (keyup)="calculate()" (change)="formValueChange()" appFormatInput>
+							    		</div>
+							    		<div class="mt-2">
+							    			{{prod.gst_amount | number: '1.2-2'}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{prod.total_amount | number: '1.2-2'}}</td>
+							    	<td class="text-center position-relative">
+							    		<div class="adminActions" id="adminActions">
+												<a class="adminButton" (click)="setFalseData(i);prod.show = !prod.show"><i class="fa fa-folder-open" [class.text-success]="(prod.remark)"></i></a>
+												<div class="adminButtons" [class.checked]="(prod.show)" *ngIf="prod.show && isFocus">
+													<a (click)="viewRemoveModal(prod, i);prod.show = false" title="Remove Product">Delete <i class="fa fa-trash"></i></a>
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewRemarkModal(prod, i);prod.show = false" title="{{(prod.remark) ? 'View': 'Add'}} Remark">{{(prod.remark) ? 'View': 'Add'}} Remark <i class="fa fa-edit"></i></a>
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewProductDetailModal(prod, i);prod.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div>
+							    	</td>
+							    </tr>
+							    <tr [class.disable-content-v]="readonlyMode" class="total">
+							    	<td class="text-right" colspan="3">SUPPLY COST, Rs</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.qty_rate_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.discount_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.sub_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.gst_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.total_amount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-center">
+							    		
+							    	</td>
+							    </tr>
+							    <tr class="total" *ngIf="purchaseForm.value.itc_total_amount && !showItcRateTable">
+							    	<td colspan="3">
+							    		<div class="d-flex">
+							    			<div class="text-left" style="width:30%;">PART-II ITC CHARGE</div>
+							    			<div class="text-right" style="width:70%;">Installation, Testing & Commissioning Cost, Rs </div>
+							    		</div>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_qty_rate_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span></span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_sub_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_gst_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_total_amount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-center">
+							    		<i class="fa fa-copy open-2" (click)="showItcRateTable = !showItcRateTable"></i>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14" *ngIf="showItcRateTable">
+		    			PART-II ITC CHARGE
+		    		</div>
+		    		<div class="table-responsive mb-3" *ngIf="showItcRateTable" style="overflow: unset;">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="30">Srl</th>
+						        <th width="130">Prod. Group/Model No.</th>
+						        <th width="200">Product Description</th>
+						        <th width="120">Service Description</th>
+						        <th width="80">Qnty/Rate</th>
+						        <th width="90">Total, Rs.	</th>
+						        <th width="80">GST, %/Total</th>
+						        <th width="90">Total w/GST, Rs.</th>
+						        <th width="35"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr [class.disable-content-v]="readonlyMode" *ngFor="let prod of productItc;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td>
+							    		<div *ngIf="!prod.is_paired">
+							    			<select disabled class="form-control" [(ngModel)]="prod.group_id" [ngModelOptions]="{standalone: true}">
+													<option [value]="null">-- Product Group --</option>
+													<option *ngFor="let itm of productGroups" [value]="itm.id">{{itm.name}}</option>
+												</select>
+							    		</div>
+											<div class="mt-2" *ngIf="!prod.is_paired">
+							    			<select disabled class="form-control" [(ngModel)]="prod.product_id" [ngModelOptions]="{standalone: true}">
+													<option [value]="null">-- Model No --</option>
+													<option *ngFor="let itm of prod.products" [value]="itm.id">{{itm.model_no}}</option>
+												</select>
+							    		</div>
+							    		<div *ngIf="prod.is_paired">
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.group_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    		<div class="mt-2" *ngIf="prod.is_paired">
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.product_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    	</td>
+							    	<td><textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea></td>
+							    	<td>
+							    		<select class="form-control" [(ngModel)]="prod.service_description" [ngModelOptions]="{standalone: true}" (change)="calculateItc()" (change)="formValueChange()">
+												<option [value]="null">-- Service --</option>
+												<option value="Installation">Installation, Testing & Commissioning</option>
+												<option value="Client">Client's Scope</option>
+											</select>
+							    	</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input disabled type="number" class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity" (keyup)="calculateItc()">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="number" class="form-control text-right" [value]="toFixed(prod.itc_rate)" [(ngModel)]="prod.itc_rate" [ngModelOptions]="{standalone: true}" placeholder="Rate" (keyup)="calculateItc()" (change)="formValueChange()" appFormatInput>
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{prod.sub_total | number: '1.2-2'}}</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" [disabled]="(prod.is_paired)" class="form-control text-right" [value]="toFixed(prod.itc_gst_rate)" [(ngModel)]="prod.itc_gst_rate" [ngModelOptions]="{standalone: true}" placeholder="TAX" (keyup)="calculateItc()" (change)="formValueChange()" appFormatInput>
+							    		</div>
+							    		<div class="mt-2">
+							    			{{prod.gst_amount | number: '1.2-2'}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{prod.total_amount | number: '1.2-2'}}</td>
+							    	<td class="text-center position-relative" *ngIf="!editMode">
+							    		<!-- <div class="adminActionsIt" id="adminActions">
+												<a class="adminButton" (click)="setItFalseData(i);prod.show = !prod.show"><i class="fa fa-folder-open" [class.text-success]="(prod.remark)"></i></a>
+												<div class="adminButtons" [class.checked]="(prod.show)" *ngIf="prod.show && isFocuss">
+													<a (click)="viewRemoveModal(prod, i);prod.show = false" title="Remove Product">Delete <i class="fa fa-trash"></i></a>
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewRemarkModal(prod, i);prod.show = false" title="{{(prod.remark) ? 'View': 'Add'}} Remark">{{(prod.remark) ? 'View': 'Add'}} Remark <i class="fa fa-edit"></i></a>
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewProductDetailModal(prod, i);prod.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div> -->
+							    	</td>
+							    </tr>
+							    <tr class="total">
+							    	<td class="text-right" colspan="4">ITC COST, Rs</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_qty_rate_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_sub_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_gst_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.itc_total_amount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-center">
+							    		<i class="fa fa-copy open-2" (click)="showItcRateTable = !showItcRateTable"></i>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			PART-III SERVICE
+		    		</div>
+		    		<div class="right-title float-right text-right pointer pr-3" *ngIf="!readonlyMode">
+		    			<button type="button" class="btn btn-xs add-item-btn" (click)="addServiceDetail('Service')"><i class="fa fa-plus"></i> ADD ITEM</button>
+		    		</div>
+		    		<div class="table-responsive mb-3" style="overflow: unset;" [class.disable-content-v]="readonlyMode">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="30">Srl</th>
+						        <th width="150">Servce. Group/Servce.</th>
+						        <th width="200">Servce Description</th>
+						        <th width="80">Qnty/Rate</th>
+						        <th width="100">Disc.,%/Amt</th>
+						        <th width="90">Total, Rs.	</th>
+						        <th width="80">GST, %/Total</th>
+						        <th width="90">Total w/GST, Rs.</th>
+						        <th width="35"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of serviceDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td>
+							    		<div>
+							    			<select class="form-control" [(ngModel)]="prod.group_id" [ngModelOptions]="{standalone: true}" (change)="getServices(prod, i, null);formValueChange()">
+													<option [value]="null">-- Service Group --</option>
+													<option *ngFor="let itm of serviceGroups" [value]="itm.id">{{itm.name}}</option>
+												</select>
+							    		</div>
+							    		<div class="mt-2">
+							    			<select class="form-control" [(ngModel)]="prod.product_id" [ngModelOptions]="{standalone: true}" (change)="changeModel(prod.product_id, prod, false);formValueChange()">
+													<option [value]="null">-- Service Code --</option>
+													<option *ngFor="let itm of prod.products" [value]="itm.id">{{itm.service_code}}</option>
+												</select>
+							    		</div>
+							    	</td>
+							    	<td><textarea disabled class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea></td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity" (keyup)="calculateService()" (change)="formValueChange()">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="number" class="form-control text-right" [(ngModel)]="prod.rate" [ngModelOptions]="{standalone: true}" placeholder="Rate" (keyup)="calculateService()" (change)="formValueChange()" appFormatInput>
+							    		</div>
+							    	</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" class="form-control text-right" [value]="toFixed(prod.discount_percentage)" [(ngModel)]="prod.discount_percentage" [ngModelOptions]="{standalone: true}" placeholder="%" (keyup)="calculateService()" (change)="formValueChange()" appFormatInput>
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="number" disabled class="form-control text-right" [value]="prod.discount_amount | number: '1.2-2'" placeholder="0.00">
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{prod.sub_total | number: '1.2-2'}}</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" class="form-control text-right" [value]="toFixed(prod.gst_percentage)" [(ngModel)]="prod.gst_percentage" [ngModelOptions]="{standalone: true}" placeholder="TAX" (keyup)="calculateService()" (change)="formValueChange()" appFormatInput>
+							    		</div>
+							    		<div class="mt-2">
+							    			{{prod.gst_amount | number: '1.2-2'}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{prod.total_amount | number: '1.2-2'}}</td>
+							    	<td class="text-center position-relative">
+							    		<div class="adminActionsSv" id="adminActions">
+												<a class="adminButton" (click)="setSvFalseData(i);prod.show = !prod.show"><i class="fa fa-folder-open" [class.text-success]="(prod.remark)"></i></a>
+												<div class="adminButtons" [class.checked]="(prod.show)" *ngIf="prod.show && isFocusV">
+													<a (click)="viewRemoveModal(prod, i);prod.show = false" title="Remove Product">Delete <i class="fa fa-trash"></i></a>
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewRemarkModal(prod, i);prod.show = false" title="{{(prod.remark) ? 'View': 'Add'}} Remark">{{(prod.remark) ? 'View': 'Add'}} Remark <i class="fa fa-edit"></i></a>
+													<a *ngIf="!isNotValid(prod.product_id)" (click)="viewProductDetailModal(prod, i);prod.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div>
+							    	</td>
+							    </tr>
+							    <tr class="total">
+							    	<td class="text-right" colspan="3">SERVICE COST, Rs</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.service_qty_rate_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.service_discount_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.service_sub_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.service_gst_total | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.service_total_amount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-center">
+							    		
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="row m-0">
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-9 col-md-9 col-sm-9 text-right col-xs-12 control-label pr-3">
+										PRODUCT SUPPLY, TOTAL WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.sub_total | number: '1.2-2')" Placeholder="Basic Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.gst_total | number: '1.2-2')" Placeholder="GST Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.total_amount | number: '1.2-2')" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-9 col-md-9 col-sm-9 text-right col-xs-12 control-label pr-3">
+										ITC CHARGE, TOTAL WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.itc_sub_total | number: '1.2-2')" Placeholder="Basic Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.itc_gst_total | number: '1.2-2')" Placeholder="GST Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.itc_total_amount | number: '1.2-2')" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-9 col-md-9 col-sm-9 text-right col-xs-12 control-label pr-3">
+										SERVICE CHARGE, TOTAL WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.service_sub_total | number: '1.2-2')" Placeholder="Basic Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.service_gst_total | number: '1.2-2')" Placeholder="GST Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.service_total_amount | number: '1.2-2')" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-11 col-md-11 col-sm-11 text-right col-xs-12 control-label pr-3">
+										TOTAL COST WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(purchaseForm.value.native_amount | number: '1.2-2')" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group row mr-0 mt-3">
+							<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+								Warranty & Liabilities disclosure:
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 mt8">
+								<textarea disabled class="form-control" rows="3">Warranty is a legally binding assurance between Earth Control Systems & it's Client. It describes the responcibility under, and period, during which Earth Control Systems will repair, replace, or compensate, for the limited defective item free of cost (FOC) to it's buyer or user. FOC Replacement/Repairs for the defective item/system subject to reason of failure accountable to manufacturing cause only.&#13;&#10;Warranty period of quoted item is mentioned in respective 'Product Description' and is counted from the day of delivery.&#13;&#10;Warranty not  applicable for hand held items like RF/IR Remote & it's batteries and wear & tear of mechnical moving devices, Cables & Conduits.&#13;&#10;Warranty with all its assurance is not applicable in all cases if Item fails to work or found in functional disorder fully or partially due to defect in Power or high/low voltage fluctuation/short-circuits, tampered or repaired without our approvals, water seepage, improper use or negligent care, damage caused by fire/arson, earthquake, flood, lightening, riots, cyclones, accident or natural disasters. and in such case replacement cost or repairing charge, freight & handling charges will be paid by user in addition with all Taxes as applicable.&#13;&#10;OEM/Supplier and/or ECS's technical engineer/s judgment/assessment on the same will be final & binding on buyer.
+								</textarea>
+							</div>
+						</div>
+						<div class="form-group row mr-0">
+							<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+								Pricing Criteria:
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 mt8">
+								<textarea disabled class="form-control" rows="3">Our quote is based on the BOQ provided by you, any other item required shall be at an extra cost.&#13;&#10;Prices are in Indian Rupees and are based on Ex-Warehouse Surat basis, all other taxes shall be charged extra.&#13;&#10;Octroi if applicable shall be directly paid by customer. Local Taxes shall be charged as mentioned.&#13;&#10;This quote pertains exclusively to the items noted herein and is based solely on information supplied by customer. It does not include additional components/accessories that may be required for completion of the project, nor does it guarantee that all requirements of the&#13;&#10;specification have been or shall be addressed or satisfied. Prices are firm and valid for 25 days from the date of this quotation.&#13;&#10;Prices subject to change without prior notice.&#13;&#10;inclusive of  'Zero Charge' Service  further known as 'Termed Liability' for a period of 12 Months starting  from day of installation completion. But charges of freight will be charged if the equipment is required to send to service centre of our OEM/supplier. On expiry of 'Termed Liability' period, Service Charges is applicable.</textarea>
+							</div>
+						</div>
+						<div class="form-group row mr-0">
+							<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+								Payment Criteria:
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 mt8">
+								<textarea disabled class="form-control" rows="3">Supply of Goods: 60% Advance with PO, balance 40% against dispatch.&#13;&#10;Services: 100% on successful work completion & Training of systems.&#13;&#10;All payments to be made thru cheques/NEFT on the name of Earth Control Systems payable at Surat.</textarea>
+							</div>
+						</div>
+						<div class="form-group row mr-0">
+							<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+								Goods Delivery Criteria:
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 mt8">
+								<textarea disabled class="form-control" rows="3">Delivery days would be considered from the date of recieving confirmed PO/DO form with Advance, Billing /Shipping details, GSTIN/PAN details, Contact Details to create Account.&#13;&#10;Dispatch of goods is approximately 6-8 days after receipt of confirmed purchase order provided ex-stock, other wise as agreed.</textarea>
+							</div>
+						</div>
+						<div class="form-group row mr-0">
+							<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+								Purchase Order:
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 mt8">
+								<textarea disabled class="form-control" rows="3">Please varify pricing  & Terms prior to order. Mention quote number or ref. number on PO and to all correspondence pertaining to this quote. PO must clearly shows all the details of all terms of payment , applicable Tax, extra charges if any, Installation Charges, scope of  buyer and supplier for works, delivery schedule.</textarea>
+							</div>
+						</div>
+						<div class="form-group row mr-0">
+							<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+								Product Discontinuation Policy:
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 mt8">
+								<textarea disabled class="form-control" rows="3">In case of discontinuation of any model/product by the OEM/Manufacturer, our liability will be restricted to services only even during the warranty period.&#13;&#10;Repairs in such cases will be subject to availibility of spares & support from OEM/Manufacturer.</textarea>
+							</div>
+						</div>
+						<div class="form-group row mr-0">
+							<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+								Arbitration/Jurisdiction:
+							</label>
+							<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 mt8">
+								<textarea disabled class="form-control" rows="3">Any controversy or claim, which may arise between the parties hereto out of or related to this contract or breach thereof, shall be referred to a sole arbitrator,&#13;&#10;acceptable to both parties and the Award of such sole arbitrator shall be final and binding on the parties.&#13;&#10;All such arbitration proceedings shall be held in Surat</textarea>
+							</div>
+						</div>
+						<div *ngIf="(!isNotValid(purchaseForm.value.id) || this.quotaionMode == 'R') && purchaseForm.value.status == 'Non-Approved'">
+							<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 mt-3 border-bottom">
+			    			DISCOUNT PLANNING & APPROVAL
+			    		</div>
+			    		<div class="form-group row mr-0 border-top pt-3" *ngIf="DiscountMangerObj">
+			    			<div class="col-md-5">
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Discount Category:</label>
+					    			<div class="col-md-4 p-0">
+											Manager
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Discount Offered, %:</label>
+					    			<div class="col-md-4 p-0">
+											{{DiscountMangerObj.discount_offered}}
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Discount Approved by:</label>
+					    			<div class="col-md-4 p-0">
+											{{DiscountMangerObj.approver.first_name}} {{DiscountMangerObj.approver.last_name}}
+					    			</div>
+			    				</div>
+			    			</div>
+			    			<div class="col-md-7">
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-7 text-right pr-3 pl-0">Quotation Amount after 'Manager' discount, Rs.:</label>
+					    			<div class="col-md-5 p-0 text-danger">
+											{{DiscountMangerObj.reworked_quotation_amount}}
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-7 text-right pr-3 pl-0">Remarks by Approver:</label>
+					    			<div class="col-md-5 p-0">
+											{{DiscountMangerObj.approver_remarks}}
+					    			</div>
+			    				</div>
+			    			</div>
+			    		</div>
+			    		<div class="form-group row mr-0 border-top pt-3" *ngIf="DiscountProjectObj">
+			    			<div class="col-md-5">
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Discount Category:</label>
+					    			<div class="col-md-4 p-0">
+											Project
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Discount Offered, %:</label>
+					    			<div class="col-md-4 p-0">
+											{{DiscountProjectObj.discount_offered}}
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Discount Approved by:</label>
+					    			<div class="col-md-4 p-0">
+											{{DiscountProjectObj.approver.first_name}} {{DiscountProjectObj.approver.last_name}}
+					    			</div>
+			    				</div>
+			    			</div>
+			    			<div class="col-md-7">
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-7 text-right pr-3 pl-0">Quotation Amount after 'Project' discount, Rs.:</label>
+					    			<div class="col-md-5 p-0 text-danger">
+											{{DiscountProjectObj.reworked_quotation_amount}}
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-7 text-right pr-3 pl-0">Remarks by Approver:</label>
+					    			<div class="col-md-5 p-0">
+											{{DiscountProjectObj.approver_remarks}}
+					    			</div>
+			    				</div>
+			    			</div>
+			    		</div>
+			    		<div class="form-group row mr-0 border-top pt-3" *ngIf="DiscountMangerObj && !DiscountProjectObj">
+			    			<div class="col-md-6">
+			    				<div class="form-group row mr-0">
+			    					<div class="col-md-4 text-center">
+					    			</div>
+					    			<label class="control-label col-md-6 text-right pr-3 pl-0">Re-Worked Quotation Amount, Rs.:</label>
+					    			<div class="col-md-2 p-0">
+											<input disabled type="text" [value]="(purchaseForm.value.re_worked_amount | number: '1.2-2')" class="form-control">
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+			    					<div class="col-md-4 text-center">
+					    				
+					    			</div>
+					    			<label class="control-label col-md-6 text-right pr-3 pl-0">Native Quotation Amount, Rs.:</label>
+					    			<div class="col-md-2 p-0">
+											<input disabled type="text" name="" class="form-control" [value]="(purchaseForm.value.native_amount | number: '1.2-2')">
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-6 text-right pr-3 pl-0"><span class="text-danger">*</span>Specify Reason for Discount</label>
+					    			<div class="col-md-6 p-0">
+											<input type="text" [value]="purchaseForm.value.reason_for_discount" class="form-control">
+					    			</div>
+			    				</div>
+			    			</div>
+			    			<div class="col-md-6">
+			    				<div class="form-group row mr-0">
+				    				<label class="control-label col-md-7 text-right">Discount 'Project' Request approval pending !</label>
+			    				</div>
+			    				<div class="form-group row mr-0">
+				    				<label class="control-label col-md-6 text-right text-success">Order Closure Amount, Rs.:</label>
+					    			<div class="col-md-3 pr-0">
+											<input type="text" formControlName="closure_amount" class="form-control text-success" (change)="formValueChange()">
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+				    				<label class="control-label col-md-6 text-right"><span class="text-danger">*</span>Discount request for Amount, Rs.:</label>
+					    			<div class="col-md-3 pr-0">
+											<input type="text" disabled [value]="(purchaseForm.value.discount_request_amount | number: '1.2-2')" class="form-control">
+					    			</div>	
+			    				</div>
+			    			</div>
+			    		</div>
+			    		<div class="form-group row mr-0 border-top pt-3" *ngIf="doneDiscount">
+			    			<div class="col-md-5">
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Native Quotation Amount, Rs.:</label>
+					    			<div class="col-md-4 p-0">
+											{{purchaseForm.value.native_amount}}
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0 ts">Order Closure Amount, Rs.:</label>
+					    			<div class="col-md-4 p-0 ts">
+											{{purchaseForm.value.closure_amount}}
+					    			</div>
+			    				</div>
+			    			</div>
+			    			<div class="col-md-7">
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Quotation Amount after 'Sales Executive' Discount, Rs.:</label>
+					    			<div class="col-md-4 p-0">
+											{{purchaseForm.value.re_worked_amount}}
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0">Reason for Discount:</label>
+					    			<div class="col-md-4 p-0">
+											{{purchaseForm.value.reason_for_discount}}
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0 ts">Discount Approval Request is honoured.</label>
+			    				</div>
+			    				<div class="form-group row mr-0" *ngIf="!readonlyMode">
+					    			<label class="control-label col-md-8 text-right pr-3 pl-0"><b>Do you want to Apply it and Calculate all?:</b></label>
+					    			<div class="col-md-4">
+					    				<button type="button" (click)="applyDiscount()" class="btn btn-xs btn-success">Apply</button>
+					    			</div>
+			    				</div>
+			    			</div>
+			    		</div>
+			    		<div class="form-group row mr-0 border-top pt-3" *ngIf="!DiscountMangerObj">
+			    			<div class="col-md-6">
+			    				<div class="form-group row mr-0">
+			    					<div class="col-md-4 text-center">
+					    				<button type="button" class="btn btn-sm btn-primary" (click)="discountCalibration()">Discount Calibration</button>
+					    			</div>
+					    			<label class="control-label col-md-6 text-right pr-3 pl-0">Re-Worked Quotation Amount, Rs.:</label>
+					    			<div class="col-md-2 p-0">
+											<input disabled type="text" [value]="(purchaseForm.value.re_worked_amount | number: '1.2-2')" class="form-control">
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+			    					<div class="col-md-4 text-center">
+					    				
+					    			</div>
+					    			<label class="control-label col-md-6 text-right pr-3 pl-0">Native Quotation Amount, Rs.:</label>
+					    			<div class="col-md-2 p-0">
+											<input disabled type="text" name="" class="form-control" [value]="(purchaseForm.value.native_amount | number: '1.2-2')">
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0" *ngIf="showManagerDiscount">
+					    			<label class="control-label col-md-6 text-right pr-3 pl-0"><span class="text-danger">*</span>Specify Reason for Discount</label>
+					    			<div class="col-md-6 p-0" [class.form-invalid]="invalidForm && isNotValid(purchaseForm.value.reason_for_discount)">
+											<input type="text" formControlName="reason_for_discount" (change)="formValueChange()" class="form-control">
+					    			</div>
+			    				</div>
+			    			</div>
+			    			<div class="col-md-6">
+			    				<div class="form-group row mr-0" *ngIf="showManagerDiscount">
+				    				<label class="control-label col-md-6 text-right"> <input type="checkbox" formControlName="is_discount_category" (change)="setDiscountCategory();formValueChange()"><span class="checkbox-text"> Discount Request, Category:</span></label>
+					    			<div class="col-md-3 pr-0">
+											<input type="text" disabled [value]="purchaseForm.value.discount_request_category" class="form-control">
+					    			</div>
+			    				</div>
+			    				<div class="form-group row mr-0">
+				    				<label class="control-label col-md-6 text-right text-success">Order Closure Amount, Rs.:</label>
+					    			<div class="col-md-3 pr-0">
+											<input type="text" formControlName="closure_amount" class="form-control text-success" (change)="checkDiscount();formValueChange()" appFormatInput>
+					    			</div>
+					    			<div class="col-md-3" *ngIf="showApplyBtn">
+					    				<button type="button" (click)="applyDiscount()" class="btn btn-xs btn-success btn-block">Apply</button>
+					    			</div>	
+			    				</div>
+			    				<div class="form-group row mr-0" *ngIf="showManagerDiscount">
+				    				<label class="control-label col-md-6 text-right"><span class="text-danger">*</span>Discount request for Amount, Rs.:</label>
+					    			<div class="col-md-3 pr-0">
+											<input type="text" disabled [value]="(purchaseForm.value.discount_request_amount | number: '1.2-2')" class="form-control">
+					    			</div>	
+			    				</div>
+			    			</div>
+			    		</div>
+			    	</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" *ngIf="!readonlyMode || pre_sale_demand_id == 0" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" *ngIf="!readonlyMode || pre_sale_demand_id == 0" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Purchase Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are you sure to delete this Quotation?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showReviseModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Revise the quotation Alert!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showReviseModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Do you want to revise this {{ QuotationName }} Quote?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-danger" (click)="showReviseModal = false;">Yes</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showReviseModal = false;closeForm()">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddItemModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Product Field</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddItemModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="col-md-12">
+  				<div class="form-group row mr-0">
+    				<label class="col-md-12 control-label">
+							<input type="checkbox" (change)="addRow('Product')"><span class="checkbox-text">Add Product</span>
+						</label>
+					</div>
+					<div class="form-group row mr-0">
+    				<label class="col-md-12 control-label">
+							<input type="checkbox" (change)="addRow('Service')"><span class="checkbox-text">Add Service</span>
+						</label>
+					</div>
+  			</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showAddItemModal = false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAlert">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Quotation Alert!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAlert = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+  			<div class="col-md-12">
+  				<div class="form-group row mr-0">
+    				<label class="col-md-12 control-label">
+							<input type="checkbox" (change)="setType('N')"><span class="checkbox-text">Add new Quotaion</span>
+						</label>
+					</div>
+					<div class="form-group row mr-0">
+    				<label class="col-md-12 control-label">
+							<input type="checkbox" (change)="setType('R')"><span class="checkbox-text">Revise the Quotaion</span>
+						</label>
+					</div>
+  			</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddLocationModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Location</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddLocationModal = false;locationName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Location
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="locationName" [(ngModel)]="locationName" placeholder="Location">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveLocation()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showAddLocationModal = false;locationName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddProjectModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Project</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddProjectModal = false;projectName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Project
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="projectName" [(ngModel)]="projectName" placeholder="Project">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveProject()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showAddProjectModal = false;projectName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddAttentionModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Attention</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddAttentionModal = false;attentionName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Attention
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="attentionName" [(ngModel)]="attentionName" placeholder="Location">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveAttention()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showAddAttentionModal = false;attentionName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showRemoveModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showRemoveModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are you sure to delete this product?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showRemoveModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="removeProduct()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showApprovedConfirmed">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Disapprove Quotation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="clearApprovedData(false)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>All Approval data will be deleted. Are you sure to remove approval?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="clearApprovedData(false)">No</button>
+        <button type="button" class="btn btn-sm btn-danger min-70" (click)="clearApprovedData(true)">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showManagerDiscountModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" *ngIf="!viewManagerDiscount">Request for Discount Approval !</h5>
+        <h5 class="modal-title" *ngIf="viewManagerDiscount">Discount Category !</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="clearManagerDiscount(false)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+  			<div *ngIf="!viewManagerDiscount">Are you sure for Discount ?</div>
+  			<div *ngIf="viewManagerDiscount">You need to request for <b>{{purchaseForm.value.discount_request_category}}</b></div>
+  			<div>Quotation No.: {{purchaseForm.value.quotation_no}}</div>
+  			<div>Discount Amount, Rs.: {{ purchaseForm.value.discount_request_amount | number: '1.2-2' }}</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" *ngIf="!viewManagerDiscount" (click)="clearManagerDiscount(false)">No</button>
+        <button type="button" class="btn btn-sm btn-save min-70" *ngIf="!viewManagerDiscount" (click)="viewManagerDiscount = true">Yes</button>
+        <button type="button" class="btn btn-sm btn-save min-70" *ngIf="viewManagerDiscount" (click)="clearManagerDiscount(true)">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showCancelDiscountModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Discount Planning Cancellation !</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showCancelDiscountModal = false;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+  			<div>Do you want discount planning to Cancel ?</div>
+  			<div>Quotation No.: {{purchaseForm.value.quotation_no}}</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="noCancelDisount()">No</button>
+        <button type="button" class="btn btn-sm btn-save min-70" (click)="showCancelDiscountModal = false;">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showRemarkModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Remarks</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showRemarkModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<textarea rows="5" class="form-control" placeholder="Remarks" [(ngModel)]="productRemark"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showRemarkModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="saveRemark()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="attentionModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Your Attention</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="attentionModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<p class="mb-0">Remarks = {{stockProductRemark}}</p>
+      		<p class="mb-0">This Product Stock = {{stock}}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="attentionModal = false">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showProductDetailModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content" *ngIf="selectedModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Model No.: {{selectedModal.model_no}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showProductDetailModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+    		<div class="row" *ngIf="selectedModal">
+    			<div class="col-md-4">
+    				<ng-container *ngIf="productImage">
+	            <img [src]="productImage" class="img-fluid pointer" />
+	        	</ng-container>
+	        	<h5 class="text-uppercase mt-2">Product Group</h5>
+	        	<p><i class="fa fa-shopping-bag mr-2"></i>{{selectedModal.group.name}}</p>
+    			</div>
+    			<div class="col-md-8">
+    				<div class="form-horizontal">
+	              <div class="form-group">
+	                  <span class="bold">HSN Code: </span>{{selectedModal.hsn_code}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Product Code: </span>{{selectedModal.product_code}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Product Remark: </span>{{selectedModal.remarks}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Sold: </span>0
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">In Stock: </span>5
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">UOM: </span>Nos.
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Brand: </span>{{selectedModal.brand.name}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Prod. Description: </span><br> {{selectedModal.description}}
+	              </div>
+	              <div class="form-group">
+	                  
+	              </div>
+	          </div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showProductDetailModal = false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showTermsModel" [class.v-hidden]="showCommissionModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Terms & Conditions</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showTermsModel = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body f-14" [formGroup]="purchaseForm">
+      	<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">
+						Goods' Delivery :
+					</label>
+					<div class="col-md-2 mt8">
+						<input type="number" class="form-control" placeholder="" formControlName="goods_delivery">
+					</div>
+					<div class="col-md-7 mt8 f-14 pl-0">
+						Weeks from the date of PO received (not PO Date).
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">
+						Termed Liability :
+					</label>
+					<div class="col-md-2 mt8">
+						<input type="number" class="form-control" placeholder="" formControlName="termed_liability">
+					</div>
+					<div class="col-md-7 mt8 f-14 pl-0">
+						Months. Applicable from the date of Project/Work completion.
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">
+						Product's Standard Warranty :
+					</label>
+					<div class="col-md-9 mt8">
+						<input disabled type="text" class="form-control f-14" placeholder="Product Warranty" [value]="purchaseForm.value.product_warranty">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">
+						Transaction Type :
+					</label>
+					<div class="col-md-9 mt8">
+						<input disabled type="text" class="form-control f-14" placeholder="Transaction Type" [value]="purchaseForm.value.transaction_type">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">
+						Reason to get Order :
+					</label>
+					<div class="col-md-9 mt8">
+						<input type="text" class="form-control f-14" placeholder="Reason" formControlName="reason_to_get_order">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">
+						Remarks :
+					</label>
+					<div class="col-md-9 mt8">
+						<input type="text" class="form-control f-14" placeholder="Remarks" formControlName="remarks">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label"><input type="checkbox" formControlName="incentives_to_pay" change="changeIncentivesPay()"><span class="checkbox-text">Incentives To Pay :</span></label>
+					<div class="col-md-9 mt8">
+						<button type="button" (click)="getAllAddress()" [disabled]="(!purchaseForm.value.incentives_to_pay)" class="btn btn-xs btn-save" style="min-width: 30px;padding: 2px 5px !important;"><i class="fa fa-edit"></i></button>
+					</div>
+				</div>
+				<!-- <div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label"><input type="checkbox" formControlName="extended_warranty"><span class="checkbox-text">Extended Warranty :</span></label>
+					<div class="col-md-2 mt8">
+						<input type="number" class="form-control" placeholder="Extended" formControlName="extended_warranty_month">
+					</div>
+					<div class="col-md-7 mt8 f-14 pl-0">
+						Months. This is an additional Warranty offered on product's Standard Warranty.
+					</div>
+				</div> -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showTermsModel = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="saveConditions()">Save</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="DeletePreSalesApproval()" >Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showCommissionModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Incentive Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showCommissionModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body f-14" [formGroup]="purchaseForm">
+      	<div class="form-group row mr-0">
+					<label class="col-md-4 text-right control-label">
+						<span class="text-danger">*</span>Person Name
+					</label>
+					<div class="col-md-8 mt8">
+						<input type="text" class="form-control" placeholder="Person Name" formControlName="incentives_person_name">
+					</div>
+				</div>
+
+				<div class="form-group row mr-0">
+					<label class="col-md-4 text-right control-label">
+						<span class="text-danger">*</span>Mobile No.
+					</label>
+					<div class="col-md-8 mt8">
+						<input type="number" class="form-control" placeholder="Mobile Number" max="10" formControlName="incentives_person_name">
+					</div>
+				</div>
+
+				<div class="form-group row mr-0">
+					<label class="col-md-4 text-right control-label">
+						PAN No
+					</label>
+					<div class="col-md-8 mt8">
+						<input type="text" class="form-control" placeholder="PAN No" formControlName="incentives_pan_no">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-4 text-right control-label">
+						<span class="text-danger">*</span>Address
+					</label>
+					<div class="col-md-8 mt8">
+						<app-address [placeholder]="'Address'" [FullAddress]="stringAddress" [AddressOne]="purchaseForm.value.incentives_address_line_one" [AddressTwo]="purchaseForm.value.incentives_address_line_two" [AddressPincode]="purchaseForm.value.incentives_pincode" [AddressArea]="purchaseForm.value.incentives_area_id" [dropdowns]="addressDropdowns" (setAddress)="getAddress($event)"></app-address>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-4 text-right control-label">
+						<span class="text-danger">*</span>Incentives, GST Not Included
+					</label>
+					<div class="col-md-8 mt8">
+						<input type="text" class="form-control" placeholder="Incentives, GST Not Included" formControlName="incentives_gst">
+					</div>
+				</div>
+
+				<div class="form-group row mr-0">
+					<label class="col-md-4 text-right control-label">
+						<span class="text-danger">*</span>Reson to Pay
+					</label>
+					<div class="col-md-8 mt8">
+						<input type="text" class="form-control" placeholder="Reson to Pay" formControlName="reasonToPay">
+					</div>
+				</div>
+
+
+				<div class="form-group row mr-0">
+					<label class="col-md-4 text-right control-label">
+						<span class="text-danger">*</span>Payment Condition :
+					</label>
+					<div class="col-md-8 mt8">
+						<textarea class="form-control" rows="2" placeholder="Payment Condition" formControlName="incentives_payment_condition"></textarea>
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showCommissionModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="saveCommission()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" [class.vis-h]="pairedQtyAlertModal" *ngIf="showPairedProductQtyModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+    	<div class="modal-header">
+				<h5 class="modal-title">Add paired Item Quantity</h5>
+				<span style="position:relative;right: -60px;color:#ffffff;">Model: {{ProductName}}</span>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showPairedProductQtyModal = false">
+					<span aria-hidden="true">&times;</span>
+				</button>
+		</div>
+      <div class="modal-body">
+      	<p class="m-0">Paired with Main Product, Model No.: {{MainProductName}}</p>
+      	<p class="m-0">Quote, Qnty: {{MainQty}}</p>
+      	<p class="m-0">Max, qnty can add, Nos: {{MaxQty}}</p>
+      	<div class="form-group row mr-0 mt-2">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+						Add quantity, Nos.:
+					</label>
+					<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+						<input type="number" class="form-control" [(ngModel)]="PairedQty" placeholder="Quantity">
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" (click)="changeQty()" class="btn btn-sm btn-save">Add</button>
+        <button type="button" class="btn btn-sm btn-undo">Undo</button>
+        <button type="button" class="btn btn-sm btn-close" (click)="showPairedProductQtyModal = false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="pairedQtyAlertModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Quantity Alert!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="pairedQtyAlertModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6 *ngIf="(PairedQty < MaxQty)">Please check, do you really want to add lesser qnty for {{ProductName}} than {{MaxQty}}?</h6>
+      		<h6 *ngIf="(PairedQty > MaxQty)">Please check, you can not add more qnty than {{MaxQty}} for {{ProductName}}?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" *ngIf="(PairedQty < MaxQty)" class="btn btn-sm btn-save" data-dismiss="modal" (click)="applyQnty();showPairedProductQtyModal = false;pairedQtyAlertModal = false">Yes</button>
+        <button type="button" class="btn btn-sm btn-save" data-dismiss="modal" (click)="pairedQtyAlertModal = false">Change</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showContactForm">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+  	<form (ngSubmit)="saveContact(false)" class="w-100">
+	    <div class="modal-content" [formGroup]="contactForm">
+	      <div class="modal-header">
+	        <h5 class="modal-title">Contact Person</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeContactFormModal()">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						<span class="text-danger">*</span>Department
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.invalid-box]="contactForm.controls.department_id.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.department_id.invalid">
+					  	<select class="form-control" formControlName="department_id">
+					  		<option [value]="null">-- Department --</option>
+    						<option *ngFor="let itm of departments" [value]="itm.id">{{itm.name}}</option>
+	    				</select>
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						<span class="text-danger">*</span>Designation
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.invalid-box]="contactForm.controls.designation_id.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.designation_id.invalid">
+					  	<select class="form-control" formControlName="designation_id">
+					  		<option [value]="null">-- Designation --</option>
+    						<option *ngFor="let itm of designations" [value]="itm.id">{{itm.title}}</option>
+	    				</select>
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						<span class="text-danger">*</span>First Name
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.invalid-box]="contactForm.controls.first_name.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.first_name.invalid">
+						<input type="text" class="form-control" formControlName="first_name" placeholder="First Name">
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Last Name
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="last_name" placeholder="Last Name">
+					</div>
+				</div>
+				<div class="form-group row">
+    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+    				<span class="text-danger">*</span>Mobile
+    			</label>
+    			<div class="col-lg-2 col-md-2 col-sm-4 text-right col-xs-12 mt8 pr-0" [class.invalid-box]="contactForm.controls.mobile_code.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.mobile_code.invalid">
+    				<input type="text" class="form-control" formControlName="mobile_code" placeholder="Code">
+    			</div>
+    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 pl-0 mt8" [class.invalid-box]="contactForm.controls.mobile_number.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.mobile_number.invalid">
+    				<input type="text" class="form-control" formControlName="mobile_number" placeholder="Enter Mobile Number">
+    			</div>
+    		</div>
+    		<div class="form-group row">
+    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+    				Phone
+    			</label>
+    			<div class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 mt8 pr-0">
+    				<input type="text" class="form-control" formControlName="phone_code" placeholder="Code">
+    			</div>
+    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 pl-0 mt8">
+    				<input type="text" class="form-control" formControlName="phone_number" placeholder="Enter Phone Number">
+    			</div>
+    		</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Email
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="email" placeholder="Email">
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Birth Date
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="b_date" placeholder="Birth Date" id="contactBirthDate" (change)="changeDate('b_date', 'birth_date')">
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Anniversary Date
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="a_date" placeholder="Anniversary Date" id="contactAnniversaryDate" (change)="changeDate('a_date', 'anniversary_date')">
+					</div>
+				</div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="submit" class="btn btn-sm btn-save">Save</button>
+	        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="closeContactFormModal()">Close</button>
+	      </div>
+	    </div>
+  	</form>
+  </div>
+</div>
+<app-confirm-dialog *ngIf="MessageText" [MessageText]="MessageText" [MessageTitle]="MessageTitle" [ActionType]="ActionType" [SaveBtn]="SaveBtn" [CancelBtn]="CancelBtn" (saveAction)="confirmedAction($event)"></app-confirm-dialog>  
+<ngx-ui-loader></ngx-ui-loader>

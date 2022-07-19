@@ -1,0 +1,24 @@
+.nav-tabs {
+	justify-items: center;
+    align-items: center;
+    border-top: 1px solid #dddfeb;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-tabs li {
+	padding: 12px 0px;
+	color: #fff;
+	margin-bottom: 0px;
+	border-right: 1px solid #dddfeb;
+	cursor: pointer;
+}
+
+.nav-tabs li:last-child {
+	border-right: none;
+}
+
+.nav-tabs li.active {
+	background-color: #fff;
+	color: #261104;
+}

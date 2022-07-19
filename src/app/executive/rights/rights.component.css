@@ -1,0 +1,51 @@
+table tbody {
+  display: block;
+  height: calc(100vh - 220px);
+}
+
+table thead, table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table thead {
+  position: sticky; top: 0;
+}
+
+tr th:first-child,tr td:first-child {
+  width: 30%;
+}
+
+tr th:nth-child(2),tr td:nth-child(2) {
+  width: 10%;
+}
+tr th:nth-child(3),tr td:nth-child(3) {
+  width: 10%;
+}
+tr th:nth-child(4),tr td:nth-child(4) {
+  width: 10%;
+}
+tr th:nth-child(5),tr td:nth-child(5) {
+  width: 10%;
+}
+tr th:nth-child(6),tr td:nth-child(6) {
+  width: 10%;
+}
+tr th:nth-child(7),tr td:nth-child(7) {
+  width: 10%;
+}
+tr th:nth-child(8),tr td:nth-child(8) {
+  width: 10%;
+}
+
+
+table thead th {
+  padding: 5px 0px 5px 0px !important;
+  position: sticky; top: 0;
+}
+
+.th-checkbox {
+  position: relative;
+  top: 3px;
+}

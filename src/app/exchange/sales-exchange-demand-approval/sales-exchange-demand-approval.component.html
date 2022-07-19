@@ -1,0 +1,263 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} Exchange DEMAND APPROVAL</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-1">
+						<div class="pl-2 mb-1"><b *ngIf="createMode">Approval Pending List</b><b *ngIf="editMode">Approved List</b></div>
+						<div class="table-responsive mb-2">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="60">Srl</th>
+						        <th width="150">Sales Executive</th>
+						        <th width="150">Client</th>
+						        <th width="150">Location</th>
+						        <th width="150">Priority</th>
+						        <th>Exchange Demand No.</th>
+						        <th width="100">Date</th>
+						        <th width="150">Source of Demand</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let item of ExchangeDemands;let i = index;" (click)="setRow(item)" [class.bg-secondary]="(purchaseForm.value.id == item.id)">
+										<td class="text-center">{{ (i + 1) }}</td>
+										<td>{{item.executive.first_name}} {{item.executive.father_name}} {{item.executive.last_name}}</td>
+										<td>{{item.client.account_name}}</td>
+										<td>{{item.location.name}}</td>
+										<td>{{item.priority}}</td>
+										<td>{{item.exchange_no}}</td>
+										<td>{{item.exchange_date | date: 'dd/MM/y'}}</td>
+										<td>{{item.source_demand}}</td>
+									</tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="pl-2 mb-1"><b>Approval Details</b></div>
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" value="{{purchaseForm.value.client}}" placeholder="Client">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.location}}" placeholder="Location">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Project
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.project}}" placeholder="Project">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Demand No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.exchange_no}}" placeholder="Demand No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Date | Time
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" value="{{purchaseForm.value.exchange_date | date: 'dd/MM/y'}} {{purchaseForm.value.exchange_time}}" placeholder="Date | Time">
+									</div>
+								</div>
+							</div>
+						</div>
+						
+		    		<div class="table-responsive mb-3 mt-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+									<!-- <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th>Model No.</th>
+						        <th>Prod. Cat</th>
+						        <th>MAC/SR No.</th>
+						        <th>Reason of Exchange</th>
+						        <th>QR Code</th>
+						        <th>Warranty, Client</th>
+						        <th>Service, Engineer</th>
+						        <th width="100">Action io Take</th>
+						        <th>Info</th>
+							    </tr> -->
+							    <tr class="text-center">
+						        <th width="60">Srl</th>
+						        <th width="200">Prod. Group</th>
+						        <th width="200">Model No.</th>
+						        <th>Product Description</th>
+						        <th width="90">Qty</th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of productDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td><input type="text" disabled class="form-control" value="{{prod.group.name}}"></td>
+							    	<td><input type="text" disabled class="form-control" value="{{prod.product.model_no}}"></td>
+							    	<td><textarea disabled class="form-control border-0" rows="2" [innerHTML]="prod.description"></textarea></td>
+							    	<td><input type="text" disabled class="form-control" value="{{prod.qty}}"></td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="row m-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Approved
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<button [disabled]="!purchaseForm.value.id" (click)="verifyPassword()" type="button" class="btn btn-xs btn-info"><i class="fa fa-edit"></i></button>&nbsp;<b *ngIf="purchaseForm.value.status == 'Approved'">(Approved)</b>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Approved By
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled *ngIf="loginUser" type="text" name="" class="form-control" value="{{loginUser.first_name}} {{loginUser.father_name}} {{loginUser.last_name}}" placeholder="Approved By">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label pr-1">
+										Date | Time
+									</label>
+									<div class="col-md-3 mt8" style="padding-left: 9px;">
+										<input type="text" disabled [value]="purchaseForm.value.status_date | date: 'dd/MM/y'" class="form-control" placeholder="Date">
+									</div>
+									<div class="col-md-3 pl-0 mt8">
+										<div class="input-group">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input type="text" class="form-control" disabled [value]="purchaseForm.value.status_time" placeholder="Time">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Demand</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Client
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Client --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Select
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Demand --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="verifyLoginModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Enter Your Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="savePassword(false, null)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<div class="row">
+      			<div class="col-md-4 text-right">
+      				<label class="control-label"><span class="text-danger">*</span>Password</label>
+      			</div>
+      			<div class="col-md-6">
+      				<input type="password" class="form-control" name="passs" [(ngModel)]="myPassword">
+      			</div>
+      		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="savePassword(false, null)">Close</button>
+        <button type="button" *ngIf="purchaseForm.value.status == 'Pending'" class="btn btn-sm btn-save" [disabled]="!myPassword" (click)="savePassword(true, 'Approved')">Approve</button>
+        <button type="button" *ngIf="purchaseForm.value.status == 'Approved'" class="btn btn-sm btn-save" [disabled]="!myPassword" (click)="savePassword(true, 'Pending')">Disapprove</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>
+

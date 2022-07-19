@@ -1,0 +1,11 @@
+.text-success {color: #1cc88a!important;}
+.v-hidden {visibility: hidden;}
+.open-2{
+	color: #3f51b5;
+    background: orange;
+    padding: 5px 6px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.p-0 {padding: 0px !important;}
+.bg-pink {background-color: #f4e5f5 !important;}

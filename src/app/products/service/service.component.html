@@ -1,0 +1,231 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteService()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form (ngSubmit)="saveService()">
+	<div class="row" [formGroup]="serviceForm" [class.disable-content]="(!createMode && !editMode)">
+	<div class="col-lg-2 col-md-2 pr-0">
+		<div class="border position-relative product-image">
+			<ng-container *ngIf="cardImageBase64">
+	            <img [src]="cardImageBase64" class="img-fluid pointer" (click)="productImage.click()" />
+	        </ng-container>
+	        <span class="fa fa-edit edit-photo" (click)="productImage.click()"></span>
+			<input class="d-none" #productImage type="file" accept="image/x-png,image/jpeg" (change)="fileChangeEvent($event)" />
+		</div>
+	</div>
+	<div class="col-lg-10 col-md-10 pl-1">
+		<div class="card">
+		    <div class="card-header py-1">
+		        <h6 class="m-0 font-weight-bold text-primary">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} SERVICE</h6>
+		    </div>
+		    <div class="card-body  px-0 pb-3 pt-0">
+		    	<div class="form-horizontal card-body-scroll pt-3">
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Service Group
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && serviceForm.controls.group_id.invalid" [class.invalid-box]="serviceForm.controls.group_id.invalid">
+							  	<select class="form-control" formControlName="group_id" (change)="getServiceGroupCode()">
+							  		<option [value]="null">-- Select Service Group --</option>
+									<option *ngFor="let itm of serviceGroupLists" [value]="itm.id">{{itm.name}}</option>
+			    				</select>
+								  <div class="input-group-append" *ngIf="!isValid(serviceForm.value.group_id)">
+								    <span class="input-group-text custom-info" (click)="viewServiceGroupModal()">EDIT</span>
+								  </div>
+								  <div class="input-group-append" *ngIf="isValid(serviceForm.value.group_id)">
+								    <span class="input-group-text custom-info" (click)="viewServiceGroupModal()">ADD</span>
+								  </div>
+								</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="editMode">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Service Code
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && serviceForm.controls.id.invalid" [class.invalid-box]="serviceForm.controls.id.invalid">
+							  	<select class="form-control" formControlName="id" (change)="setEditFormData()">
+							  		<option [value]="null">-- Select Service Code --</option>
+									<option *ngFor="let itm of serviceCodeLists" [value]="itm.id">{{itm.service_code}}</option>
+			    				</select>
+							  <div class="input-group-append" *ngIf="!isValid(serviceForm.value.id)">
+							    <span class="input-group-text custom-info" (click)="viewServiceCodeModal()">EDIT</span>
+							  </div>
+							</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="!editMode">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Service Code
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" [class.form-invalid]="invalidForm && serviceForm.controls.service_code.invalid" [class.invalid-box]="serviceForm.controls.service_code.invalid">
+		    				<input type="text" class="form-control" formControlName="service_code" placeholder="Enter Service Code">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				Service Description
+		    			</label>
+		    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+		    				<input type="text" class="form-control" formControlName="description" placeholder="Enter Service Description">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				HSN Code
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<input type="text" class="form-control" formControlName="hsn_code" placeholder="HSN Code">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Unit
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && serviceForm.controls.unit_id.invalid" [class.invalid-box]="serviceForm.controls.unit_id.invalid">
+							  	<select class="form-control" formControlName="unit_id">
+		    						<option [value]="null">-- Select Unit --</option>
+									<option *ngFor="let itm of unitLists" [value]="itm.id">{{itm.name}}</option>
+			    				</select>
+			    				<div class="input-group-append" *ngIf="!isValid(serviceForm.value.unit_id)">
+								    <span class="input-group-text custom-info" (click)="viewUnitModal()">EDIT</span>
+								  </div>
+								  <div class="input-group-append" *ngIf="isValid(serviceForm.value.unit_id)">
+								    <span class="input-group-text custom-info" (click)="viewUnitModal()">ADD</span>
+								  </div>
+								</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				GST Rate(%)
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<input type="number" class="form-control" formControlName="gst_rate" placeholder="Enter Tax" appFormatInput>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				Remark
+		    			</label>
+		    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+		    				<input type="text" class="form-control" formControlName="remarks" placeholder="Remark">
+		    			</div>
+		    		</div>
+					</div>
+						<div class="pt-3 text-left border-top pl-3">
+	    				<button type="button" (click)="undoForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+		    			<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+		    		</div>
+		    </div>
+		</div>
+	</div>
+	</div>
+</form>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Account</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Account?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showServiceGroupModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Service Group</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showServiceGroupModal = false;serviceGroupName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Service Group
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="serviceGroupName" [(ngModel)]="serviceGroupName" placeholder="Service Group">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveServiceGroup()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showServiceGroupModal = false;serviceGroupName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showServiceCodeModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Service Code</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showServiceCodeModal = false;serviceCodeName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Service Code
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="serviceCodeName" [(ngModel)]="serviceCodeName" placeholder="Service Code">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveServiceGroupCode()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showServiceCodeModal = false;serviceCodeName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showUnitModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Units</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showUnitModal = false;untiName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Unit
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="untiName" [(ngModel)]="untiName" placeholder="Unit">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveUnit()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showUnitModal = false;untiName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

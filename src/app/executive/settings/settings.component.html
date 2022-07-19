@@ -1,0 +1,44 @@
+<form (ngSubmit)="savePassword()">
+<div class="row" [formGroup]="accountForm">
+	<div class="col-lg-12 col-md-12">
+		<div class="card">
+		    <div class="card-header pb-1 pt-0">
+		        <h6 class="m-0 font-weight-bold text-primary">CHANGE USER PASSWORD</h6>
+		    </div>
+		    <div class="card-body px-0 pb-3 pt-0">
+		    	<div class="form-horizontal card-body-scroll pt-3">
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Old Password
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8"  [class.invalid-box]="accountForm.controls.old_password.invalid" [class.form-invalid]="invalidForm && accountForm.controls.old_password.invalid">
+		    				<input type="password" class="form-control" formControlName="old_password" placeholder="Old Password">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>New Password
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8"  [class.invalid-box]="accountForm.controls.password.invalid" [class.form-invalid]="invalidForm && accountForm.controls.password.invalid">
+		    				<input type="password" class="form-control" formControlName="password" placeholder="New Password">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Confirm Password
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8"  [class.invalid-box]="accountForm.controls.password_confirmation.invalid" [class.form-invalid]="invalidForm && accountForm.controls.password_confirmation.invalid">
+		    				<input type="password" class="form-control" formControlName="password_confirmation" placeholder="Confirm Password">
+		    			</div>
+		    		</div>
+				</div>
+				<div class="w-100 pt-3 text-left border-top pl-3">
+					<button type="button" class="mr-2 btn btn-sm btn-close">Close</button>
+					<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+				</div>
+		    </div>
+		</div>
+	</div>
+</div>
+</form>
+<ngx-ui-loader></ngx-ui-loader>

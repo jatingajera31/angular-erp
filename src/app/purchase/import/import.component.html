@@ -1,0 +1,681 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} MATERIAL IMPORT</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-12">
+								<div class="form-group row mr-0" *ngIf="createMode">
+									<label class="col-md-2 text-right control-label">
+										<span class="text-danger">*</span>Sr. No.
+									</label>
+									<div class="col-md-6 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.sr_no.invalid" [class.invalid-box]="purchaseForm.controls.sr_no.invalid">
+										<input type="text" disabled class="form-control" [value]="purchaseForm.value.sr_no">
+									</div>
+								</div>
+								<div class="form-group row mr-0" *ngIf="editMode">
+									<label class="col-md-2 text-right control-label">
+										<span class="text-danger">*</span>Sr. No.
+									</label>
+									<div class="col-md-6 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.id.invalid" [class.invalid-box]="purchaseForm.controls.id.invalid">
+										<select class="form-control" formControlName="id" (change)="showImport()">
+											<option [value]="null">-- Select Import Detail --</option>
+											<option *ngFor="let itm of imports" [value]="itm.id">{{itm.sr_no}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Supplier's Information
+		    		</div>
+						<div class="row m-0 pt-3 border-top">
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										<span class="text-danger">*</span>Supplier Name
+									</label>
+									<div class="col-md-6 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.supplier_id.invalid" [class.invalid-box]="purchaseForm.controls.supplier_id.invalid">
+										<select class="form-control" formControlName="supplier_id">
+											<option [value]="null">-- Select Supplier --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Name Of Import Item
+									</label>
+									<div class="col-md-6 mt8">
+										<input type="text"class="form-control" formControlName="item_name" placeholder="Enter Name Of Import Item">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Proforma Invoice No
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text" class="form-control" formControlName="invoice_no" placeholder="Enter Proforma Invoice No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Inv Date
+									</label>
+									<div class="col-md-7 mt8" style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_invoice_date" placeholder="Date" id="invoice_date" (change)="changeDate('t_invoice_date', 'invoice_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-6 text-right control-label pl-0">
+										Currency of Purchase
+									</label>
+									<div class="col-md-6 mt8">
+										<input type="text" class="form-control" formControlName="purchase_currency" placeholder="Currency">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Total Amount, {{purchaseForm.value.purchase_currency}}
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text" class="form-control" formControlName="total_amount_currency" placeholder="Enter Total Amount">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Delivery Days
+									</label>
+									<div class="col-md-7 mt8" style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="delivery_days" placeholder="Enter Delivery Days">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-6 text-right control-label pl-0">
+										Expected Delivery Date
+									</label>
+									<div class="col-md-6 mt8">
+										<input type="text" class="form-control" formControlName="t_expected_delivery_date" placeholder="Date" id="expected_delivery_date" (change)="changeDate('t_expected_delivery_date', 'expected_delivery_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Contact Name
+									</label>
+									<div class="col-md-6 mt8">
+										<input type="text"class="form-control" formControlName="contact_name" placeholder="Enter Contact Name">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Email ID
+									</label>
+									<div class="col-md-6 mt8">
+										<input type="text"class="form-control" formControlName="email_id" placeholder="Enter Email ID">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Contact No
+									</label>
+									<div class="col-md-6 mt8">
+										<input type="text"class="form-control" formControlName="contact_no" placeholder="Enter Contact No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Remarks
+									</label>
+									<div class="col-md-6 mt8">
+										<textarea class="form-control" formControlName="remarks" placeholder="Enter Remarks" rows="2"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Packing Details
+		    		</div>
+						<div class="row m-0 pt-3 border-top">
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Total No. of Boxes
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="number"class="form-control" formControlName="no_of_boxes" placeholder="Enter Total No. of Boxes" (change)="makeTable()">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Total Wt./Kgs
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="total_wt" placeholder="Enter Total Wt./Kgs">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="60">Srl</th>
+						        <th width="100">Box ID</th>
+						        <th>Dimensions (L*W*H) CM</th>
+						        <th>Net Wt, Kg</th>
+						        <th>Gross Wt, Kg</th>
+						        <th width="300">Remarks</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let itm of packingDetails;let i = index;">
+										<td class="text-center">{{(i + 1)}}</td>
+										<td class="text-center">{{itm.box_id}}</td>
+										<td class="text-center"><input type="text" class="form-control text-center" [(ngModel)]="itm.dimensions" [ngModelOptions]="{standalone: true}" placeholder="Dimensions"></td>
+										<td class="text-center"><input type="text" class="form-control text-center" [(ngModel)]="itm.net_wt" [ngModelOptions]="{standalone: true}" placeholder="Net Wt, Kg"></td>
+										<td class="text-center"><input type="text" class="form-control text-center" [(ngModel)]="itm.gross_wt" [ngModelOptions]="{standalone: true}" placeholder="Gross Wt, Kg"></td>
+										<td><input type="text" class="form-control" [(ngModel)]="itm.remarks" [ngModelOptions]="{standalone: true}" placeholder="Remarks"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="col-md-12">
+							<div class="form-group row mr-0">
+								<label class="col-md-2 text-right control-label">
+									Remarks
+								</label>
+								<div class="col-md-6 mt8">
+									<textarea class="form-control" formControlName="packing_remarks" placeholder="Enter Remarks" rows="2"></textarea>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Payment Details
+		    		</div>
+						<div class="row m-0 pt-3 border-top">
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Amount {{purchaseForm.value.purchase_currency}}
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="payment_amount" placeholder="Enter Amount">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Exchage Rate, INR
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="payment_exchage_rate" placeholder="Enter Exchage Rate, INR">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Amount, INR
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="payment_amount_inr" placeholder="Enter Amount">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Instrument No
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="payment_instrument_no" placeholder="Enter Instrument No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Date
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_payment_instrument_date" placeholder="Date" id="payment_instrument_date" (change)="changeDate('t_payment_instrument_date', 'payment_instrument_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Remarks
+									</label>
+									<div class="col-md-7 mt8">
+										<textarea class="form-control" formControlName="payment_remarks" placeholder="Enter Remarks" rows="2"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Freight forwarder's Detail
+		    		</div>
+						<div class="row m-0 pt-3 border-top">
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Name
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="freight_name" placeholder="Enter Name">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Freight Charge/Kgs
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="freight_charge" placeholder="Enter Freight Charge/Kgs">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Rate Confirmed, Date
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_freight_rate_confirmed_date" placeholder="Date" id="freight_rate_confirmed_date" (change)="changeDate('t_freight_rate_confirmed_date', 'freight_rate_confirmed_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Pick Up Order No
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="pickup_order_no" placeholder="Enter Amount">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Carrier Type
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="carrier_type" placeholder="Enter Carrier Type">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Pick Up Date
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text" class="form-control" formControlName="t_pickup_date" placeholder="Date" id="pickup_date" (change)="changeDate('t_pickup_date', 'pickup_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Tracking No
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="tracking_no" placeholder="Enter Tracking No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Amount, INR
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="freight_amount_inr" placeholder="Enter Amount">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Instrument No
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="freight_instrument_no" placeholder="Enter Instrument No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Date
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_freight_instrument_date" placeholder="Date" id="freight_instrument_date" (change)="changeDate('t_freight_instrument_date', 'freight_instrument_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										MAWN No.
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="mawn_no" placeholder="Enter MAWN No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										HAWB No.
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="hawb_no" placeholder="Enter HAWB No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Date
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text" class="form-control" formControlName="t_freight_m_date" placeholder="Date" id="freight_m_date" (change)="changeDate('t_freight_m_date', 'freight_m_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Date
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_freight_h_date" placeholder="Date" id="freight_h_date" (change)="changeDate('t_freight_h_date', 'freight_h_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Remarks
+									</label>
+									<div class="col-md-7 mt8">
+										<textarea class="form-control" formControlName="freight_remarks" placeholder="Enter Remarks" rows="2"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Custom Duty Payment Details
+		    		</div>
+						<div class="row m-0 pt-3 border-top">
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Place of Custom Clearance
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="place_of_clearance" placeholder="Enter Place of Custom Clearance">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Custom House
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="custom_house" placeholder="Enter Custom House">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Custom Duty Amount, INR
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="custom_duty_amount_inr" placeholder="Enter Custom Duty Amount">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Exchange Rate, INR(1 {{purchaseForm.value.purchase_currency}})
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="custom_duty_exchange_rate" placeholder="Enter Exchange Rate">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Penalty Type
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="penalty_type" placeholder="Enter Penalty Type">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Amount, Rs.
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="custom_duty_amount" placeholder="Enter Amount, Rs.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										BOE No.
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="boe_no" placeholder="BOE No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Date
+									</label>
+									<div class="col-md-7 mt8" style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_boe_date" placeholder="Date" id="boe_date" (change)="changeDate('t_boe_date', 'boe_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										GST Amount, INR
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="custom_gst_amount" placeholder="GST Amount, INR">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Instrument No
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="custom_instrument_no" placeholder="Enter Instrument No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2 pl-0">
+								<div class="form-group row mr-0">
+									<label class="col-md-4 text-right control-label p-0">
+										Date
+									</label>
+									<div class="col-md-8 mt8"  style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_custom_instrument_date" placeholder="Date" id="custom_instrument_date" (change)="changeDate('t_custom_instrument_date', 'custom_instrument_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Remarks
+									</label>
+									<div class="col-md-7 mt8">
+										<textarea class="form-control" formControlName="custom_remarks" placeholder="Enter Remarks" rows="2"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Material Received Details
+		    		</div>
+						<div class="row m-0 pt-3 border-top">
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Import Invoice No
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="import_invoice_no" placeholder="Enter Import Invoice No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label pl-0">
+										Date
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_material_date" placeholder="Date" id="material_date" (change)="changeDate('t_material_date', 'material_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Received, Date
+									</label>
+									<div class="col-md-7 mt8"  style="padding-left: 7px;">
+										<input type="text" class="form-control" formControlName="t_material_received_date" placeholder="Date" id="material_received_date" (change)="changeDate('t_material_received_date', 'material_received_date')">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row m-0">
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Freight Amount, Rs
+									</label>
+									<div class="col-md-7 mt8" style="padding-left: 7px;">
+										<input type="text"class="form-control" formControlName="material_freight_amount" placeholder="Freight Amount, Rs">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Instrument No
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text"class="form-control" formControlName="material_instrument_no" placeholder="Enter Instrument No">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Date
+									</label>
+									<div class="col-md-7 mt8"  style="padding-right: 7px;">
+										<input type="text" class="form-control" formControlName="t_material_instrument_date" placeholder="Date" id="material_instrument_date" (change)="changeDate('t_material_instrument_date', 'material_instrument_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-2 text-right control-label">
+										Remarks
+									</label>
+									<div class="col-md-7 mt8">
+										<textarea class="form-control" formControlName="material_remarks" placeholder="Enter Remarks" rows="2"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Purchase Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Purchase Order?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

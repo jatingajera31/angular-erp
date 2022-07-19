@@ -1,0 +1,567 @@
+<div class="action-btns">
+	<button (click)="viewEditMode()" type="button" class="mr-2 btn btn-sm btn-secondary text-center"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="previewMode()" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>VIEW</button>
+	<div *ngIf="!viewMode" class="float-right f-16 pt-1">You are in ADD Mode</div>
+	<div *ngIf="viewMode" class="float-right f-16 pt-1">You are in VIEW Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">Inventory-StoreBook</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0 disable-content-v">
+							<div class="col-md-7">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Supplier
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<select class="form-control" formControlName="supplier_id">
+											<option [value]="null">-- Supplier --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Purchase ID
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="purchase_no" placeholder="Purchase ID">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Materials received, Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="t_materials_received_date" (change)="changeDate('t_materials_received_date', 'materials_received_date')" placeholder="Enter Materials received, Date" id="materials_received_date">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Received By
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<select class="form-control" formControlName="received_by">
+											<option [value]="null">-- Received By --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+								<!-- <div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>No of Cartons
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.no_of_cartons.invalid" [class.invalid-box]="purchaseForm.controls.no_of_cartons.invalid">
+										<input type="number" class="form-control" formControlName="no_of_cartons" placeholder="Enter No of Cartons">
+									</div>
+								</div> -->
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Remarks
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<textarea class="form-control" rows="2" formControlName="remarks"></textarea>
+									</div>
+								</div>
+								<div class="pl-5 mb-2"><b>Transportation details</b>:</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Delivered By
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+									  	<select class="form-control" formControlName="delivered_by">
+									  		<option [value]="null">-- Select Delivered By --</option>
+												<option *ngFor="let itm of deliveredBy" [value]="itm.id">{{itm.name}}</option>
+					    				</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Amount Paid Rs
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+										<input type="number" class="form-control" formControlName="amount_paid" placeholder="Enter Amount Paid Rs">
+									</div>
+									<div class="col-md-5 d-flex pl-0">
+										<label class="text-left control-label min-100">
+											Delivery Time
+										</label>
+										<div class="mt8">
+											<input type="text" class="form-control" formControlName="delivery_time" placeholder="Delivery Time" id="delivery_time">
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Docket No
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="docket_no" placeholder="Enter Docket No">
+									</div>
+									<div class="col-md-5 d-flex pl-0">
+										<label class="text-left control-label" style="min-width: 140px;">
+											Total Weight, Kg.
+										</label>
+										<div class="mt8">
+											<input type="number" class="form-control" formControlName="total_weight" placeholder="Weight">
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										No of Cartons
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+										<input type="number" class="form-control" formControlName="tansport_no_of_cartons" placeholder="Enter No of Cartons">
+									</div>
+									<div class="col-md-5 d-flex pl-0">
+										<label class="text-left control-label" style="min-width: 140px;">
+											Charged Weight, Kg.
+										</label>
+										<div class="mt8">
+											<input type="number" class="form-control" formControlName="charged_weight" placeholder="Weight">
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Remarks
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<textarea class="form-control" rows="2" formControlName="tansport_remarks"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>GRN No.
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8"  [class.form-invalid]="invalidForm && purchaseForm.controls.sr_no.invalid" [class.invalid-box]="purchaseForm.controls.sr_no.invalid">
+										<input type="number" [attr.disabled]="true" class="form-control" formControlName="sr_no" placeholder="GRN NO">
+									</div>
+								</div>
+								<!-- <div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label"><span class="text-danger">*</span>Invoice Copy</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8 lhpx"  [class.form-invalid]="invalidForm && purchaseForm.controls.invoice_copy.invalid" (change)="changeCopy()">
+										<label class="mr-3 mb-0"><input type="radio" formControlName="invoice_copy" value="Yes"><span class="checkbox-text">Yes</span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="invoice_copy" value="No"><span class="checkbox-text">No</span></label>
+									</div>
+								</div> -->
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger" *ngIf="purchaseForm.value.invoice_copy == 'Yes'">*</span>Invoice No
+									</label>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pr-0 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.invoice_no.invalid" [class.invalid-box]="purchaseForm.controls.invoice_no.invalid">
+										<input type="text" class="form-control" formControlName="invoice_no" placeholder="Enter Invoice No" (blur)="getDispatchByInvoice()">
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pl-0 mt8">
+										<div class="input-group"  [class.form-invalid]="invalidForm && purchaseForm.controls.invoice_amount.invalid" [class.invalid-box]="purchaseForm.controls.invoice_amount.invalid">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-rupee-sign"></i></span>
+											</div>
+											<input type="text" class="form-control" [value]="purchaseForm.value.invoice_amount | number : '1.2-2'" placeholder="Invoice Amount" appFormatInput>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger" *ngIf="purchaseForm.value.invoice_copy == 'Yes'">*</span>Invoice Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8"  [class.form-invalid]="invalidForm && purchaseForm.controls.invoice_date.invalid" [class.invalid-box]="purchaseForm.controls.invoice_date.invalid">
+										<input type="text" formControlName="t_invoice_date" (change)="changeDate('t_invoice_date', 'invoice_date')" class="form-control" placeholder="Enter Invoice Date" id="invoice_date">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Challan No
+									</label>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+										<input type="number" class="form-control" formControlName="challan_no" placeholder="Enter Challan No">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Challan Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_challan_date" (change)="changeDate('t_challan_date', 'challan_date')" class="form-control" placeholder="Enter Challan Date" id="challan_date">
+									</div>
+								</div>
+								<!-- <div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">eWay Bill Copy</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8 lhpx"  [class.form-invalid]="invalidForm && purchaseForm.controls.e_way_bill_copy.invalid" (change)="changeCopy()">
+										<label class="mr-3 mb-0"><input type="radio" formControlName="e_way_bill_copy" value="Yes"><span class="checkbox-text">Yes</span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="e_way_bill_copy" value="No"><span class="checkbox-text">No</span></label>
+									</div>
+								</div> -->
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										e-Way Bill No.
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" formControlName="e_way_bill_no" placeholder="Enter e-Way Bill No." (blur)="getDispatchEWay()">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										e-Way Bill Date/Time
+									</label>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pr-0 mt8">
+										<input type="text" class="form-control" formControlName="t_e_way_date" (change)="changeDate('t_e_way_date', 'e_way_date')" class="form-control" placeholder="Date" id="e_way_date">
+									</div>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 pl-0 mt8">
+										<div class="input-group">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input disabled type="text" class="form-control" [value]="purchaseForm.value.e_way_time" placeholder="Time" id="e_way_time">
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Valid From
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_valid_from" (change)="changeDate('t_valid_from', 'valid_from')" class="form-control" placeholder="Enter Valid From" id="valid_from">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Valid Until
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" formControlName="t_valid_until" (change)="changeDate('t_valid_until', 'valid_until')" class="form-control" placeholder="Enter Valid Until" id="valid_until">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Total Time
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" disabled [value]="(purchaseForm.value.total_time) ? purchaseForm.value.total_time + ' Days': null" class="form-control" placeholder="Total Time">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			PURCHASE DETAIL
+		    		</div>
+		    		<!-- <div class="right-title float-right text-right pointer pr-3">
+		    			<button type="button" class="btn btn-xs add-item-btn" (click)="viewAddItemModal()"><i class="fa fa-plus"></i> ADD ITEM</button>
+		    		</div> -->
+		    		<div class="table-responsive mb-3" style="overflow:unset;">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="200">Prod. Group</th>
+						        <th width="200">Model No.</th>
+						        <th>Product Description</th>
+						        <th width="110">Quantity</th>
+						        <th width="50"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of productDetails;let i = index;">
+							    	<!-- <td class="text-center">{{ (i + 1) }}</td> -->
+							    	<td>
+							    		<div>
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.group_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    	</td>
+							    	<td>
+							    		<div>
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.product_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    	</td>
+							    	<td>
+							    		<textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea>
+							    	</td>
+							    	<td>
+							    		<div *ngIf="prod.qty" class="text-center">
+							    			{{prod.qty}}
+							    		</div>
+							    		<div *ngIf="!prod.qty" class="text-center">
+							    			<button (click)="editProductModal(prod, i)" type="button" class="btn btn-xs btn-save">Add Qty.</button>
+							    		</div>
+							    	</td>
+							    	<td class="text-center position-relative">
+							    		<div class="adminActions" id="adminActions">
+												<a class="adminButton" (click)="setFalseData(i);prod.show = !prod.show"><i class="fa fa-folder-open"></i></a>
+												<div class="adminButtons" [class.checked]="(prod.show)" *ngIf="prod.show && isFocus">
+													<a *ngIf="prod.qrcodes.length" (click)="showCodes(prod);prod.show = false" title="Print Label">Print Label <i class="fa fa-edit"></i></a>
+													<a (click)="viewProductDetailModal(prod.product_id);prod.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo" *ngIf="!viewMode">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" [disabled]="!purchaseForm.value.id" (click)="savePurchase()" class="mr-2 btn btn-sm btn-save" *ngIf="!viewMode">Purchase</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showProductDetailModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content" *ngIf="selectedModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Model No.: {{selectedModal.model_no}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showProductDetailModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+    		<div class="row" *ngIf="selectedModal">
+    			<div class="col-md-4">
+    				<ng-container *ngIf="productImage">
+	            <img [src]="productImage" class="img-fluid pointer" />
+	        	</ng-container>
+	        	<h5 class="text-uppercase mt-2">Product Group</h5>
+	        	<p><i class="fa fa-shopping-bag mr-2"></i>{{selectedModal.group.name}}</p>
+    			</div>
+    			<div class="col-md-8">
+    				<div class="form-horizontal">
+	              <div class="form-group">
+	                  <span class="bold">HSN Code: </span>{{selectedModal.hsn_code}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Product Code: </span>{{selectedModal.product_code}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Product Remark: </span>{{selectedModal.remarks}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Sold: </span>0
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">In Stock: </span>5
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">UOM: </span>Nos.
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Brand: </span>{{selectedModal.brand.name}}
+	              </div>
+	              <div class="form-group">
+	                  <span class="bold">Prod. Description: </span><br> {{selectedModal.description}}
+	              </div>
+	              <div class="form-group">
+	                  
+	              </div>
+	          </div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showProductDetailModal = false">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showPrintModal">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Inventory-Label Print</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeLabel();">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mr-0 px-3">
+					<label class="control-label">
+						Supplier: <span class="text-dark">{{SupplierName}}</span>
+					</label>
+				</div>
+				<div class="form-group row mr-0 px-3" *ngIf="purchaseData">
+					<label class="control-label" style="width:13%;">
+						GRN No.: <span class="text-dark">{{purchaseData.sr_no}}</span>
+					</label>
+					<label class="control-label" style="width:30%;">
+						Purchase ID: <span class="text-dark">{{purchaseData.purchase_no}}</span>
+					</label>
+					<label class="control-label" style="width:20%;">
+						Invoice No: <span class="text-dark">{{purchaseData.invoice_no}}</span>
+					</label>
+					<label class="control-label" style="width:17%;">
+						Invoice Date: <span class="text-dark">{{purchaseData.invoice_date | date : 'dd/MM/y'}}</span>
+					</label>
+					<label class="control-label text-right" style="width:20%;">
+						Amount, Rs.: <span class="text-dark">{{purchaseData.invoice_amount | number : '1.2-2'}}</span>
+					</label>
+				</div>
+				<div class="table-responsive mb-3">
+						<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+							<thead>
+						    <tr class="text-center">
+					        <th width="80">Select</th>
+					        <th width="200">Model</th>
+					        <th width="200">Prod. Group</th>
+					        <th>Prod. Description</th>
+					        <th width="100">Pur. Qnty</th>
+						    </tr>
+							</thead>
+							<tbody>
+						    <tr *ngFor="let prod of productDetails;let i = index;">
+						    	<td class="text-center">
+						    		<input [class.d-none]="!prod.qrcodes.length" type="checkbox" name="chk[{{i}}]" [(ngModel)]="prod.checked" (change)="printLabel(prod)">
+						    	</td>
+						    	<td class="text-center">
+						    			{{prod.product_name}}
+						    	</td>
+						    	<td class="text-center">
+						    		{{prod.group_name}}
+						    	</td>
+						    	<td>
+						    		<textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea>
+						    	</td>
+						    	<td class="text-center">
+						    		{{prod.qty}}
+						    	</td>
+						    </tr>
+						  </tbody>
+						</table>
+					</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="closeLabel()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Inventory-StoreBook</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Supplier
+							</label>
+							<div class="col-md-9">
+								<select class="form-control" [(ngModel)]="supplierId" (change)="getPurchaseOrder()">
+									<option [value]="null">-- Select Supplier --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>GRN No.
+							</label>
+							<div class="col-md-9">
+								<select class="form-control" [(ngModel)]="purchaseId">
+									<option [value]="null">-- Select GRN No. --</option>
+									<option *ngFor="let itm of purchaseOrders" [value]="itm.id">{{itm.sr_no}} | {{itm.invoice_no}} | {{ itm.invoice_date | date : 'dd/MM/y' }} | {{(itm.invoice_amount) ? (itm.invoice_amount | number : '1.2-2') : '??'}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showBarCodes">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">QR CODE</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showBarCodes = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center" style="max-height: 500px;overflow-x: auto;" *ngIf="BarCodes.length">
+      	<table class="table table-bordered mb-0 border-0 w-100">
+      		<thead>
+      			<tr>
+      				<th>Srl</th>
+      				<th class="text-left"><input type="checkbox" name="chkAll" [(ngModel)]="isChecked" (change)="selectAll()"> Select</th>
+      				<th>QR Code</th>
+      			</tr>
+      		</thead>
+      		<tbody>
+      			<tr *ngFor="let brc of BarCodes; let i = index;">
+      				<td>{{(i + 1)}}</td>
+      				<td class="text-left"><input type="checkbox" name="chk[{{i}}]" [(ngModel)]="brc.checked"></td>
+      				<td>{{brc.qr_code}}</td>
+      			</tr>
+      		</tbody>
+      	</table>
+      </div>
+      <div class="modal-footer text-center">
+        <button type="button" class="btn btn-sm btn-close" (click)="showBarCodes = false">Close</button>
+        <button type="button" (click)="viewCodes()" class="btn btn-sm btn-save">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showQrCodeModal">
+  <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">QR CODE</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showQrCodeModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center" style="max-height: 500px;overflow-x: auto;" *ngIf="BarCodes.length">
+      	<div *ngFor="let brc of BarCodes">
+      		<qrcode *ngIf="brc.checked" [qrdata]="brc.qr_code" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
+      	</div>
+      </div>
+      <div class="modal-footer text-center">
+        <button type="button" class="btn btn-sm btn-close" (click)="showQrCodeModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="confirmLabelModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+      		<h6>Hey label for few items are pending to Print. Do you know?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="confirmLabelModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="yesKnow()">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

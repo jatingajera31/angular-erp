@@ -1,0 +1,158 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} Project Pre-Commissioning</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-7">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-md-7" [class.form-invalid]="invalidForm && purchaseForm.controls.client_id.invalid" [class.invalid-box]="purchaseForm.controls.client_id.invalid">
+										<select class="form-control" formControlName="client_id" (change)="getPreCommissioningNo();getLocation()">
+											<option [value]="null">-- Select Client --</option>
+    									<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Pre-Commissioning No.
+									</label>
+									<div class="col-md-6 mt8"  [class.form-invalid]="invalidForm && purchaseForm.controls.pre_commissioning_no.invalid" [class.invalid-box]="purchaseForm.controls.pre_commissioning_no.invalid">
+										<input type="text" *ngIf="!editMode" disabled class="form-control" [value]="purchaseForm.value.pre_commissioning_no">
+										<select *ngIf="editMode" class="form-control" formControlName="id" (change)="showPreCommissioning()">
+											<option [value]="null">-- Select Pre-Commissioning No --</option>
+											<option *ngFor="let itm of commissioning" [value]="itm.id">{{itm.pre_commissioning_no}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-7">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-md-7" [class.form-invalid]="invalidForm && purchaseForm.controls.location_id.invalid" [class.invalid-box]="purchaseForm.controls.location_id.invalid">
+										<select class="form-control" formControlName="location_id" (change)="getProject()">
+											<option [value]="null">-- Select Location --</option>
+											<option *ngFor="let itm of locations" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Date
+									</label>
+									<div class="col-md-6" [class.form-invalid]="invalidForm && purchaseForm.controls.pre_date.invalid" [class.invalid-box]="purchaseForm.controls.pre_date.invalid">
+										<input type="text" formControlName="t_pre_date" class="form-control" placeholder="Date" id="pre_date" (change)="changeDate('t_pre_date', 'pre_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-7">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Project
+									</label>
+									<div class="col-md-7">
+										<select class="form-control" formControlName="project_id">
+											<option [value]="null">-- Select Project --</option>
+											<option *ngFor="let itm of projects" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-6 text-right col-xs-12 control-label">
+										Commissioning Done By
+									</label>
+									<div class="col-md-6">
+										<select class="form-control" formControlName="commissioning_done_by">
+											<option [value]="null">-- Commissioning Done By --</option>
+    									<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-7">
+								<div class="form-group row mr-0">
+									<label class="col-md-5 text-right control-label">
+										Reason for Pre-Commissioning
+									</label>
+									<div class="col-md-7">
+										<textarea class="form-control" rows="2" formControlName="reason"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Remind On, Date
+									</label>
+									<div class="col-md-6" [class.form-invalid]="invalidForm && purchaseForm.controls.remind_date.invalid" [class.invalid-box]="purchaseForm.controls.remind_date.invalid">
+										<input type="text" formControlName="t_remind_date" class="form-control" placeholder="Date" id="remind_date" (change)="changeDate('t_remind_date', 'remind_date')">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Groups: Product Supplied
+		    		</div>
+		    		<div class="row m-0 pt-3 border-top">
+		    			<div class="col-md-3"></div>
+		    			<div class="col-md-6">
+								<div class="d-block" *ngFor="let grp of productGroups">
+									<label class="mr-3 mb-0"><input type="checkbox" [(ngModel)]="grp.checked" [ngModelOptions]="{standalone: true}"><span class="checkbox-text">{{grp.name}}</span></label>
+								</div>
+							</div>
+		    		</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Project Pre-Commissioning</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Project Pre-Commissioning?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

@@ -1,0 +1,51 @@
+.product-image:hover img { opacity: 0.3;  }
+.edit-photo { position: absolute; top: 45%; left: 48%; font-size: 20px; color: #000; display: none; cursor: pointer;}
+.product-image:hover .edit-photo { display: block;  }
+.card-body-scroll {
+	max-height: calc(100vh - 205px);
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+
+.modal-card-body-scroll {
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.min-w110 {min-width: 110px;}
+
+.ui-timepicker-list {
+    list-style: none;
+    width: 120px;
+    border-color: #9fa8bc;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    overflow-y: auto;
+    height: 150px;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 5px 10px rgb(0 0 0 / 20%);
+    outline: none;
+    z-index: 10001;
+    margin: 0;
+    padding-left: 0px;
+    position: absolute;
+    top: 25px;
+    left: 0;
+    cursor: pointer;
+}
+
+.ui-timepicker-list li {
+    margin: 0 10px;
+    padding: 0 10px;
+}
+.ui-timepicker-list li:hover {
+    background-color: #259dab;
+    color: #fff;
+}
+.c-save-btn {
+    color: #fff !important;
+    background: #f70d84 !important;
+    border-color: #f70d84 !important;
+}

@@ -1,0 +1,203 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">Installation Completion Claim</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.client_id.invalid" [class.invalid-box]="purchaseForm.controls.client_id.invalid">
+										<select class="form-control" formControlName="client_id" (change)="getItemInstallationNo();getLocation()">
+											<option [value]="null">-- Select Client --</option>
+    									<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Claim of the day | Time
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.claim_date.invalid" [class.invalid-box]="purchaseForm.controls.claim_date.invalid">
+										<input type="text" formControlName="t_claim_date" class="form-control" placeholder="Date" id="claim_date" (change)="changeDate('t_claim_date', 'claim_date')">
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pl-0 mt8">
+										<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.claim_time.invalid" [class.invalid-box]="purchaseForm.controls.claim_time.invalid">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input type="text" class="form-control" [value]="purchaseForm.value.claim_time" id="claim_time" placeholder="Time">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.location_id.invalid" [class.invalid-box]="purchaseForm.controls.location_id.invalid">
+										<select class="form-control" formControlName="location_id" (change)="getProject();getYieldProduct()">
+											<option [value]="null">-- Select Location --</option>
+											<option *ngFor="let itm of locations" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Claimed by Executive
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.claimed_by.invalid" [class.invalid-box]="purchaseForm.controls.claimed_by.invalid">
+										<select class="form-control" formControlName="claimed_by">
+											<option [value]="null">-- Claimed By --</option>
+    									<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Project
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.project_id.invalid" [class.invalid-box]="purchaseForm.controls.project_id.invalid">
+										<select class="form-control" formControlName="project_id">
+											<option [value]="null">-- Select Project --</option>
+											<option *ngFor="let itm of projects" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Claim No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.claim_no.invalid" [class.invalid-box]="purchaseForm.controls.claim_no.invalid">
+										<input type="text" *ngIf="!editMode" disabled class="form-control" [value]="purchaseForm.value.claim_no">
+										<select *ngIf="editMode" class="form-control" formControlName="id" (change)="showItemInstallation()">
+											<option [value]="null">-- Select Pre-Commissioning No --</option>
+											<option *ngFor="let itm of commissioning" [value]="itm.id">{{itm.claim_no}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			List: Item Installation
+		    		</div>
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="50" class="pdx-0">Srl</th>
+						        <th width="150">Model</th>
+						        <th width="100">Prod. Cat.</th>
+						        <th>Total, Supplied</th>
+						        <th>Total Installed, Qnty</th>
+						        <th>Pending to install, Qnty</th>
+						        <th>To be installed by Date</th>
+						        <th>Supporting Eng.</th>
+						        <th>Qnty, Today We Installed</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let prod of products;let i = index;">
+										<td class="text-center">{{(i+1)}}</td>
+										<td>{{prod.model_no}}</td>
+										<td>{{prod.category_name}}</td>
+										<td class="text-center">{{prod.supplied}}</td>
+										<td class="text-center">{{prod.installed}}</td>
+										<td class="text-center">{{prod.pending}}</td>
+										<td>{{prod.installed_by_date}}</td>
+										<td>
+											<select class="form-control" [(ngModel)]="prod.supporting_engineer" [ngModelOptions]="{standalone: true}">
+												<option [value]="null">-- Select Supporting Engineer --</option>
+												<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+											</select>
+										</td>
+										<td><input type="number" class="form-control" [(ngModel)]="prod.today_installed" [ngModelOptions]="{standalone: true}" (change)="checkQty()"></td>
+									</tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="50" class="pdx-0">Srl</th>
+						        <th>Model</th>
+						        <th>Prod. Cat.</th>
+						        <th>QR Code</th>
+						        <th>Del. Challan | Time</th>
+						        <th>Start Date</th>
+						        <th>Completion Date</th>
+						        <th>Item Installed, Where about it</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="text-center">1</td>
+										<td>Model</td>
+										<td>Category</td>
+										<td>1-19</td>
+										<td></td>
+										<td>20-07-2021 | 11:00 AM</td>
+										<td>20-07-2021 | 11:00 AM</td>
+										<td><span class="text-primary pointer">Click here</span></td>
+									</tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" class="mr-2 btn btn-sm btn-save">View</button>
+							<button type="button" class="mr-2 btn btn-sm btn-save">Approve Later</button>
+							<button type="button" class="mr-2 btn btn-sm btn-save">Self-Approve</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Purchase Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Purchase Order?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

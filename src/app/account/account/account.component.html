@@ -1,0 +1,520 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteAcount()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form (ngSubmit)="saveAccount()">
+	<div class="card" [formGroup]="accountForm" [class.disable-content]="(!createMode && !editMode)">
+	    <div class="card-header py-1">
+	        <h6 class="m-0 font-weight-bold text-primary">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} ACCOUNT</h6>
+	    </div>
+	    <div class="card-body px-0 py-3">
+	    	<div class="form-horizontal">
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Type
+	    			</label>
+	    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8 lhpx" [class.form-invalid]="invalidForm && !accountForm.value.is_client && !accountForm.value.is_supplier && !accountForm.value.is_service_agency && !accountForm.value.is_re_seller">
+	    				<label class="mr-3 mb-0"><input type="checkbox" (change)="getAccountInfoByInfo()" formControlName="is_client"><span class="checkbox-text">Client</span></label>
+	    				<label class="mr-3 mb-0"><input type="checkbox" (change)="getAccountInfoByInfo()" formControlName="is_supplier"><span class="checkbox-text">Supplier</span></label>
+	    				<label class="mr-3 mb-0"><input type="checkbox" (change)="getAccountInfoByInfo()" formControlName="is_service_agency"><span class="checkbox-text">Service Agency</span></label>
+	    				<label class="mr-3 mb-0"><input type="checkbox" (change)="getAccountInfoByInfo()" formControlName="is_re_seller"><span class="checkbox-text">Re-Seller</span></label>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="editMode">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Account
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<select class="form-control" formControlName="id" (change)="getAccountDetail()">
+					  		<option [value]="null">-- Select Account --</option>
+    						<option *ngFor="let itm of accountLists" [value]="itm.id">{{itm.account_name}}</option>
+	    				</select>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="createMode">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Account
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.invalid-box]="accountForm.controls.account_name.invalid" [class.form-invalid]="invalidForm && accountForm.controls.account_name.invalid">
+	    				<input type="text" class="form-control" formControlName="account_name" placeholder="Please Enter Account Name">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Short Code
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.invalid-box]="accountForm.controls.short_code.invalid" [class.form-invalid]="invalidForm && accountForm.controls.short_code.invalid">
+	    				<input type="text" class="form-control" formControlName="short_code" placeholder="Short Code" (change)="getAccountNo()" (blue)="getAccountNo()">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Account No
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.invalid-box]="accountForm.controls.account_no.invalid" [class.form-invalid]="invalidForm && accountForm.controls.account_no.invalid">
+	    				<input type="text" class="form-control" formControlName="account_no" [attr.disabled]="true" value="00062021">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				Account Group
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<div class="input-group">
+						  	<select class="form-control" formControlName="account_group_id">
+						  		<option [value]="null">-- Select Account Group --</option>
+								<option *ngFor="let itm of productListGroup" [value]="itm.id">{{itm.name}}</option>
+		    				</select>
+						  	<div class="input-group-append" *ngIf="!isValid(accountForm.value.account_group_id)">
+						    	<span class="input-group-text custom-info" (click)="viewServiceGroupModal()">EDIT</span>
+						  	</div>
+						  	<div class="input-group-append" *ngIf="isValid(accountForm.value.account_group_id)">
+						    	<span class="input-group-text custom-info" (click)="viewServiceGroupModal()">ADD</span>
+						  	</div>
+						</div>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(accountForm.value.is_client == true || accountForm.value.is_re_seller == true)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Executive
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.invalid-box]="accountForm.controls.executive_id.invalid" [class.form-invalid]="invalidForm && isValid(accountForm.value.executive_id)">
+	    				<select class="form-control" formControlName="executive_id">
+					  		<option [value]="null">-- Select Executive --</option>
+    						<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.last_name}}</option>
+	    				</select>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				Phone Number
+	    			</label>
+	    			<div class="col-lg-1 col-md-1 col-sm-1 text-right col-xs-12 mt8 pr-0">
+	    				<input type="text" class="form-control" formControlName="phone_code" placeholder="Code">
+	    			</div>
+	    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pl-0 mt8">
+	    				<input type="text" class="form-control" formControlName="phone_number" placeholder="Enter Phone Number">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				Website
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<input type="text" class="form-control" formControlName="website" placeholder="Enter Website">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				Email
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<input type="text" class="form-control" formControlName="email" placeholder="Enter Email">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Address
+	    			</label>
+	    			<div *ngIf="isLoadedAddress" class="col-lg-5 col-md-5 col-sm-5 col-xs-12 mt8" [class.invalid-box]="accountForm.controls.address.invalid" [class.form-invalid]="invalidForm && accountForm.controls.address.invalid">
+	    				<app-address [placeholder]="'Address'"  [FullAddress]="accountForm.value.address" [AddressOne]="accountForm.value.address_line_one" [AddressTwo]="accountForm.value.address_line_two" [AddressPincode]="accountForm.value.pincode" [AddressArea]="accountForm.value.area_id" [dropdowns]="dropdowns" (setAddress)="getAddress($event)"></app-address>
+
+	    				<!-- <div class="input-group">
+	    					<textarea class="form-control" [attr.disabled]="true" formControlName="address" placeholder="Address" rows="2"></textarea>
+						  	<div class="input-group-append">
+						    	<span class="input-group-text custom-info" (click)="showAddressOneModal()">ADD</span>
+						  	</div>
+							</div> -->
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(!accountForm.value.is_service_agency)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				Credit Day
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<input type="text" class="form-control" formControlName="credit_day" placeholder="Enter Credit Day">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(!accountForm.value.is_service_agency)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				Credit Limit
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<input type="text" class="form-control" formControlName="credit_limit" placeholder="Enter Credit Limit">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(!accountForm.value.is_service_agency)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				GST
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<input type="text" class="form-control" formControlName="gst_no" placeholder="Enter GST" maxlength="15" (change)="getPan()">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(!accountForm.value.is_service_agency)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				PAN
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+	    				<input type="text" class="form-control" formControlName="pan_no" placeholder="Enter PAN" maxlength="10">
+	    			</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Communication Preffered in
+	    			</label>
+	    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8 lhpx" [class.form-invalid]="invalidForm && !accountForm.value.communication_gujarati && !accountForm.value.communication_english">
+	    				<label class="mr-3"><input type="checkbox" formControlName="communication_gujarati"><span class="checkbox-text">Gujarati</span></label>
+	    				<label class="mr-3"><input type="checkbox" formControlName="communication_english"><span class="checkbox-text">English</span></label>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(accountForm.value.is_re_seller == true)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>Rate Discount Slot,%
+	    			</label>
+	    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+	    				<div class="d-flex pt-1">
+	    					<div>
+	    						<div class="d-flex">
+				    				<label style="width: 100px" class="mr-2 mb-0 pt2"><input type="checkbox" formControlName="price_discount_silver"><span class="checkbox-text">Silver</span></label>
+				    				<input type="text" class="form-control max-100 mr-4 mt-m-5" formControlName="price_discount_silver_rate">
+			    				</div>
+			    				<div class="d-flex mt-2">
+				    				<label style="width: 100px" class="mr-2 mb-0 control-label">Additional, %</label>
+				    				<input type="text" class="form-control max-100 mr-4 mt-m-5" formControlName="additional_silver_rate">
+			    				</div>
+		    				</div>
+		    				<div>
+	    						<div class="d-flex">
+				    				<label style="width: 100px" class="mr-2 mb-0 pt2"><input type="checkbox" formControlName="price_discount_gold"><span class="checkbox-text">Gold</span></label>
+				    				<input type="text" class="form-control max-100 mr-4 mt-m-5" formControlName="price_discount_gold_rate">
+			    				</div>
+			    				<div class="d-flex mt-2">
+				    				<label style="width: 100px" class="mr-2 mb-0 control-label">Additional, %</label>
+				    				<input type="text" class="form-control max-100 mr-4 mt-m-5" formControlName="additional_gold_rate">
+			    				</div>
+		    				</div>
+		    				<div>
+	    						<div class="d-flex">
+				    				<label style="width: 100px" class="mr-2 mb-0 pt2"><input type="checkbox" formControlName="price_discount_platinum"><span class="checkbox-text">Platinum</span></label>
+				    				<input type="text" class="form-control max-100 mr-4 mt-m-5" formControlName="price_discount_platinum_rate">
+			    				</div>
+			    				<div class="d-flex mt-2">
+				    				<label style="width: 100px" class="mr-2 mb-0 control-label">Additional, %</label>
+				    				<input type="text" class="form-control max-100 mr-4 mt-m-5" formControlName="additional_platinum_rate">
+			    				</div>
+		    				</div>
+	    				</div>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(accountForm.value.is_re_seller == true)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label pt-4">
+	    				<span class="text-danger">*</span>Target, Rs
+	    			</label>
+	    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+	    				<div class="d-flex">
+	    					<div class="">
+	    						<label class="control-label">Lower</label>
+			    				<input type="text" class="form-control max-100 mr-2" placeholder="Lower" formControlName="target_lower_silver_rate">
+			    			</div>
+			    			<div>
+			    				<label class="control-label">Upper</label>
+			    				<input type="text" class="form-control max-100 mr-4" placeholder="Upper" formControlName="target_upper_silver_rate">
+		    				</div>
+		    				<div class="">
+		    					<label class="control-label">Lower</label>
+			    				<input type="text" class="form-control max-100 mr-2" placeholder="Lower" formControlName="target_lower_gold_rate">
+			    			</div>
+			    			<div class="">
+		    					<label class="control-label">Upper</label>
+			    				<input type="text" class="form-control max-100 mr-4" placeholder="Upper" formControlName="target_upper_gold_rate">
+		    				</div>
+		    				<div class="">
+		    					<label class="control-label">Lower</label>
+				    			<input type="text" class="form-control max-100 mr-2" placeholder="Lower" formControlName="target_lower_platinum_rate">
+		    				</div>
+	    				</div>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row" *ngIf="(accountForm.value.is_re_seller == true)">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    		</label>
+		    		<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8 lhpx">
+		    			<label class="mr-3 mb-0 control-label"><input type="checkbox" formControlName="reminder_target_reached"><span class="checkbox-text">Reminder me When Target reached</span></label>
+		    		</div>
+	    		</div>
+	    		<div class="form-group row">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+	    				<span class="text-danger">*</span>This Account is 'In Reach' by Department
+		    		</label>
+		    		<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8"  [class.invalid-box]="accountForm.controls.department_id.invalid" [class.form-invalid]="invalidForm && accountForm.controls.department_id.invalid">
+		    			<select class="form-control" formControlName="department_id">
+					  		<option [value]="null">-- Department --</option>
+			    			<option *ngFor="let itm of departments" [value]="itm.id">{{itm.name}}</option>
+	    				</select>
+		    		</div>
+	    		</div>
+	    		<div *ngIf="otherFields.length">
+		    		<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			ACCOUNT INFORMATION
+		    		</div>
+		    		<div class="border-top w-100"></div>
+		    		<div class="mt-3">
+			    		<div class="form-group row" *ngFor="let txt of otherFields">
+			    			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+			    				{{txt.name}}
+			    			</label>
+			    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+			    				<input type="text" class="form-control" name="{{txt.id}}" [(ngModel)]="txt.text_value" placeholder="Enter {{txt.name}}" [ngModelOptions]="{standalone: true}">
+			    			</div>
+			    		</div>
+		    		</div>
+	    		</div>
+	    		<div class="pt-3 text-left border-top pl-3">
+    				<button type="button" class="mr-2 btn btn-sm btn-close" (click)="closeForm()">Close</button>
+					<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+    			</div>
+			</div>
+	    </div>
+	</div>
+</form>
+
+<div class="card" [class.disable-content]="(!accountForm.value.id)">
+    <div class="card-header py-1">
+        <h6 class="m-0 font-weight-bold text-primary">CONTACT DETAILS</h6>
+    </div>
+    <div class="card-body">
+    	<div class="mb-3">
+			<button type="button" (click)="showContactFormModal()" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+			<button type="button" [disabled]="(!selectedRow)" (click)="editContactFormModal()" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+			<button type="button" [disabled]="(!selectedRow)" (click)="removeContactFormModal()" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+		</div>
+		<div *ngIf="!contactPersons.length">
+			<img src="./assets/images/no_data.png" class="img-fluid">
+		</div>
+		<div *ngIf="contactPersons.length">
+			<div class="table-responsive">
+				<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+					<thead>
+					    <tr>
+					        <th width="150">Name</th>
+					        <th>Designation</th>
+					        <th width="130">Mobile No</th>
+					        <th width="130">Phone</th>
+					        <th width="200">Email</th>
+					        <th width="100">Birth Date</th>
+					        <th width="130">Anniversary Date</th>
+					    </tr>
+					</thead>
+					<tbody>
+					    <tr *ngFor="let infos of contactPersons" (click)="selectedRow = infos" [class.bg-secondary]="(selectedRow && selectedRow.id == infos.id)">
+					        <td width="150">{{infos.first_name}} {{infos.last_name}}</td>
+					        <td>{{infos.designation_name}}</td>
+					        <td width="130">{{infos.mobile_code}} {{infos.mobile_number}}</td>
+					        <td width="130">{{infos.phone_code}} {{infos.phone_number}}</td>
+					        <td width="200">{{infos.email}}</td>
+					        <td width="100">{{infos.birth_date | date: 'dd-MM-YYYY'}}</td>
+					        <td width="130">{{infos.anniversary_date | date: 'dd-MM-YYYY'}}</td>
+					    </tr>
+				    </tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showContactForm">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+  	<form (ngSubmit)="saveContact(false)" class="w-100">
+	    <div class="modal-content" [formGroup]="contactForm">
+	      <div class="modal-header">
+	        <h5 class="modal-title">Contact Person</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeContactFormModal()">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+      			<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Client Name
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input disabled type="text" class="form-control" [value]="contactForm.value.account_name">
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						<span class="text-danger">*</span>Department
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<div class="input-group" *ngIf="!showDepartment" [class.invalid-box]="contactForm.controls.department_id.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.department_id.invalid">
+					  	<select class="form-control" formControlName="department_id">
+					  		<option [value]="null">-- Department --</option>
+    						<option *ngFor="let itm of departments" [value]="itm.id">{{itm.name}}</option>
+	    				</select>
+					  	<div class="input-group-append">
+					    	<span class="input-group-text custom-info" (click)="showDepartmentModal()">ADD</span>
+					  	</div>
+						</div>
+						<div class="input-group" *ngIf="showDepartment" [class.invalid-box]="contactForm.controls.department_name.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.department_name.invalid">
+					  	<input type="text" class="form-control" formControlName="department_name" placeholder="Department">
+					  	<div class="input-group-append">
+					    	<span class="input-group-text custom-info" (click)="closeDepartmentModal()">Close</span>
+					  	</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						<span class="text-danger">*</span>Designation
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.invalid-box]="contactForm.controls.designation_id.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.designation_id.invalid">
+					  	<select class="form-control" formControlName="designation_id">
+					  		<option [value]="null">-- Designation --</option>
+    						<option *ngFor="let itm of designations" [value]="itm.id">{{itm.title}}</option>
+	    				</select>
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						<span class="text-danger">*</span>First Name
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.invalid-box]="contactForm.controls.first_name.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.first_name.invalid">
+						<input type="text" class="form-control" formControlName="first_name" placeholder="First Name">
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Last Name
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="last_name" placeholder="Last Name">
+					</div>
+				</div>
+				<div class="form-group row">
+    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+    				<span class="text-danger">*</span>Mobile
+    			</label>
+    			<div class="col-lg-2 col-md-2 col-sm-4 text-right col-xs-12 mt8 pr-0" [class.invalid-box]="contactForm.controls.mobile_code.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.mobile_code.invalid">
+    				<input type="text" class="form-control" formControlName="mobile_code" placeholder="Code">
+    			</div>
+    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 pl-0 mt8" [class.invalid-box]="contactForm.controls.mobile_number.invalid" [class.form-invalid]="invalidContactForm && contactForm.controls.mobile_number.invalid">
+    				<input type="text" class="form-control" formControlName="mobile_number" placeholder="Enter Mobile Number">
+    			</div>
+    		</div>
+    		<div class="form-group row">
+    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+    				Phone
+    			</label>
+    			<div class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 mt8 pr-0">
+    				<input type="text" class="form-control" formControlName="phone_code" placeholder="Code">
+    			</div>
+    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 pl-0 mt8">
+    				<input type="text" class="form-control" formControlName="phone_number" placeholder="Enter Phone Number">
+    			</div>
+    		</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Email
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="email" placeholder="Email">
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Birth Date
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="b_date" placeholder="Birth Date" id="contactBirthDate" (change)="changeDate('b_date', 'birth_date')">
+					</div>
+				</div>
+				<div class="form-group row mb-1">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label px-0">
+						Anniversary Date
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" class="form-control" formControlName="a_date" placeholder="Anniversary Date" id="contactAnniversaryDate" (change)="changeDate('a_date', 'anniversary_date')">
+					</div>
+				</div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="submit" class="btn btn-sm btn-save">Save</button>
+	        <button type="button" class="btn btn-sm btn-save" (click)="saveContact(true)">Save & Continue</button>
+	        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="closeContactFormModal()">Close</button>
+	      </div>
+	    </div>
+  	</form>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Account</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Account?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showConflictModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Client & Re-Seller Conflict !</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="noConflict()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Do You Want Re-Seller ?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="noConflict()">No</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="yesConflict()">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showServiceGroupModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Account Group</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showServiceGroupModal = false;serviceGroupName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Account Group
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="serviceGroupName" [(ngModel)]="serviceGroupName" placeholder="Account Group">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveServiceGroup()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showServiceGroupModal = false;serviceGroupName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

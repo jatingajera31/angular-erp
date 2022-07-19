@@ -1,0 +1,256 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} Installation</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.client_id.invalid" [class.invalid-box]="purchaseForm.controls.client_id.invalid">
+										<select class="form-control" formControlName="client_id" (change)="getInstaPlanningNo();getLocation()">
+											<option [value]="null">-- Select Client --</option>
+    									<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.location_id.invalid" [class.invalid-box]="purchaseForm.controls.location_id.invalid">
+										<select class="form-control" formControlName="location_id" (change)="getProject()">
+											<option [value]="null">-- Select Location --</option>
+											<option *ngFor="let itm of locations" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Project
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.project_id.invalid" [class.invalid-box]="purchaseForm.controls.project_id.invalid">
+										<select class="form-control" formControlName="project_id">
+											<option [value]="null">-- Select Project --</option>
+											<option *ngFor="let itm of projects" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Planning No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" *ngIf="!editMode" disabled class="form-control" [value]="purchaseForm.value.planning_no">
+										<select *ngIf="editMode" class="form-control" formControlName="id" (change)="showInstaPlanning()">
+											<option [value]="null">-- Select Planning No --</option>
+											<option *ngFor="let itm of InstaPlanning" [value]="itm.id">{{itm.planning_no}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Date | Time
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.planning_date.invalid" [class.invalid-box]="purchaseForm.controls.planning_date.invalid">
+										<input type="text" formControlName="t_planning_date" class="form-control" placeholder="Date" id="planning_date" (change)="changeDate('t_planning_date', 'planning_date')">
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pl-0 mt8">
+										<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.planning_time.invalid" [class.invalid-box]="purchaseForm.controls.planning_time.invalid">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input type="text" class="form-control" [value]="purchaseForm.value.planning_time" id="planning_time" placeholder="Time">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Building Name
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.building_name.invalid" [class.invalid-box]="purchaseForm.controls.building_name.invalid">
+										<input type="text" class="form-control" formControlName="building_name" placeholder="Building Name">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Planning Done By
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.planning_done_by.invalid" [class.invalid-box]="purchaseForm.controls.planning_done_by.invalid">
+										<select class="form-control" formControlName="planning_done_by">
+											<option [value]="null">-- Select Done By --</option>
+    									<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Building Structure
+		    		</div>
+		    		<div class="row m-0 pt-3 border-top">
+		    			<div class="col-md-1">
+		    			</div>
+		    			<div class="col-md-3">
+								<div class="form-group" [class.form-invalid]="invalidForm && isNotValid(NoOFFloor)">
+									<label class="col-md-12 text-center control-label">
+										<span class="text-danger">*</span>No. of Floor
+									</label>
+									<input type="number" [(ngModel)]="NoOFFloor" [ngModelOptions]="{standalone: true}" class="form-control text-center" placeholder="No. of floors in building except ground">
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group" [class.form-invalid]="invalidForm && isNotValid(NoOFGroundFloor)">
+									<label class="col-md-12 text-center control-label">
+										<span class="text-danger">*</span>Ground Floor
+									</label>
+									<input type="number" disabled [(ngModel)]="NoOFGroundFloor" [ngModelOptions]="{standalone: true}" class="form-control text-center" placeholder="No. of Ground Floor">
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group">
+									<label class="col-md-12 text-center control-label">
+										Basement
+									</label>
+									<input type="number" [(ngModel)]="NoOFBasement" [ngModelOptions]="{standalone: true}" class="form-control text-center" placeholder="No. of basement in building">
+								</div>
+							</div>
+							<div class="col-md-10 text-right">
+								<button type="button" (click)="addBuilding()" class="btn btn-xs btn-close"><i class="fa fa-plus" *ngIf="!editMode"></i> <span *ngIf="!editMode"> ADD BUILDING</span><span *ngIf="editMode"> UPDATE BUILDING</span></button>
+							</div>
+		    		</div>
+		    		<div class="table-responsive mb-3 mt-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="60">Srl</th>
+						        <th width="150">Floor ID</th>
+						        <th>Floor Name</th>
+						        <th>Floor Planning</th>
+							    </tr>
+								</thead>
+								<tbody class="text-center">
+									<tr *ngFor="let itm of building;let i = index;">
+										<td>{{(i+1)}}</td>
+										<td>{{itm.floor_id}}</td>
+										<td>{{itm.floor_name}}</td>
+										<td><span class="pointer text-primary" (click)="setPlanning(itm)">Click here for planning</span></td>
+									</tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddItemModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" *ngIf="SelectedRow">
+      <div class="modal-header">
+        <h5 class="modal-title">Floor Planning</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddItemModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">Floor No</label>
+					<div class="col-md-4 mt8">
+						<input type="text" disabled class="form-control" placeholder="Floor No" [value]="SelectedRow.floor_id">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">No. of Area</label>
+					<div class="col-md-4 mt8">
+						<input type="number" class="form-control" placeholder="No. of Area" [(ngModel)]="SelectedRow.no_of_area" (change)="setArea()">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">No. of Junction</label>
+					<div class="col-md-4 mt8">
+						<input type="number" class="form-control" placeholder="No. of Junction" [(ngModel)]="SelectedRow.no_of_junction" (change)="setArea()">
+					</div>
+				</div>
+				<div class="table-responsive mt-3">
+						<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+							<thead>
+						    <tr class="text-center">
+					        <th width="60">Srl</th>
+					        <th width="150">Area ID</th>
+					        <th>Area Name</th>
+						    </tr>
+							</thead>
+							<tbody class="text-center">
+								<tr *ngFor="let itm of floors;let i = index;">
+									<td>{{(i+1)}}</td>
+									<td>{{itm.area_id}}</td>
+									<td><input type="text" name="areaname{{i}}" [(ngModel)]="itm.area_name" class="form-control"></td>
+								</tr>
+						  </tbody>
+						</table>
+					</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showAddItemModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="saveArea()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Installation Planning</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Installation Planning?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

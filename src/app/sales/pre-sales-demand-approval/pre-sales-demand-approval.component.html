@@ -1,0 +1,1141 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="far fa-check-square mr-1"></i>PENDING</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} PRE-SALES DEMAND APPROVAL</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sales Executive
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="formErrors('sales_executive_id')">
+										<select class="form-control" formControlName="sales_executive_id" (change)="getEditClients()">
+											<option [value]="null">-- Select Sales Executive --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="formErrors('client_id')">
+										<select class="form-control" formControlName="client_id" (change)="changeClient();getQuotations();getPreSalesDemandNo();getAttentions();getPreSalesDemand();getLocation()">
+											<option [value]="null">-- Select Client --</option>
+											<option *ngFor="let itm of clients" [value]="itm.id">{{itm.account_name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Quotation No
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<select disabled class="form-control" [value]="purchaseForm.value.quotation_id">
+											<option [value]="null">-- Select Quotation No --</option>
+											<option *ngFor="let itm of quotations" [value]="itm.id">{{itm.quotation_no}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										PO No
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" disabled [value]="purchaseForm.value.po_no" Placeholder="Enter PO No">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>PO Received, Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" disabled [value]="purchaseForm.value.po_received_date | date : 'dd/MM/y'" class="form-control" placeholder="Date" id="po_received_date">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Delivery Day
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" [value]="purchaseForm.value.delivery_day" placeholder="Enter Delivery Day">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Shipping Address
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<app-address [IsDisabled]="false" [placeholder]="'Shipping Address'"  [FullAddress]="stringAddress" [AddressOne]="purchaseForm.value.ship_address_line_one" [AddressTwo]="purchaseForm.value.ship_address_line_two" [AddressPincode]="purchaseForm.value.ship_pincode" [AddressArea]="purchaseForm.value.ship_area_id" [dropdowns]="dropdowns" (setAddress)="getShipingAddress($event)"></app-address>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="formErrors('location_id')">
+										<select class="form-control" disabled [value]="purchaseForm.value.location_id">
+											<option [value]="null">-- Location --</option>
+											<option *ngFor="let itm of locations" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Project
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<select class="form-control" disabled [value]="purchaseForm.value.project_id">
+											<option [value]="null">-- Project --</option>
+											<option *ngFor="let itm of projects" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Away from ME
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="formErrors('away_from_me')">
+										<div class="input-group">
+											<input disabled type="text" class="form-control" [value]="purchaseForm.value.away_from_me" placeholder="Enter Away from ME KM">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info">KM</span>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Remarks
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" class="form-control" [value]="purchaseForm.value.remarks" placeholder="Enter Remarks">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<b>Basic Credit Limit, Rs</b>
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" [value]="purchaseForm.value.credit_limit" placeholder="0.00">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Pre-Sales Demand
+									</label>
+									<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 mt8 pr-0">
+										<select class="form-control" formControlName="id" (change)="showPreSalesDemand();">
+											<option [value]="null">-- Pre-Sales Demand --</option>
+											<option *ngFor="let itm of demands" [value]="itm.id">{{itm.pre_sale_demand_no}}</option>
+										</select>
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8 pl-0">
+										<div class="input-group">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="fa fa-calendar"></i></span>
+											</div>
+											<input disabled type="text" class="form-control" [value]="purchaseForm.value.pre_sale_date | date : 'dd/MM/y'" placeholder="Date" id="pre_sale_date">
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Address
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<app-address [IsDisabled]="true" [placeholder]="'Address'" [FullAddress]="stringAddress" [AddressOne]="purchaseForm.value.address_line_one" [AddressTwo]="purchaseForm.value.address_line_two" [AddressPincode]="purchaseForm.value.pincode" [AddressArea]="purchaseForm.value.area_id" [dropdowns]="dropdowns" (setAddress)="getAddress($event)"></app-address>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Quotation Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" [value]="purchaseForm.value.quotation_date | date : 'dd/MM/y'" placeholder="Enter Date" id="quotation_date">
+									</div>
+								</div>
+
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Quotation done, by
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="formErrors('sales_executive_id')">
+										<select class="form-control" formControlName="sales_executive_id" (change)="getEditClients()">
+											<option [value]="null">-- Select Sales Executive --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										PO Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input disabled type="text" [value]="purchaseForm.value.po_date | date : 'dd/MM/y'" class="form-control" placeholder="Date" id="po_date">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										&nbsp;
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										&nbsp;
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Delivery Date
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" [value]="purchaseForm.value.delivery_date | date : 'dd/MM/y'" placeholder="Enter Date">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Billing Address
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<app-address [IsDisabled]="false" [placeholder]="'Billing Address'"  [FullAddress]="stringAddress" [AddressOne]="purchaseForm.value.bill_address_line_one" [AddressTwo]="purchaseForm.value.bill_address_line_two" [AddressPincode]="purchaseForm.value.bill_pincode" [AddressArea]="purchaseForm.value.bill_area_id" [dropdowns]="dropdowns" (setAddress)="getBillingAddress($event)"></app-address>
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										GSTIN
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" [value]="gst_no" placeholder="GSTIN">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										PAN
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input disabled type="text" class="form-control" [value]="pan_no" placeholder="PAN">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-7 col-md-7 col-sm-7 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Project completion to be done by date
+									</label>
+									<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12 mt8">
+										<input type="text" disabled [value]="purchaseForm.value.project_completion_date | date : 'dd/MM/y'" class="form-control" placeholder="Date" id="project_completion_date">
+									</div>
+								</div>
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<b>Credit Balance, Rs</b>
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" [value]="purchaseForm.value.credit_balance" placeholder="0.00">
+									</div>
+								</div>
+
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Payment Condition
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<button type="button" (click)="loadPaymentCond()" class="btn btn-xs btn-save" style="min-width: 35px;"><i class="fa fa-edit"></i></button>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-8 border ml-5">
+								<div class="f-14"><span class="control-label f-14 d-inline-block" style="width: 160px;">Transaction Type :</span>Repeat Business</div>
+								<div class="f-14"><span class="control-label f-14 d-inline-block" style="width: 160px;">Reason To Get Order :</span>Product Quality & our presence in Market.</div>
+								<div class="f-14"><span class="control-label f-14 d-inline-block" style="width: 160px;">Goods' Delivery :</span>4 Weeks from the date of PO received (not PO Date).</div>
+								<div class="f-14"><span class="control-label f-14 d-inline-block" style="width: 160px;">Termed Liability :</span>12 Months. Applicable from the date of Project/Work completion.</div>
+								<div class="f-14"><span class="control-label f-14 d-inline-block" style="width: 160px;">Incentives To Pay :</span>2.00 %</div>
+								<div class="f-14"><span class="control-label f-14 d-inline-block" style="width: 160px;">Additional Warranty :</span>3 Months</div>
+							</div>
+							<div class="col-md-11 border ml-5 mt-3 mb-3">
+								<div class="d-flex f-14">
+									<span class="control-label f-14 d-inline-block" style="width: 16%;">Product's Standard  Warranty Clauser :</span>
+									<span class="f-14" style="width: 84%;">Standard Warranty. Applicable from the date of Delivery Challan and valid as mentioned in respective Product's Description.
+A warranty is a legally binding assurance between Earth Control Systems & it's Client. It describes the conditions under, and period during, which Earth Control Systems will repair, replace, or compensate, for the defective item free of cost (FOC) to it's buyer or user. FOC Replacement/Repairs for the defective item/system subject to reason of failure attributable to manufacturing cause only.
+Warranty with all its assurance is not applicable in all cases if Item fails to work or found in functional disorder due to defective Power, Water Seepage & Physical Damage partially or fully with whatsoever reason, and replacement cost or repair charge, freight & handling charges will be paid by user in addition with Taxes as applicable.
+</span>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			CONTACT DETAIL
+		    		</div>
+		    		<div class="row m-0 border-top pt-3">
+		    			<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">
+								<span class="text-danger">*</span>For Payment
+							</label>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.form-invalid]="formErrors('payment_id')">
+								<div class="input-group">
+									<select class="form-control" formControlName="payment_id" [value]="purchaseForm.value.payment_id" [disabled]="true">
+										<option [value]="null">-- Select Person --</option>
+										<option *ngFor="let itm of attentions" [value]="purchaseForm.value.payment_id">{{itm.name}}</option>
+									</select>
+									
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 mt8 pr-0 max-100">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="f-14 fa fa-phone-alt"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.payment_code" placeholder="Code">
+								</div>
+							</div>
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pl-0 mt8">
+								<input disabled type="text" class="form-control" [value]="purchaseForm.value.payment_number" placeholder="Please Enter Mobile">
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="fa fa-envelope"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.payment_email" placeholder="Enter Email">
+								</div>
+							</div>
+		    		</div>
+		    		<div class="row m-0 pt-3">
+		    			<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">
+								Project Manager
+							</label>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<select disabled class="form-control" [value]="purchaseForm.value.manager_id">
+										<option [value]="null">-- Select Person --</option>
+										<option *ngFor="let itm of attentions" [value]="itm.id">{{itm.name}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 mt8 pr-0 max-100">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="f-14 fa fa-phone-alt"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.manager_code" placeholder="Code">
+								</div>
+							</div>
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pl-0 mt8">
+								<input disabled type="text" class="form-control" [value]="purchaseForm.value.manager_number" placeholder="Please Enter Mobile">
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="fa fa-envelope"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.manager_email" placeholder="Enter Email">
+								</div>
+							</div>
+		    		</div>
+		    		<div class="row m-0 pt-3">
+		    			<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">
+								Electrician
+							</label>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<select disabled class="form-control" [value]="purchaseForm.value.electrician_id">
+										<option [value]="null">-- Select Person --</option>
+										<option *ngFor="let itm of attentions" [value]="itm.id">{{itm.name}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 mt8 pr-0 max-100">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="f-14 fa fa-phone-alt"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.electrician_code" placeholder="Code">
+								</div>
+							</div>
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pl-0 mt8">
+								<input disabled type="text" class="form-control" [value]="purchaseForm.value.electrician_number" placeholder="Please Enter Mobile">
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="fa fa-envelope"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.electrician_email" placeholder="Enter Email">
+								</div>
+							</div>
+		    		</div>
+		    		<div class="row m-0 pt-3">
+		    			<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">
+								Store Keeper
+							</label>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<select disabled class="form-control" [value]="purchaseForm.value.store_keeper_id">
+										<option [value]="null">-- Select Person --</option>
+										<option *ngFor="let itm of attentions" [value]="itm.id">{{itm.name}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 mt8 pr-0 max-100">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="f-14 fa fa-phone-alt"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.store_keeper_code" placeholder="Code">
+								</div>
+							</div>
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pl-0 mt8">
+								<input disabled type="text" class="form-control" [value]="purchaseForm.value.store_keeper_number" placeholder="Please Enter Mobile">
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="fa fa-envelope"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.store_keeper_email" placeholder="Enter Email">
+								</div>
+							</div>
+		    		</div>
+		    		<div class="row m-0 pt-3">
+		    			<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">
+								Architect
+							</label>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<select disabled class="form-control" [value]="purchaseForm.value.architect_id">
+										<option [value]="null">-- Select Person --</option>
+										<option *ngFor="let itm of attentions" [value]="itm.id">{{itm.name}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 mt8 pr-0 max-100">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="f-14 fa fa-phone-alt"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.architect_code" placeholder="Code">
+								</div>
+							</div>
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pl-0 mt8">
+								<input disabled type="text" class="form-control" [value]="purchaseForm.value.architect_number" placeholder="Please Enter Mobile">
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+								<div class="input-group">
+									<div class="input-group-append">
+										<span class="input-group-text custom-info"><i class="fa fa-envelope"></i></span>
+									</div>
+									<input disabled type="text" class="form-control" [value]="purchaseForm.value.architect_email" placeholder="Enter Email">
+								</div>
+							</div>
+		    		</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			PART-I PRODUCT SUPPLY
+		    		</div>
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="30">Srl</th>
+						        <th width="150">Prod. Group/Model No.</th>
+						        <th width="200">Product Description</th>
+						        <th width="80">Qnty/Rate</th>
+						        <th width="100">Disc.,%/Amt</th>
+						        <th width="90">Total, Rs.	</th>
+						        <th width="80">GST, %/Total</th>
+						        <th width="90">Total w/GST, Rs.</th>
+							    </tr>
+								</thead>
+								<tbody *ngIf="quots">
+							    <tr *ngFor="let prod of productDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td>
+							    		<div>
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.group_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.product_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    	</td>
+							    	<td><textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea></td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" disabled class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity">
+							    		</div>
+							    		<div class="mt-2">
+							    			{{toFixed(prod.rate)}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" disabled class="form-control text-right" [(ngModel)]="prod.discount_percentage" [ngModelOptions]="{standalone: true}" placeholder="%">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="number" disabled class="form-control text-right" [value]="toFixed(prod.discount_amount)" placeholder="0.00">
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{toFixed(prod.sub_total)}}</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" disabled class="form-control text-right" [(ngModel)]="prod.gst_percentage" [ngModelOptions]="{standalone: true}" placeholder="TAX">
+							    		</div>
+							    		<div class="mt-2">
+							    			{{toFixed(prod.gst_amount)}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{toFixed(prod.total_amount)}}</td>
+							    </tr>
+							    <tr class="total">
+							    	<td class="text-right" colspan="3">SUPPLY COST, Rs</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.qty_rate_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.discount_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.sub_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.gst_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.total_amount)}}</span>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14" *ngIf="productItc.length">
+		    			PART-II ITC CHARGE
+		    		</div>
+		    		<div class="table-responsive mb-3" *ngIf="productItc.length">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="30">Srl</th>
+						        <th width="130">Prod. Group/Model No.</th>
+						        <th width="200">Product Description</th>
+						        <th width="120">Service Description</th>
+						        <th width="80">Qnty/Rate</th>
+						        <th width="90">Total, Rs.	</th>
+						        <th width="80">GST, %/Total</th>
+						        <th width="90">Total w/GST, Rs.</th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of productItc;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td>
+							    		<div >
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.group_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.product_name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    	</td>
+							    	<td><textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea></td>
+							    	<td>
+							    		<select disabled class="form-control" [(ngModel)]="prod.service_description" [ngModelOptions]="{standalone: true}">
+												<option [value]="null">-- Service --</option>
+												<option value="Installation">Installation, Testing & Commissioning</option>
+												<option value="Client">Client's Scope</option>
+											</select>
+							    	</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input disabled type="number" class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input disabled type="number" class="form-control text-right" [(ngModel)]="prod.itc_rate" [ngModelOptions]="{standalone: true}" placeholder="Rate">
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{toFixed(prod.sub_total)}}</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" disabled class="form-control text-right" [(ngModel)]="prod.itc_gst_rate" [ngModelOptions]="{standalone: true}" placeholder="TAX">
+							    		</div>
+							    		<div class="mt-2">
+							    			{{toFixed(prod.gst_amount)}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{toFixed(prod.total_amount)}}</td>
+							    </tr>
+							    <tr class="total">
+							    	<td class="text-right" colspan="4">ITC COST, Rs</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.itc_qty_rate_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.itc_sub_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.itc_gst_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.itc_total_amount)}}</span>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14" *ngIf="serviceDetails.length">
+		    			PART-III SERVICE SUPPLY
+		    		</div>
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="30">Srl</th>
+						        <th width="150">Service. Group/Service.</th>
+						        <th width="200">Service Description</th>
+						        <th width="80">Qnty/Rate</th>
+						        <th width="100">Disc.,%/Amt</th>
+						        <th width="90">Total, Rs.	</th>
+						        <th width="80">GST, %/Total</th>
+						        <th width="90">Total w/GST, Rs.</th>
+							    </tr>
+								</thead>
+								<tbody *ngIf="quots">
+							    <tr *ngFor="let prod of serviceDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td>
+							    		<div>
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.group.name" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="text" disabled class="form-control" [(ngModel)]="prod.prmodel.service_code" [ngModelOptions]="{standalone: true}">
+							    		</div>
+							    	</td>
+							    	<td><textarea disabled [class.bg-pink]="(prod.is_paired)" class="form-control border-0" rows="3" [innerHTML]="prod.description"></textarea></td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" disabled class="form-control text-right" [(ngModel)]="prod.qty" [ngModelOptions]="{standalone: true}" placeholder="Quantity">
+							    		</div>
+							    		<div class="mt-2">
+							    			{{toFixed(prod.rate)}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" disabled class="form-control text-right" [(ngModel)]="prod.discount_percentage" [ngModelOptions]="{standalone: true}" placeholder="%">
+							    		</div>
+							    		<div class="mt-2">
+							    			<input type="number" disabled class="form-control text-right" [value]="toFixed(prod.discount_amount)" placeholder="0.00">
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{toFixed(prod.sub_total)}}</td>
+							    	<td class="text-right">
+							    		<div>
+							    			<input type="number" disabled class="form-control text-right" [(ngModel)]="prod.gst_percentage" [ngModelOptions]="{standalone: true}" placeholder="TAX">
+							    		</div>
+							    		<div class="mt-2">
+							    			{{toFixed(prod.gst_amount)}}
+							    		</div>
+							    	</td>
+							    	<td class="text-right">{{toFixed(prod.total_amount)}}</td>
+							    </tr>
+							    <tr class="total">
+							    	<td class="text-right" colspan="3">Service SUPPLY COST, Rs</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.service_qty_rate_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.service_discount_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.service_sub_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.service_gst_total)}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{toFixed(quots.service_total_amount)}}</span>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="row m-0" *ngIf="quots">
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-9 col-md-9 col-sm-9 text-right col-xs-12 control-label pr-3">
+										PRODUCT SUPPLY, TOTAL WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.sub_total))" Placeholder="Basic Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.gst_total))" Placeholder="GST Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.total_amount))" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12" *ngIf="productItc.length">
+								<div class="form-group row mr-0">
+									<label class="col-lg-9 col-md-9 col-sm-9 text-right col-xs-12 control-label pr-3">
+										ITC CHARGE, TOTAL WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.itc_sub_total))" Placeholder="Basic Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.itc_gst_total))" Placeholder="GST Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.itc_total_amount))" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12" *ngIf="serviceDetails.length">
+								<div class="form-group row mr-0">
+									<label class="col-lg-9 col-md-9 col-sm-9 text-right col-xs-12 control-label pr-3">
+										SERVICE SUPPLY, TOTAL WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.service_sub_total))" Placeholder="Basic Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.service_gst_total))" Placeholder="GST Amt">
+									</div>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.service_total_amount))" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-11 col-md-11 col-sm-11 text-right col-xs-12 control-label pr-3">
+										TOTAL COST WITH GST, Rs
+									</label>
+									<div class="col-lg-1 col-md-1 col-sm-1 col-xs-12 mt8 pl-0 pr-0">
+										<input type="text" disabled class="form-control text-right" [value]="(toFixed(quots.native_amount))" Placeholder="Total">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 mt-3">
+		    			PAYMENT TERMS & CONDITIONS
+		    		</div>
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th>Reminder To</th>
+						        <th>Task To Remind</th>
+						        <th width="150">Payment (Rs)</th>
+						        <th width="150">Days</th>
+							    </tr>
+								</thead>
+								<tbody *ngIf="purchaseForm.value.payment_condition">
+							    <tr *ngIf="!isNotValid(purchaseForm.value.balance_payment) && !isNotValid(purchaseForm.value.balance_day)">
+							    	<td>
+							    		<input type="text" disabled class="form-control" [value]="getExecutiveName()">
+							    	</td>
+							    	<td>
+							    		<input type="text" disabled class="form-control" [value]="'Materials Accepted/Delivered'">
+							    	</td>
+							    	<td class="text-right">
+							    		<input type="text" disabled class="form-control" [value]="toFixed(purchaseForm.value.balance_payment)">
+							    	</td>
+							    	<td class="text-center">
+							    		<input type="text" disabled class="form-control" [value]="purchaseForm.value.balance_day">
+							    	</td>
+							    </tr>
+							    <tr *ngIf="!isNotValid(purchaseForm.value.final_payment) && !isNotValid(purchaseForm.value.final_day)">
+							    	<td>
+							    		<input type="text" disabled class="form-control" [value]="getExecutiveName()">
+							    	</td>
+							    	<td>
+							    		<input type="text" disabled class="form-control" [value]="'Project Completion'">
+							    	</td>
+							    	<td class="text-right">
+							    		<input type="text" disabled class="form-control" [value]="toFixed(purchaseForm.value.final_payment)">
+							    	</td>
+							    	<td class="text-center">
+							    		<input type="text" disabled class="form-control" [value]="purchaseForm.value.final_day">
+							    	</td>
+							    </tr>
+							    <tr *ngIf="!isNotValid(purchaseForm.value.special_payment) && !isNotValid(purchaseForm.value.special_day)">
+							    	<td>
+							    		<input type="text" disabled class="form-control" [value]="getExecutiveName()">
+							    	</td>
+							    	<td>
+							    		<input type="text" disabled class="form-control" [value]="purchaseForm.value.special_condition">
+							    	</td>
+							    	<td class="text-right">
+							    		<input type="text" disabled class="form-control" [value]="toFixed(purchaseForm.value.special_payment)">
+							    	</td>
+							    	<td class="text-center">
+							    		<input type="text" disabled class="form-control" [value]="purchaseForm.value.special_day">
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+		    		<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			APPROVAL
+		    		</div>
+		    		<div class="right-title float-right text-right pointer pr-3">
+		    			<button type="button" class="btn btn-xs btn-close" (click)="viewDetail()">VIEW DETAIL</button>
+		    		</div>
+		    		<div class="row m-0 pt-3 pb-3 border-top">
+		    			<label class="col-md-6 text-left control-label">
+								Query
+							</label>
+							<label class="col-md-6 text-right control-label pr-3">
+								<input type="checkbox" formControlName="is_approved" (change)="changeApproved()">
+								<span class="checkbox-text">Approved</span>
+							</label>
+							<div class="col-md-12">
+								<textarea class="form-control"formControlName="approved_remarks"  placeholder="Query..." rows="2"></textarea>
+							</div>
+		    		</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showQuotationDetail" [class.v-hidden]="showWarantyModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Important Details <span style="position: absolute;right: 40px;">Pre-Sale Demand : {{purchaseForm.value.pre_sale_demand_no}} | {{purchaseForm.value.pre_sale_date | date : 'dd/MM/y'}} | {{toFixed(quots.native_amount)}}</span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showQuotationDetail = false;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body f-14" style="overflow-x: auto;height: calc(100vh - 150px);">
+				<div class="form-group row m-0">
+					<div class="col-md-4 control-label text-right">
+						Quotation No.(Approved) :
+					</div>
+					<div class="col-md-8">
+						{{quots.quotation_no}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Client Name :
+					</div>
+					<div class="col-md-8">
+						{{getClientInfo('account_name')}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Address :
+					</div>
+					<div class="col-md-8">
+						{{stringAddress}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Location :
+					</div>
+					<div class="col-md-8">
+						{{getLocationName()}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Shipping Address :
+					</div>
+					<div class="col-md-8">
+						{{shipAddress}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Billing Address :
+					</div>
+					<div class="col-md-8">
+						{{billAddress}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						GSTIN :
+					</div>
+					<div class="col-md-8">
+						{{getClientInfo('gst_no')}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						PAN :
+					</div>
+					<div class="col-md-8">
+						{{getClientInfo('pan_no')}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Payment Condition :
+					</div>
+					<div class="col-md-8">
+						ECS/QT-SRK-0004/19-20/Rv-0 | 13-12-2019 | 6165.50
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Project Completion Date :
+					</div>
+					<div class="col-md-8">
+						{{purchaseForm.value.project_completion_date | date : 'dd/MM/y'}}
+					</div>
+				</div>
+				<div class="form-group row m-0 border">
+					<div class="col-md-4 control-label text-right">
+						Transaction Type :
+					</div>
+					<div class="col-md-8">
+						{{quots.transaction_type}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Reason to get Order :
+					</div>
+					<div class="col-md-8">
+						{{quots.reason_to_get_order}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Good's Delivery :
+					</div>
+					<div class="col-md-8">
+						{{quots.goods_delivery}} Weeks
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Delivery Date :
+					</div>
+					<div class="col-md-8">
+						{{purchaseForm.value.delivery_date | date : 'dd/MM/y'}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Termed Liability :
+					</div>
+					<div class="col-md-8">
+						{{quots.termed_liability}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Product Warranty :
+					</div>
+					<div class="col-md-8">
+						Standard Warranty. Applicable from the date of Delivery Challan and valid as mentioned in respective Product's Description.
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Incentives to Pay :
+					</div>
+					<div class="col-md-8">
+						{{(quots.incentives_to_pay) ? 'Yes': ''}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						PAN :
+					</div>
+					<div class="col-md-8">
+						{{quots.incentives_pan_no}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Payment Condition :
+					</div>
+					<div class="col-md-8">
+						{{quots.incentives_payment_condition}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Incentives :
+					</div>
+					<div class="col-md-8">
+						{{quots.incentives_person_name}}
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Address :
+					</div>
+					<div class="col-md-8">
+						<span *ngIf="quots.incentives_address_line_one && quots.incentives_area_id">{{quots.incentives_address_line_one}}, {{quots.incentives_address_line_one}}, {{quots.area_name}}, {{quots.city_name}}-{{quots.incentives_pincode}}, {{quots.state_name}}, {{quots.country_name}}</span>
+					</div>
+					<div class="col-md-4 control-label text-right">
+						Additional Warranty :
+					</div>
+					<div class="col-md-8">
+						{{quots.extended_warranty_month}} Months <span *ngIf="!isNotValid(purchaseForm.value.extended_comments)"><b>, Agreed</b> ({{purchaseForm.value.extended_comments}})</span><button *ngIf="isNotValid(purchaseForm.value.extended_comments)" (click)="addExtended()" type="button" class="btn btn-xs btn-save" style="min-width: 30px;padding: 2px 5px !important;"><i class="fa fa-edit"></i></button>
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showQuotationDetail = false;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showWarantyModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Additional Warranty</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showWarantyModal = false;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body f-14">
+				<div class="form-group row m-0">
+					<div class="col-md-3 control-label text-right">
+						<span class="text-danger">*</span>Comment :
+					</div>
+					<div class="col-md-9">
+						<textarea class="form-control" rows="2" name="extended_comments" [(ngModel)]="extended_comments"></textarea>
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showWarantyModal = false;">Close</button>
+        <button type="button" class="btn btn-sm btn-save" [disabled]="(!extended_comments)" (click)="saveWarranty()">Agree</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="payemntCondtionModal">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title">Payment Condition</h5>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeCond()">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="modal-body f-14" [formGroup]="purchaseForm">
+			<div class="form-group row mr-0">
+					  <div class="col-md-8 text-right">
+						  Total Payments(Rs)
+					  </div>
+					  <div class="col-md-4" *ngIf="quots">
+						  <input type="number" disabled class="form-control text-center" [value]="(toFixed(quots.native_amount))">
+					  </div>
+				  </div>
+				  <h5>Special Condition</h5>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  <input type="number" class="form-control text-center" placeholder="Percent" (change)="changePercent('special_percent', 'special_payment')" formControlName="special_percent" appFormatInput>
+					  </div>
+					  <div class="col-md-2 text-center">
+						  % on/after
+					  </div>
+					  <div class="col-md-2">
+						  <input type="number" class="form-control text-center" placeholder="Days" formControlName="special_day">
+					  </div>
+					  <div class="col-md-2">
+						  Days
+					  </div>
+				  </div>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  Condition
+					  </div>
+					  <div class="col-md-3">
+						  <input type="text" class="form-control" placeholder="Condition" formControlName="special_condition">
+					  </div>
+					  <div class="col-md-2 text-right">
+						  Payment(Rs)
+					  </div>
+					  <div class="col-md-3">
+						  <input type="number" disabled class="form-control text-center" placeholder="Payment(Rs)" [value]="purchaseForm.value.special_payment">
+					  </div>
+				  </div>
+				  <h5>Advance Payment</h5>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  Amount(Rs)
+					  </div>
+					  <div class="col-md-3">
+						  <input type="number" class="form-control text-center" placeholder="Payment(Rs)" formControlName="advance_amount" appFormatInput>
+					  </div>
+					  <div class="col-md-2 text-right">
+						  Mode
+					  </div>
+					  <div class="col-md-4 lhpx">
+						  <label class="mr-3 mb-0"><input type="radio" class="form-control d-inline-block" value="CASH" formControlName="advance_mode" (change)="changeBankMode()"><span class="checkbox-text d-inline-block">CASH</span></label>
+						  <label class="mr-3 mb-0"><input type="radio" class="form-control d-inline-block" value="BANK" formControlName="advance_mode" (change)="changeBankMode()"><span class="checkbox-text d-inline-block">BANK</span></label>
+					  </div>
+				  </div>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  Cheque No.
+					  </div>
+					  <div class="col-md-10">
+						  <input type="text" class="form-control" placeholder="Cheque No." formControlName="advance_cheque_no">
+					  </div>
+				  </div>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  Bank Name
+					  </div>
+					  <div class="col-md-3">
+						  <input type="text" class="form-control" placeholder="Bank Name" formControlName="bank_name">
+					  </div>
+					  <div class="col-md-2 text-right">
+						  Date
+					  </div>
+					  <div class="col-md-3">
+						  <input type="text" formControlName="t_advance_date" class="form-control" placeholder="Date" id="advance_date" (change)="changeDate('t_advance_date', 'advance_date')">
+					  </div>
+				  </div>
+				  <h5>Part Payment of Balance Amount</h5>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  <input type="number" class="form-control text-center" placeholder="Percent" formControlName="balance_percent" (change)="changePercent('balance_percent', 'balance_payment')" appFormatInput>
+					  </div>
+					  <div class="col-md-2 text-center">
+						  % within
+					  </div>
+					  <div class="col-md-2">
+						  <input type="number" class="form-control text-center" placeholder="Days" formControlName="balance_day">
+					  </div>
+					  <div class="col-md-6">
+						  Days from the date of materials accepted/delivered.
+					  </div>
+				  </div>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  Payment(Rs)
+					  </div>
+					  <div class="col-md-3">
+						  <input type="number" disabled class="form-control text-center" placeholder="Payment(Rs)" [value]="purchaseForm.value.balance_payment">
+					  </div>
+				  </div>
+				  <h5>Final Payment of Balance Amount</h5>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  <div class="input-group">
+							  <div class="input-group-append">
+								  <span class="input-group-text custom-info" title="Auto count remaining percent and amount."><i (click)="calcFinal()" class="fas fa-calculator"></i></span>
+							  </div>
+							  <input type="number" class="form-control text-center" placeholder="Percent" formControlName="final_percent" (change)="changePercent('final_percent', 'final_payment')" appFormatInput>
+						  </div>
+					  </div>
+					  <div class="col-md-2 text-center">
+						  % within
+					  </div>
+					  <div class="col-md-2">
+						  <input type="number" class="form-control text-center" placeholder="Days" formControlName="final_day">
+					  </div>
+					  <div class="col-md-6">
+						  Days from the date of project completion.
+					  </div>
+				  </div>
+				  <div class="form-group row mr-0">
+					  <div class="col-md-2">
+						  Payment(Rs)
+					  </div>
+					  <div class="col-md-3">
+						  <input type="number" disabled class="form-control text-center" placeholder="Payment(Rs)" [value]="purchaseForm.value.final_payment">
+					  </div>
+				  </div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="mr-2 btn btn-sm btn-undo" (click)="resetCond()">Undo</button>
+		  <button type="button" class="btn btn-sm btn-close" (click)="closeCond()">Close</button>
+		  <button type="button" class="btn btn-sm btn-save" (click)="saveConditions()">Save</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+<ngx-ui-loader></ngx-ui-loader>

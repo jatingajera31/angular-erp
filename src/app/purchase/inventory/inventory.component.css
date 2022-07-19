@@ -1,0 +1,11 @@
+.bg-pink {background-color: #f4e5f5 !important;}
+.pointer.bg-warning {
+	padding: 2px;
+  font-size: 12px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}

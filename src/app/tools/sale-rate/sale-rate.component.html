@@ -1,0 +1,352 @@
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Sale Rate Editor</h6>
+    </div>
+    <form (ngSubmit)="saveRate()">
+    <div class="card-body p-0">
+    	<div class="form-horizontal">
+    		<div class="form-group row mr-0 mt-3">
+    			<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 text-right">
+    				Product Group
+    			</label>
+    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+    				<select class="form-control" [(ngModel)]="group_id" (change)="getBrand();getProducts()" [ngModelOptions]="{standalone: true}">
+				  		<option [value]="null">-- Select Product Group --</option>
+						<option *ngFor="let itm of productGroups" [value]="itm.id">{{itm.name}}</option>
+    				</select>
+    			</div>
+    			<label class="col-lg-1 col-md-1 col-sm-1 text-right col-xs-12 text-right">
+    				Brand
+    			</label>
+    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+    				<select class="form-control" [(ngModel)]="brand_id" (change)="getProducts()" [ngModelOptions]="{standalone: true}">
+				  		<option [value]="null">-- Select Brand --</option>
+						<option *ngFor="let itm of brands" [value]="itm.id">{{itm.name}}</option>
+    				</select>
+    			</div>
+    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" *ngIf="isChecked">
+    				<button type="button" (click)="showEditModal()" class="btn btn-sm btn-save">Change Rate</button>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="table-content">
+			<div class="table-responsive" id="tableResponsive">
+		        <table class="table table-bordered mb-0 border-0 w-100 remove-r-border" cellspacing="0" rules="all">
+				    <thead>
+				        <tr>
+				            <th width="50" class="text-center" valign="middle">
+				            	Select <input class="th-checkbox" [(ngModel)]="selectAll" type="checkbox" (change)="selectAllChk()" [ngModelOptions]="{standalone: true}">
+				            </th>
+				            <th width="130" class="text-center" valign="middle">
+				            	<div class="bb">Model No.</div>
+				            	<div>Prod. Code</div>
+				            </th>
+				            <th width="220" class="text-center" valign="middle">
+				            	<div class="bb">Purchase</div>
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br">Purchase Rate</div>
+					            	<div class="w-50">HSN/GST</div>
+				            	</div>
+				            </th>
+				            <th width="160" class="text-center" valign="middle">
+				            	<div class="bb">Sales Price</div>
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br">MRP/MSP</div>
+					            	<div class="w-50">GST</div>
+				            	</div>
+				            </th>
+				            <th width="220" class="text-center" valign="middle">
+				            	<div class="bb">ITC Rate</div>
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br">Charge</div>
+					            	<div class="w-50">GST/HSN</div>
+				            	</div>
+				            </th>
+				            <th width="220" class="text-center" valign="middle">
+				            	<div class="bb">Handling Charge</div>
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br">Charge</div>
+					            	<div class="w-50">GST/HSN</div>
+				            	</div>
+				            </th>
+				            <th width="150" class="text-center" valign="middle">
+				            	<div>Source of Supply</div>
+				            </th>
+				            <th width="150" class="text-center" valign="middle">
+				            	<div class="bb">Add. Warranty</div>
+				            	<div>ADD-ON/I.Factor</div>
+				            </th>
+				            <th width="150" class="text-center" valign="middle">
+				            	<div class="bb">Comp. SC</div>
+				            	<div>ADD-ON/I.Factor</div>
+				            </th>
+				            <th width="150" class="text-center" valign="middle">
+				            	<div class="bb">Non Comp. SC</div>
+				            	<div>ADD-ON/I.Factor</div>
+				            </th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				    	<tr *ngFor="let ins of installations;let i = index;">
+				            <td width="50" class="text-center" valign="middle">
+				            	<input class="th-checkbox" name="checked{{i}}" [(ngModel)]="ins.checked" type="checkbox" (change)="checkUncheck()">
+				            </td>
+				            <td width="130" class="text-center" valign="middle">
+				            	<div class="bb">{{ins.model_no}}</div>
+				            	<div>{{ins.product_code}}</div>
+				            </td>
+				            <td width="220" class="text-center" valign="middle">
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br p-1">
+					            		<input type="number" class="form-control max-100 mx-auto" placeholder="Rate" [(ngModel)]="ins.purchase_rate" [ngModelOptions]="{standalone: true}" (keyup)="setRate(ins)" appFormatInput>
+					            	</div>
+					            	<div class="w-50">
+					            		<div class="bb p-1">
+					            			<input type="text" class="form-control max-100 mx-auto" placeholder="HSN" [(ngModel)]="ins.hsn_code" [ngModelOptions]="{standalone: true}">	
+					            		</div>
+					            		<div class="p-1">
+					            			<input type="number" class="form-control max-100 mx-auto" placeholder="%" [(ngModel)]="ins.gst_rate" [ngModelOptions]="{standalone: true}" appFormatInput>
+					            		</div>
+					            	</div>
+				            	</div>
+				            </td>
+				            <td width="160" class="text-center" valign="middle">
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br">
+					            		<div class="bb">{{ins.mrp_rate | number: '1.2-2'}}</div>
+				            			<div class="">{{ins.msp_rate | number: '1.2-2'}}</div>
+					            	</div>
+					            	<div class="w-50">
+					            		<div class="bb p-1">
+					            			<input type="number" class="form-control max-70 mx-auto" placeholder="%" [(ngModel)]="ins.sale_gst" [ngModelOptions]="{standalone: true}" appFormatInput>	
+					            		</div>
+					            	</div>
+				            	</div>
+				            </td>
+				            <td width="220" class="text-center" valign="middle">
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br p-1">
+					            		<input [disabled]="(!ins.is_itc)" type="number" class="form-control max-100 mx-auto" placeholder="Rate" [(ngModel)]="ins.itc_rate" [ngModelOptions]="{standalone: true}" appFormatInput>	
+					            	</div>
+					            	<div class="w-50">
+					            		<div class="bb p-1">
+					            			<input [disabled]="(!ins.is_itc)" type="number" class="form-control max-100 mx-auto" placeholder="%" [(ngModel)]="ins.itc_gst_rate" [ngModelOptions]="{standalone: true}" appFormatInput>	
+					            		</div>
+					            		<div class="p-1">
+					            			<input [disabled]="(!ins.is_itc)" type="number" class="form-control max-100 mx-auto" placeholder="HSN" [(ngModel)]="ins.itc_hsncode" [ngModelOptions]="{standalone: true}">	
+					            		</div>
+					            	</div>
+				            	</div>
+				            </td>
+				            <td width="220" class="text-center" valign="middle">
+				            	<div class="d-flex text-center">
+					            	<div class="w-50 br p-1">
+					            		<input [disabled]="(!ins.is_handling_charge)" type="number" class="form-control max-100 mx-auto" placeholder="Rate" [(ngModel)]="ins.handling_charge_rate" [ngModelOptions]="{standalone: true}" appFormatInput>	
+					            	</div>
+					            	<div class="w-50">
+					            		<div class="bb p-1">
+					            			<input [disabled]="(!ins.is_handling_charge)" type="number" class="form-control max-100 mx-auto" placeholder="%" [(ngModel)]="ins.handling_charge_gst" [ngModelOptions]="{standalone: true}" appFormatInput>	
+					            		</div>
+					            		<div class="p-1">
+					            			<input [disabled]="(!ins.is_handling_charge)" type="number" class="form-control max-100 mx-auto" placeholder="HSN" [(ngModel)]="ins.handling_charge_hsn" [ngModelOptions]="{standalone: true}">	
+					            		</div>
+					            	</div>
+				            	</div>
+				            </td>
+				            <td width="150" class="text-center" valign="middle">
+				            	<div class="p-1">
+					            	<select class="form-control mx-auto" [(ngModel)]="ins.source_id" (change)="getMatrix(ins)" [ngModelOptions]="{standalone: true}">
+													<option *ngFor="let itm of purchaseSources" [value]="itm.id">{{itm.name}}</option>
+						    				</select>
+				            	</div>
+				            </td>
+				            <td width="150" class="text-center" valign="middle">
+				            	<div class="bb p-1">
+				            		<input [disabled]="(!ins.extended_warranty)" type="number" [(ngModel)]="ins.extended_warranty_rate"  class="form-control max-70 mx-auto" placeholder="%" [ngModelOptions]="{standalone: true}" appFormatInput>	
+				            		</div>
+				            	<div class="p-1">
+				            		<input [disabled]="(!ins.extended_warranty)" type="number" [(ngModel)]="ins.extended_warranty_yearly_increment"  class="form-control max-70 mx-auto" placeholder="%" [ngModelOptions]="{standalone: true}" appFormatInput>	
+				            	</div>
+				            </td>
+				            <td width="150" class="text-center" valign="middle">
+				            	<div class="bb p-1">
+				            		<input [disabled]="(!ins.sc_rate)" type="number" [(ngModel)]="ins.sc_rate_comprehensive_rate"  class="form-control max-70 mx-auto" placeholder="%" [ngModelOptions]="{standalone: true}" appFormatInput>	
+				            	</div>
+				            	<div class="p-1">
+				            		<input [disabled]="(!ins.sc_rate)" type="number" [(ngModel)]="ins.sc_rate_comprehensive_yearly_increment"  class="form-control max-70 mx-auto" placeholder="%" [ngModelOptions]="{standalone: true}" appFormatInput>	
+				            	</div>
+				            </td>
+				            <td width="150" class="text-center" valign="middle">
+				            	<div class="bb p-1">
+				            		<input [disabled]="(!ins.sc_rate)" type="number" [(ngModel)]="ins.sc_rate_non_comprehensive_rate"  class="form-control max-70 mx-auto" placeholder="%" [ngModelOptions]="{standalone: true}" appFormatInput>	
+				            	</div>
+				            	<div class="p-1">
+				            		<input [disabled]="(!ins.sc_rate)" type="number" [(ngModel)]="ins.sc_rate_non_comprehensive_yearly_increment"  class="form-control max-70 mx-auto" placeholder="%" [ngModelOptions]="{standalone: true}" appFormatInput>	
+				            	</div>
+				            </td>
+				        </tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="w-50 py-3 border-top pl-3 text-left d-inline-block">
+				<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+				<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+			</div>
+			<div class="w-50 py-3 border-top pl-3 text-left d-inline-block">
+				<button data-toggle="tooltip" data-placement="top" title="Scroll Left" *ngIf="horizonalScroll" type="button" (click)="leftClick()" class="mr-2 btn btn-sm btn-save c-save-btn"><i class="fa fa-chevron-left"></i></button>
+				<button data-toggle="tooltip" data-placement="top" title="Scroll Right" *ngIf="horizonalScroll" type="button" (click)="rightClick()" class="mr-2 btn btn-sm btn-save c-save-btn"><i class="fa fa-chevron-right"></i></button>
+			</div>
+		</div>
+    </div>
+	</form>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="isEditModel">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+		<h5 class="modal-title">Edit Product Information</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="isEditModel = false">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		</div>
+		<div class="modal-body" [formGroup]="editForm">
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_source_id"><span class="checkbox-text m-115">Source of Supply</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<select class="form-control" formControlName="source_id" (change)="getDiscountMatrix()">
+				  		<option [value]="null">-- Select --</option>
+						<option *ngFor="let itm of purchaseSources" [value]="itm.id">{{itm.name}}</option>
+    				</select>
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_purchase_rate">
+					<span *ngIf="!singleMode" class="checkbox-text m-115">Purchase Rate, %</span>
+					<span *ngIf="singleMode" class="checkbox-text m-115">Purchase Rate, Rs</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<input *ngIf="!singleMode" type="number" class="form-control" formControlName="purchase_rate"  placeholder="Purchase Rate, %" appFormatInput>
+					<input *ngIf="singleMode" type="number" class="form-control" formControlName="purchase_rate"  placeholder="Purchase Rate" appFormatInput>
+				</div>
+				<!-- <label class="col-md-2 text-right control-label pt2 max-100">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_gst"><span class="checkbox-text m-50">GST</span>
+				</label>
+				<div class="col-md-2 mt8">
+					<input type="number" class="form-control" formControlName="gst"  placeholder="Enter %" appFormatInput>
+				</div> -->
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label pt2">
+					<span class="checkbox-text pr-4">GST:</span><input type="checkbox" (change)="setEnableDisable()" formControlName="is_sale_gst"><span class="checkbox-text m-80">Sale</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="number" class="form-control" formControlName="sale_gst"  placeholder="Enter %" appFormatInput>
+				</div>
+				<label class="col-md-2 text-right control-label pt2 max-100">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_gst"><span class="checkbox-text m-50">Purchase</span>
+				</label>
+				<div class="col-md-2 mt8">
+					<input type="number" class="form-control" formControlName="gst_rate"  placeholder="Enter %" appFormatInput>
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label pt2">
+					<span class="checkbox-text pr-4">ITC Rate:</span><input type="checkbox" (change)="setEnableDisable()" formControlName="is_itc_gst"><span class="checkbox-text m-80">GST</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="number" class="form-control" formControlName="itc_gst"  placeholder="Enter %" appFormatInput>
+				</div>
+				<label class="col-md-2 text-right control-label pt2 max-100">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_itc_hsn"><span class="checkbox-text m-50">HSN</span>
+				</label>
+				<div class="col-md-2 mt8">
+					<input type="number" class="form-control" formControlName="itc_hsn"  placeholder="Enter HSN">
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label pt2">
+					<span class="checkbox-text pr-4">Handling Charge:</span><input type="checkbox" (change)="setEnableDisable()" formControlName="is_handling_gst"><span class="checkbox-text m-80">GST</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="number" class="form-control" formControlName="handling_charge_gst"  placeholder="Enter %" appFormatInput>
+				</div>
+				<label class="col-md-2 text-right control-label pt2 max-100">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_handling_hsn"><span class="checkbox-text m-50">HSN</span>
+				</label>
+				<div class="col-md-2 mt8">
+					<input type="number" class="form-control" formControlName="handling_charge_hsn"  placeholder="Enter HSN">
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label pt2">
+					<span class="checkbox-text pr-4">Addition Warrany:</span><input type="checkbox" (change)="setEnableDisable()" formControlName="is_warranty_addon"><span class="checkbox-text m-80">ADD-ON</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="number" class="form-control" formControlName="warranty_addon"  placeholder="Enter %" appFormatInput>
+				</div>
+				<label class="col-md-2 text-right control-label pt2 max-100">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_warranty_factor"><span class="checkbox-text m-50">I.Factor</span>
+				</label>
+				<div class="col-md-2 mt8">
+					<input type="number" class="form-control" formControlName="warranty_factor"  placeholder="Enter %" appFormatInput>
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label pt2">
+					<span class="checkbox-text pr-4">Comprehensive AMC:</span><input type="checkbox" (change)="setEnableDisable()" formControlName="is_comp_addon"><span class="checkbox-text m-80">ADD-ON</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="number" class="form-control" formControlName="comp_addon"  placeholder="Enter %" appFormatInput>
+				</div>
+				<label class="col-md-2 text-right control-label pt2 max-100">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_comp_factor"><span class="checkbox-text m-50">I.Factor</span>
+				</label>
+				<div class="col-md-2 mt8">
+					<input type="number" class="form-control" formControlName="comp_factor"  placeholder="Enter %" appFormatInput>
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-md-5 text-right control-label pt2">
+					<span class="checkbox-text pr-4">Non-Comprehensive AMC:</span><input type="checkbox" (change)="setEnableDisable()" formControlName="is_non_comp_addon"><span class="checkbox-text m-80">ADD-ON</span>
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="number" class="form-control" formControlName="non_comp_addon"  placeholder="Enter %" appFormatInput>
+				</div>
+				<label class="col-md-2 text-right control-label pt2 max-100">
+					<input type="checkbox" (change)="setEnableDisable()" formControlName="is_non_comp_factor"><span class="checkbox-text m-50">I.Factor</span>
+				</label>
+				<div class="col-md-2 mt8">
+					<input type="number" class="form-control" formControlName="non_comp_factor"  placeholder="Enter %" appFormatInput>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-sm btn-save" (click)="confirmChange()">Change</button>
+		<button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="isEditModel = false">Close</button>
+		</div>
+	</div>
+	</div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="confirmModel">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="confirmModel = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Information of all selected items will change, <b>Do you Want to Change?</b></h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="updateInfo()">Yes</button>
+        <button type="button" class="btn btn-sm btn-close" (click)="confirmModel = false">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

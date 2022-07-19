@@ -1,0 +1,194 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteOrder()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">{{ (createMode) ? '': ''}}{{ (editMode) ? 'EDIT': ''}} Instaltallation Completion Claim Self-Approval</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Claim No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<select class="form-control" formControlName="client_id">
+											<option [value]="null">-- Select Client --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<select class="form-control" formControlName="client_id">
+											<option [value]="null">-- Select Client --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Claim of the day | Time
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" [value]="purchaseForm.value.return_date | date : 'dd/MM/y'" class="form-control" placeholder="Date" id="return_date">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<select class="form-control" formControlName="client_id">
+											<option [value]="null">-- Select Location --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Claimed By
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<select class="form-control" formControlName="client_id">
+											<option [value]="null">-- Select Claimed By --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Project
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text"class="form-control">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-11">
+								<div class="form-group row mr-0">
+									<div class="col-md-12 mt8 text-right">
+										<button type="button" class="btn btn-xs btn-save">Show</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			List: Item Installation
+		    		</div>
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th>Model No.</th>
+						        <th>Prod. Category</th>
+						        <th>Del. Challan</th>
+						        <th>QR Code</th>
+						        <th>Qnty</th>
+						        <th>Supporting Eng.</th>
+						        <th>Start Date</th>
+						        <th>Completion Date</th>
+						        <th>Time</th>
+						        <th>Signature/s</th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr>
+							    	<td class="text-center">1</td>
+							    	<td>Product Category</td>
+							    	<td>Model No</td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Accept</button>
+							<!-- <button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Approve Later</button> -->
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Purchase Rate</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Client
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Client --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Select
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Demand --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

@@ -1,0 +1,53 @@
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Product Life Variable Planner</h6>
+    </div>
+    <div class="card-body p-0">
+    	<form (ngSubmit)="saveRate()">
+	    	<div class="table-content">
+				<div class="right-title float-right text-right pointer my-2">
+					<button type="button" (click)="addDis()" class="btn btn-xs btn-close"><i class="fa fa-plus"></i> ADD</button>
+				</div>
+				<div class="table-responsive">
+			        <table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+					    <thead>
+					        <tr>
+					            <th width="60" class="text-center" valign="middle">Srl</th>
+					            <th width="250" class="text-center" valign="middle">Life, Days of Span</th>
+					            <th width="150" class="text-center" valign="middle">Prod. Life Variable</th>
+					            <th width="50" class="text-center" valign="middle"><i class="fa fa-bolt tooltips"></i></th>
+					        </tr>
+					    </thead>
+					    <tbody>
+						    <tr *ngFor="let ins of installations;let i = index;">
+						        <td width="60" class="text-center">{{i + 1}}</td>
+						        <td width="250">
+						        	<div class="d-flex">
+							        	<div class="w-40" [class.form-invalid]="invalidForm && isValid(ins.from_day)">
+										  	<input type="number" class="form-control text-center" [(ngModel)]="ins.from_day" [ngModelOptions]="{standalone: true}" placeholder="Supply Life From Day" appFormatInput>
+										  </div>
+										<div class="w-10">
+										  	<div class="input-group-append rounded-0">
+										    	<span class="input-group-text custom-info rounded-0">To</span>
+										  	</div>
+										</div>
+										<div class="w-40" [class.form-invalid]="invalidForm && isValid(ins.to_day)">
+							        		<input type="number" class="form-control text-center" [(ngModel)]="ins.to_day" [ngModelOptions]="{standalone: true}" placeholder="Supply Life To Day" appFormatInput>
+										</div>
+						        	</div>
+						        </td>
+						        <td width="150" [class.form-invalid]="invalidForm && isValid(ins.variable)"><input type="number" class="form-control text-center" [(ngModel)]="ins.variable" [ngModelOptions]="{standalone: true}" placeholder="Enter Variable" appFormatInput></td>
+						        <td width="50" class="text-center"><i *ngIf="installations.length > 1" class="fa fa-trash text-danger pointer" (click)="removeInstallations(i)"></i></td>
+						    </tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="w-100 py-3 text-center border-top pl-3">
+				<!-- <button type="button" class="mr-2 btn btn-sm btn-close">Close</button> -->
+				<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+			</div>
+		</form>
+    </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

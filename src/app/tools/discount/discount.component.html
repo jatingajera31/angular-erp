@@ -1,0 +1,66 @@
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Discount Slab Planner</h6>
+    </div>
+    <div class="card-body p-0">
+    	<form (ngSubmit)="saveRate()">
+    	<div class="table-content" [formGroup]="rateForm">
+    		<div class="card-body-scroll">
+				<div class="table-responsive w-400 p-2">
+			        <table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+					    <thead>
+					        <tr>
+					            <th class="text-center" valign="middle" width="50">Sr.</th>
+					            <th class="text-center" valign="middle">Discount Type</th>
+					            <th class="text-center" valign="middle">Disc. On Profit-Margin, %</th>
+					        </tr>
+					    </thead>
+					    <tbody>
+					    	<tr>
+					    		<td class="text-center">1</td>
+						        <td class="text-center">No Discount</td>
+						        <td class="text-center">
+						        	{{rateForm.value.standard_discount}}
+						        </td>
+						    </tr>
+						    <tr>
+						    	<td class="text-center">2</td>
+						        <td class="text-center">Executive</td>
+						        <td class="text-center" [class.invalid-box]="rateForm.controls.executive_discount.invalid" [class.form-invalid]="invalidForm && rateForm.controls.executive_discount.invalid">
+						        	<input type="number" class="form-control text-center max-100 mx-auto" formControlName="executive_discount" appFormatInput>
+						        </td>
+						    </tr>
+						    <tr>
+						    	<td class="text-center">3</td>
+						        <td class="text-center">Manager</td>
+						        <td class="text-center" [class.invalid-box]="rateForm.controls.manager_discount.invalid" [class.form-invalid]="invalidForm && rateForm.controls.manager_discount.invalid">
+						        	<input type="number" class="form-control text-center max-100 mx-auto" formControlName="manager_discount" appFormatInput>
+						        </td>
+						    </tr>
+						    <tr>
+						    	<td class="text-center">4</td>
+						        <td class="text-center">Project</td>
+						        <td class="text-center" [class.invalid-box]="rateForm.controls.project_discount.invalid" [class.form-invalid]="invalidForm && rateForm.controls.project_discount.invalid">
+						        	<input type="number" class="form-control text-center max-100 mx-auto" formControlName="project_discount" appFormatInput>
+						        </td>
+						    </tr>
+						    <tr>
+						        <td colspan="3">
+						        	<label class="m-0 pt-1">
+										<input type="checkbox" formControlName="special_dicount"><span class="checkbox-text">Recognize Special Disount</span>
+									</label>	
+						        </td>
+						    </tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="w-100 py-3 text-center border-top pl-3">
+				<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+				<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+			</div>
+		</div>
+		</form>
+    </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

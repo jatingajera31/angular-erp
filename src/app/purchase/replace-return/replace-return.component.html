@@ -1,0 +1,548 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">Replace (Purchase) Return</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-7">
+								<div class="form-group row mr-0">
+									<label class="col-md-6 text-right control-label">
+										<span class="text-danger">*</span>Item Returning Priority
+									</label>
+									<div class="col-md-6 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.return_priority.invalid" [class.invalid-box]="purchaseForm.controls.return_priority.invalid">
+										<input type="text" *ngIf="!isNotValid(purchaseForm.value.return_priority)" class="form-control" disabled [value]="purchaseForm.value.return_priority">
+										<select  *ngIf="isNotValid(purchaseForm.value.return_priority)" class="form-control" formControlName="return_priority" (change)="changePriority();">
+											<option [value]="null">-- Select Item Returning Priority --</option>
+											<option value="Before Replacement Received">Before Replacement Received</option>
+											<option value="After Replacement Received">After Replacement Received</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+							</div>
+							<div class="col-md-7" [class.disable-content-v]="(isNotValid(purchaseForm.value.return_priority) || editMode)">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Supplier
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.supplier_id.invalid" [class.invalid-box]="purchaseForm.controls.supplier_id.invalid">
+										<select class="form-control" formControlName="supplier_id" (change)="getReplaceReturnNo();getReplaceDemand();getReplaceReceipt();setInitDate();getAccountPerson(purchaseForm.value.supplier_id)">
+											<option [value]="null">-- Supplier --</option>
+											<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5 text-right">
+							</div>
+							<div class="col-md-7">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Replace (Purchase) Return No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.replace_return_no.invalid" [class.invalid-box]="purchaseForm.controls.replace_return_no.invalid">
+										<input type="text" disabled class="form-control" [value]="purchaseForm.value.replace_return_no" placeholder="Replace Return No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Date | Time
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.return_date.invalid" [class.invalid-box]="purchaseForm.controls.return_date.invalid">
+										<input type="text" disabled [value]="purchaseForm.value.return_date | date: 'dd/MM/y'" class="form-control" placeholder="Date">
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pl-0 mt8">
+										<div class="input-group" [class.form-invalid]="invalidForm && purchaseForm.controls.return_time.invalid" [class.invalid-box]="purchaseForm.controls.return_time.invalid">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input type="text" class="form-control" disabled [value]="purchaseForm.value.return_time" id="return_time" placeholder="Time">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-7" [class.disable-content-v]="(isNotValid(purchaseForm.value.supplier_id) || editMode)" *ngIf="purchaseForm.value.return_priority != 'After Replacement Received'">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Replace (Purchase) Demand No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.replace_demand_id.invalid" [class.invalid-box]="purchaseForm.controls.replace_demand_id.invalid">
+										<select class="form-control" formControlName="replace_demand_id" (change)="showReplaceDemand()">
+											<option [value]="null">-- Select Replace Demand --</option>
+    									<option *ngFor="let itm of ReplaceDemands" [value]="itm.id">{{itm.replace_no}} | {{itm.exchange_date | date: 'dd/MM/y'}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-7" [class.disable-content-v]="(isNotValid(purchaseForm.value.supplier_id) || editMode)" *ngIf="purchaseForm.value.return_priority == 'After Replacement Received'">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Replace (Purchase) Receipt No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.replace_receipt_id.invalid" [class.invalid-box]="purchaseForm.controls.replace_receipt_id.invalid">
+										<select class="form-control" formControlName="replace_receipt_id" (change)="showReplaceReceipt()">
+											<option [value]="null">-- Select Replace Receipt --</option>
+    									<option *ngFor="let itm of ReplaceReceipts" [value]="itm.id">{{itm.replace_receipt_no}} | {{itm.return_date | date: 'dd/MM/y'}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group row mr-0">
+									<label class="col-md-4 text-right control-label">
+										Date | Time
+									</label>
+									<div class="col-md-6 mt8">
+										<input type="text" class="form-control" value="{{purchaseForm.value.exchange_date | date: 'dd/MM/y'}} | {{purchaseForm.value.exchange_time}}" placeholder="Replace Demand Date" disabled>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			Replace (Purchase) Demand Item
+		    		</div>
+						<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all" *ngIf="purchaseForm.value.return_priority != 'After Replacement Received'">
+								<thead>
+									<tr class="text-center">
+							      <td colspan="6" class="bg-white">
+							      	<span>Replace (Purchase) Demand Item</span>
+							      </td>
+							      <td colspan="4" class="bg-white">
+							      	<span>Replace (Purchase) Return Item</span>
+							      </td>
+								  </tr>
+							    <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th>Model No.</th>
+						        <th width="200">Prod. Category</th>
+						        <th width="145">Pur. Inv | Pur. Date</th>
+						        <th>Qty</th>
+						        <th>QR Code</th>
+						        <th class="bg-warning">
+						        	<span>QR Code, Returned</span>
+						        </th>
+						        <th class="bg-warning">MAC | SR No.</th>
+						        <th class="bg-warning">
+						        	<span>Returned?</span>
+						        </th>
+						        <th class="bg-secondary" width="80">Action</th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let prod of purchaseDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td class="text-center">{{prod.product_name}}</td>
+										<td>{{prod.description}}</td>
+										<td class="text-center">{{prod.invoice_no}} <span *ngIf="prod.invoice_date">| {{prod.invoice_date | date : 'dd/MM/y'}}</span></td>
+										<td class="text-center">{{prod.qty}}</td>
+										<td class="text-center">{{prod.qr_code || 0}}</td>
+										<td class="text-center">{{prod.return_qr_code || 0}}</td>
+										<td class="text-center">{{prod.mac_address}} <span *ngIf="prod.serial_no">| {{prod.serial_no}}</span></td>
+										<td class="text-center">{{(prod.is_return == '1') ? 'YES': 'NO'}}</td>
+							    	<td class="text-center position-relative td-action">
+							    		<i class="fas fa-edit" [class.text-info]="(prod.is_return == 1)" (click)="editRow(prod, i);"></i>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all" *ngIf="purchaseForm.value.return_priority == 'After Replacement Received'">
+							  <thead>
+									<tr class="text-center">
+							      <td colspan="7" class="bg-white">
+							      	<span>Replace (Purchase) Return Item</span>
+							      </td>
+							      <td colspan="3" class="bg-white">
+							      	<span>Replace (Purchase) Received Item</span>
+							      </td>
+								  </tr>
+							    <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th>Model No.</th>
+						        <th width="200">Prod. Category</th>
+						        <th width="145">Pur. Inv | Pur. Date</th>
+						        <th>Qty</th>
+						        <th>QR Code</th>
+						        <th>
+						        	<span>Returned?</span>
+						        </th>
+						        <th class="bg-warning">
+						        	<span>QR Code, Received</span>
+						        </th>
+						        <th class="bg-warning">MAC | SR No.</th>
+						        <th class="bg-secondary" width="80">Action</th>
+							    </tr>
+								</thead>
+							  <tbody >
+							    <tr *ngFor="let prod of purchaseDetails;let i = index;">
+							    	<td class="text-center">{{ (i + 1) }}</td>
+							    	<td class="text-center"><span *ngIf="prod.is_return == 1">{{prod.product_name}}</span></td>
+										<td><span *ngIf="prod.is_return == 1">{{prod.description}}</span></td>
+										<td class="text-center"><span *ngIf="prod.is_return == 1">{{prod.invoice_no}} <span *ngIf="prod.invoice_date">| {{prod.invoice_date | date : 'dd/MM/y'}}</span></span></td>
+										<td class="text-center"><span *ngIf="prod.is_return == 1">{{prod.qty}}</span></td>
+										<td class="text-center"><span *ngIf="prod.is_return == 1">{{prod.return_qr_code || 0}}</span></td>
+										<td class="text-center">{{(prod.is_return == '1') ? 'YES': 'NO'}}</td>
+										<td class="text-center">{{prod.purchase_qr_code || 0}}</td>
+										<td class="text-center">{{prod.purchase_mac_address}} <span *ngIf="prod.serial_no">| {{prod.purchase_serial_no}}</span></td>
+							    	<td class="text-center position-relative td-action">
+							    		<i class="fas fa-edit" [class.text-info]="(prod.is_return == 1)" (click)="editRow(prod, i);"></i>
+							    	</td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="row m-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>No. of Cartons
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.no_of_cartons.invalid" [class.invalid-box]="purchaseForm.controls.no_of_cartons.invalid">
+										<input type="text" formControlName="no_of_cartons" class="form-control" placeholder="No. of Cartons">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Transporter Name
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.transporter_id.invalid" [class.invalid-box]="purchaseForm.controls.transporter_id.invalid">
+										<div class="input-group">
+									  	<select class="form-control" formControlName="transporter_id">
+									  		<option [value]="null">-- Select Transporter --</option>
+												<option *ngFor="let itm of transportList" [value]="itm.id">{{itm.name}}</option>
+					    				</select>
+										  <div class="input-group-append">
+										    <span class="input-group-text custom-info" (click)="showDeliveredModal = true">ADD</span>
+										  </div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Docket No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.docket_no.invalid" [class.invalid-box]="purchaseForm.controls.docket_no.invalid">
+										<input type="text" formControlName="docket_no" class="form-control" placeholder="Docket No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Dispatch Date.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.dispatch_date.invalid" [class.invalid-box]="purchaseForm.controls.dispatch_date.invalid">
+										<input type="text" formControlName="t_dispatch_date" class="form-control" placeholder="Dispatch Date" id="dispatch_date" (change)="changeDate('t_dispatch_date', 'dispatch_date')">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Your Contact Person.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.your_contact_person.invalid" [class.invalid-box]="purchaseForm.controls.your_contact_person.invalid">
+										<select class="form-control" formControlName="your_contact_person" (change)="changePerson()">
+											<option [value]="null">-- Select Contact Person --</option>
+    									<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Contact No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.contact_no.invalid" [class.invalid-box]="purchaseForm.controls.contact_no.invalid">
+										<input type="text" formControlName="contact_no" class="form-control" placeholder="Contact No.">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Email ID.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.email_id.invalid" [class.invalid-box]="purchaseForm.controls.email_id.invalid">
+										<input type="text" formControlName="email_id" class="form-control" placeholder="Email ID.">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" [disabled]="enableSave()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Exchagne Demand</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Exchagne Demand?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Replace (Purchase) Return</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-4 text-right control-label">
+								<span class="text-danger">*</span>Supplier
+							</label>
+							<div class="col-md-8">
+								<select class="form-control" [(ngModel)]="clientId" (change)="getReplaceReturn()">
+									<option [value]="null">-- Select Supplier --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-4 text-right control-label">
+								<span class="text-danger">*</span>Select
+							</label>
+							<div class="col-md-8">
+								<select class="form-control" [(ngModel)]="demandId">
+									<option [value]="null">-- Select Demand --</option>
+									<option *ngFor="let itm of ReplaceReturns" [value]="itm.id">{{itm.replace_return_no}} | {{itm.return_date | date : 'dd/MM/y'}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" [disabled]="(isNotValid(clientId) || isNotValid(demandId))" class="btn btn-sm btn-save" (click)="showData();">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showRemoveModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showRemoveModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are you sure to delete this product?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showRemoveModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="removeProduct()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showConfirmReturn">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Gentleman ! </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showConfirmReturn = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Replace (Purchase) Return is not done for few item/s, are you sure to Save and close this transaction?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showConfirmReturn = false">No</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="skipConfirmReturn = true;showConfirmReturn = false;saveInfo()">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeliveredModal">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+		<h5 class="modal-title">Transporter</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeliveredModal = false">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		</div>
+		<div class="modal-body">
+		<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Transporter Name
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="TransportName" [(ngModel)]="TransportName" placeholder="Transporter Name">
+			</div>
+		</div>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-sm btn-save" (click)="saveDelivered()">Save</button>
+		<button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeliveredModal = false">Close</button>
+		</div>
+	</div>
+	</div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddItemModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content" [formGroup]="prodForm">
+      <div class="modal-header">
+        <h5 class="modal-title">Replace (Purchase) Return</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeItemModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						<span class="text-danger">*</span>Enter QR Code
+					</label>
+					<div class="col-md-3" [class.form-invalid]="invalidForm && prodForm.controls.qr_code.invalid">
+						<input type="text" class="form-control" formControlName="qr_code" placeholder="Enter QR Code" (change)="getProductQrCode()">
+					</div>
+					<div class="col-md-3">
+						<button type="button" class="btn btn-warning btn-xs text-dark" (click)="getProductQrCode()">ADD PRODUCT</button>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						Prod. Group
+					</label>
+					<div class="col-md-3">
+						<input  *ngIf="!isZero" type="text" disabled class="form-control" [value]="prodForm.value.group_name" placeholder="Prod. Group">
+						<select *ngIf="isZero" class="form-control" formControlName="group_id" name="group_id" (change)="getModels()">
+							<option [value]="null">-- Select Prod. Group --</option>
+							<option *ngFor="let itm of productGroups" [value]="itm.id">{{itm.name}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						Model No
+					</label>
+					<div class="col-md-3">
+						<input  *ngIf="!isZero" type="text" disabled class="form-control" [value]="prodForm.value.product_name" placeholder="Model No">
+						<select *ngIf="isZero" class="form-control" formControlName="product_id" name="product_id" (change)="changeModel()">
+							<option [value]="null">-- Select Model No. --</option>
+							<option [class.d-none]="(itm.qr_code)" *ngFor="let itm of products" [value]="itm.id">{{itm.model_no}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						Prod. Description
+					</label>
+					<div class="col-md-9">
+						<textarea class="form-control" disabled class="form-control" [innerHTML]="prodForm.value.description" rows="2" placeholder="Enter Product Description"></textarea>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						Return Qnty<span class="text-danger">*</span>
+					</label>
+					<div class="col-md-3" [class.form-invalid]="invalidForm && prodForm.controls.qty.invalid">
+						<input *ngIf="isZero" type="text" class="form-control" formControlName="qty" placeholder="Enter Quantity">
+						<input *ngIf="!isZero" disabled type="text" class="form-control" [value]="prodForm.value.qty" placeholder="Enter Quantity">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						Warranty
+					</label>
+					<div class="col-md-3">
+						<span *ngIf="prodForm.value.warranty_date">{{ checkWar(prodForm.value.warranty_date) }} | {{prodForm.value.warranty_date | date : 'dd/MM/y'}}</span>
+						<span *ngIf="!prodForm.value.warranty_date && prodForm.value.product_id">Warranty not applicable</span>
+					</div>
+				</div>
+				<div class="form-group row mr-0" *ngIf="prodForm.value.qr_code != '0'">
+  				<label class="col-md-3 text-right control-label">
+						Serial No.
+					</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" disabled [value]="prodForm.value.serial_no" placeholder="Enter Sr No.">
+					</div>
+					<label class="col-md-3 text-right control-label">
+						MAC Address
+					</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" disabled [value]="prodForm.value.mac_address" placeholder="Enter MAC Address">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						Purchase Inv No.
+					</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" disabled [value]="prodForm.value.invoice_no" placeholder="Purchase Inv No">
+					</div>
+					<label class="col-md-3 text-right control-label">
+						Pur. Date
+					</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" disabled [value]="prodForm.value.return_date | date : 'dd/MM/y'" placeholder="Pur. Date"  id="return_date">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+  				<label class="col-md-3 text-right control-label">
+						<span class="text-danger">*</span>Problem Found
+					</label>
+					<div class="col-md-9" [class.form-invalid]="invalidForm && prodForm.controls.problem.invalid">
+						<textarea class="form-control" rows="2" formControlName="problem" placeholder="Enter Problem"></textarea>
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-undo" data-dismiss="modal" (click)="clearItem()">Undo</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="closeItemModal()">Close</button>
+        <button type="button" class="btn btn-sm btn-save"  data-dismiss="modal" (click)="addItem()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

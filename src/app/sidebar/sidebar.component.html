@@ -1,0 +1,419 @@
+<div class="navbar-nav sidebar accordion no-print">  
+  <a class="sidebar-brand d-flex align-items-center justify-content-center p-0" style="height: 50px;" routerLink="/dashboard">
+    <img src="./assets/images/logo.png" width="35">
+  </a>
+  <ul class="nav nav-tabs nav-justified nav-sidebar">
+    <li class="nav-item" [class.active]="(selectedTab == 1)" (click)="selectedTab = 1"><i class="fa fa-sitemap"></i></li>
+    <li class="nav-item" [class.active]="(selectedTab == 2)" (click)="selectedTab = 2"><i class="fa fa-handshake"></i></li>
+    <li class="nav-item" [class.active]="(selectedTab == 3)" (click)="selectedTab = 3"><i class="fa fa-phone"></i></li>
+    <li class="nav-item" [class.active]="(selectedTab == 4)" (click)="selectedTab = 4"><i class="fa fa-chart-bar"></i></li>
+  </ul>
+  <ul class="navbar-nav accordion no-print custom-sidebar-items" id="accordionSidebar" *ngIf="selectedTab == 1">
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu1" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu1">
+          <i class="fa fa-calendar-check mr-2"></i>
+          <span>Action List</span>
+        </a>
+        <div id="collapseMenu1" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/actions" routerLinkActive="is-active">Action List</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu2" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu2">
+          <i class="fa fa-briefcase mr-2"></i>
+          <span>Accounts</span>
+        </a>
+        <div id="collapseMenu2" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/account/view" routerLinkActive="is-active">Account</a>
+            <a class="collapse-item py-1" routerLink="/account/info" routerLinkActive="is-active">Account's Info</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu3" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu3">
+          <i class="fa fa-shopping-basket mr-2"></i>
+          <span>Product & Service</span>
+        </a>
+        <div id="collapseMenu3" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/product-and-service/product" routerLinkActive="is-active">Product</a>
+            <a class="collapse-item py-1" routerLink="/product-and-service/service" routerLinkActive="is-active">Service</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu4" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu4">
+          <i class="fa fa-users mr-2"></i>
+          <span>Executive</span>
+        </a>
+        <div id="collapseMenu4" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/executive/executive-profile" routerLinkActive="is-active">Executive Profile</a>
+            <a class="collapse-item py-1" routerLink="/executive/executive-access-rights" routerLinkActive="is-active">Executive Access Rights</a>
+            <a class="collapse-item py-1" routerLink="/executive/password-settings" routerLinkActive="is-active">Password Settings</a>
+            <a class="collapse-item py-1" routerLink="/executive/profile-photo" routerLinkActive="is-active">Profile Photo</a>
+          </div>
+        </div>
+      </li>
+      <!-- <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu5" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu5">
+          <i class="fa fa-calendar mr-2"></i>
+          <span>Executive On Duty</span>
+        </a>
+        <div id="collapseMenu5" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/executive-duty/duty-assignment" routerLinkActive="is-active">Duty Assignment</a>
+          </div>
+        </div>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu6" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu6">
+          <i class="fa fa-sliders-h mr-2"></i>
+          <span>Tools</span>
+        </a>
+        <div id="collapseMenu6" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/tools/yield-on-installation" routerLinkActive="is-active">Yield On Installation</a>
+            <a class="collapse-item py-1" routerLink="/tools/extended-warranty-planner" routerLinkActive="is-active">Additional Warranty Planner</a>
+            <a class="collapse-item py-1" routerLink="/tools/service-contract-planner" routerLinkActive="is-active">Service Contract (SC) Planner</a>
+            <a class="collapse-item py-1" routerLink="/tools/distance-variable" routerLinkActive="is-active">Distance Variable Planner</a>
+            <a class="collapse-item py-1" routerLink="/tools/supply-life-variable" routerLinkActive="is-active">Product-Life Variable Planner</a>
+            <a class="collapse-item py-1" routerLink="/tools/sales-rate-editor" routerLinkActive="is-active">Sales Rate Editor</a>
+            <a class="collapse-item py-1" routerLink="/tools/discount-type-master" routerLinkActive="is-active">Discount Slab Planner</a>
+            <a class="collapse-item py-1" routerLink="/tools/sales-rate-discount-matrix" routerLinkActive="is-active">Sales Rate Discount Planner</a>
+            <a class="collapse-item py-1" routerLink="/tools/currency" routerLinkActive="is-active">Currency</a>
+            <a class="collapse-item py-1" routerLink="/tools/utility" routerLinkActive="is-active">Utility</a>
+            <!-- <a class="collapse-item py-1" routerLink="/tools/configuration" routerLinkActive="is-active">Configuration</a>
+            <a class="collapse-item py-1" routerLink="/tools/configuration-setting" routerLinkActive="is-active">Configuration Setting</a> -->
+          </div>
+        </div>
+      </li>
+  </ul>
+  <ul class="navbar-nav accordion no-print custom-sidebar-items" id="accordionSidebar" *ngIf="selectedTab == 2">
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu1" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu1">
+          <i class="fa fa-cart-plus mr-2"></i>
+          <span>Purchase</span>
+        </a>
+        <div id="collapseMenu1" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/purchase/purchase-order" routerLinkActive="is-active">Purchase Order</a>
+            <a class="collapse-item py-1" routerLink="/purchase/pi-information" routerLinkActive="is-active">PI Information</a>
+            <a class="collapse-item py-1" routerLink="/purchase/dispatch-detail" routerLinkActive="is-active">Dispatch Detail</a>
+            <a class="collapse-item py-1" routerLink="/purchase/purchase" routerLinkActive="is-active">Goods Received Note (GRN)</a>
+            <a class="collapse-item py-1" routerLink="/purchase/purchase-approval" routerLinkActive="is-active">GRN Approval <span *ngIf="count > 0">({{count}})</span></a>
+            <a class="collapse-item py-1" routerLink="/purchase/inventory-storebook" routerLinkActive="is-active">Inventory-StoreBook</a>
+            <a class="collapse-item py-1" routerLink="/purchase/label-print" routerLinkActive="is-active">Label Print</a>
+            <a class="collapse-item py-1" routerLink="/purchase/purchase-rate" routerLinkActive="is-active">Purchase Rate</a>
+            <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Purchase Return</a>
+            <a class="collapse-item py-1" routerLink="/purchase/purchase-return-dispatch" routerLinkActive="is-active">Purchase Return Dispatch</a>
+            <a class="collapse-item py-1" routerLink="/purchase/replace-demand" routerLinkActive="is-active">Replace (Purchase) Demand</a>
+            <a class="collapse-item py-1" routerLink="/purchase/replace-demand-approval" routerLinkActive="is-active">Replace (Purchase) Demand Approval</a>
+            <a class="collapse-item py-1" routerLink="/purchase/replace-demand-notification" routerLinkActive="is-active">Replace (Purchase) Notification</a>
+            <a class="collapse-item py-1" routerLink="/purchase/replace-return" routerLinkActive="is-active">Replace (Purchase) Return</a>
+            <a class="collapse-item py-1" routerLink="/purchase/replace-receipt" routerLinkActive="is-active">Replace (Purchase) Receipt</a>
+            <a class="collapse-item py-1" routerLink="/purchase/import" routerLinkActive="is-active">Import</a>
+            <a class="collapse-item py-1" routerLink="/purchase/purchase-notification" routerLinkActive="is-active">Purchase Notification</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu2" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu2">
+          <i class="fa fa-chart-line mr-2"></i>
+          <span>Sales</span>
+        </a>
+        <div id="collapseMenu2" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/sales/quotation" routerLinkActive="is-active">Quotation</a>
+            <a class="collapse-item py-1" routerLink="/sales/pre-sales-demand" routerLinkActive="is-active">Pre Sales Demand</a>
+            <a class="collapse-item py-1" routerLink="/sales/pre-sales-demand-approval" routerLinkActive="is-active">Pre Sales Demand Approval</a>
+            <a class="collapse-item py-1" routerLink="/sales/delivery-challan" routerLinkActive="is-active">Delivery Challan</a>
+            <a class="collapse-item py-1" routerLink="/sales/delivery-get-pass" routerLinkActive="is-active">Delivery Gate Pass</a>
+            <a class="collapse-item py-1" routerLink="/sales/sales-purchase-paid" routerLinkActive="is-active">Sales-Purchase Paid</a>
+            <a class="collapse-item py-1" routerLink="/sales/delivery-challan-recovery" routerLinkActive="is-active">Delivery Challan Recovery</a>
+            <a class="collapse-item py-1" routerLink="/sales/discount-manager" routerLinkActive="is-active">Discount-Manager</a>
+            <a class="collapse-item py-1" routerLink="/sales/discount-project" routerLinkActive="is-active">Discount-Project</a>
+            <a class="collapse-item py-1" routerLink="/sales/sales-collection" routerLinkActive="is-active">Sales Collection</a>
+            <a class="collapse-item py-1" routerLink="/sales/delivery-challan-undelivered" routerLinkActive="is-active">Delivery challan undelivered</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu3" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu3">
+          <i class="fa fa-truck mr-2"></i>
+          <span>Sales Return</span>
+        </a>
+        <div id="collapseMenu3" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/sales-return/demand" routerLinkActive="is-active">Sales Return Demand</a>
+            <a class="collapse-item py-1" routerLink="/sales-return/demand-approval" routerLinkActive="is-active">Sales Return Demand Approval</a>
+            <a class="collapse-item py-1" routerLink="/sales-return/received" routerLinkActive="is-active">Sales Return Received</a>
+            <a class="collapse-item py-1" routerLink="/sales-return/updates" routerLinkActive="is-active">Sales Return Updates</a>
+            <a class="collapse-item py-1" routerLink="/sales-return/demand-disapproval" routerLinkActive="is-active">Sales Return Demand Disapproval</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu4" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu4">
+          <i class="fa fa-tv mr-2"></i>
+          <span>Demo</span>
+        </a>
+        <div id="collapseMenu4" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/demo/demand" routerLinkActive="is-active">Demo Demand</a>
+            <a class="collapse-item py-1" routerLink="/demo/demand-approval" routerLinkActive="is-active">Demo Demand Approval <span *ngIf="demo.approval > 0">({{demo.approval}})</span></a>
+            <a class="collapse-item py-1" routerLink="/demo/dispatch" routerLinkActive="is-active">Demo Dispatch <span *ngIf="demo.dispatch > 0">({{demo.dispatch}})</span></a>
+            <a class="collapse-item py-1" routerLink="/demo/return-receipt" routerLinkActive="is-active">Demo Return Receipt <span *ngIf="demo.dispatch_return > 0">({{demo.dispatch_return}})</span></a>
+            <a class="collapse-item py-1" routerLink="/demo/demand-disapproval" routerLinkActive="is-active">Demo Demand Disapproval <span *ngIf="demo.disapproval > 0">({{demo.disapproval}})</span></a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu5" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu5">
+          <i class="fab fa-stripe-s mr-2"></i>
+          <span>Sample</span>
+        </a>
+        <div id="collapseMenu5" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/sample/request-demand" routerLinkActive="is-active">Sample Request Demand</a>
+            <a class="collapse-item py-1" routerLink="/sample/request-demand-approval" routerLinkActive="is-active">Samp. Req. Demand Approval <span *ngIf="sample.approval > 0">({{sample.approval}})</span></a>
+            <a class="collapse-item py-1" routerLink="/sample/dispatch" routerLinkActive="is-active">Sample Dispatch <span *ngIf="sample.dispatch > 0">({{sample.dispatch}})</span></a>
+            <a class="collapse-item py-1" routerLink="/sample/return-receipt" routerLinkActive="is-active">Sample Return Receipt <span *ngIf="sample.dispatch_return > 0">({{sample.dispatch_return}})</span></a>
+            <a class="collapse-item py-1" routerLink="/sample/request-demand-disapproval" routerLinkActive="is-active">Samp. Req. Demand Disapproval <span *ngIf="sample.disapproval > 0">({{sample.disapproval}})</span></a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu6" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu6">
+          <i class="fa fa-share mr-2"></i>
+          <span>Spare-Service</span>
+        </a>
+        <div id="collapseMenu6" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/spare-service/demand" routerLinkActive="is-active">Spare-Service Demand</a>
+            <a class="collapse-item py-1" routerLink="/spare-service/demand-approval" routerLinkActive="is-active">Spare-Service Demand Approval <span *ngIf="spare.approval > 0">({{spare.approval}})</span></a>
+            <a class="collapse-item py-1" routerLink="/spare-service/dispatch" routerLinkActive="is-active">Spare-Service Dispatch <span *ngIf="spare.dispatch > 0">({{spare.dispatch}})</span></a>
+            <a class="collapse-item py-1" routerLink="/spare-service/return-receipt" routerLinkActive="is-active">Spare-Service Return Receipt <span *ngIf="spare.dispatch_return > 0">({{spare.dispatch_return}})</span></a>
+            <a class="collapse-item py-1" routerLink="/spare-service/demand-disapproval" routerLinkActive="is-active">Spare-Service Demand Disapproval <span *ngIf="spare.disapproval > 0">({{spare.disapproval}})</span></a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu7" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu7">
+          <i class="fa fa-retweet mr-2"></i>
+          <span>Exchange</span>
+        </a>
+        <div id="collapseMenu7" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/exchange/demand" routerLinkActive="is-active">Exchange Demand</a>
+            <a class="collapse-item py-1" routerLink="/exchange/demand-approval" routerLinkActive="is-active">Exchange Demand Approval</a>
+            <a class="collapse-item py-1" routerLink="/exchange/dispatch" routerLinkActive="is-active">Exchange Dispatch</a>
+            <a class="collapse-item py-1" routerLink="/exchange/return-in" routerLinkActive="is-active">Exchange Return IN</a>
+            <a class="collapse-item py-1" routerLink="/exchange/demand-disapproval" routerLinkActive="is-active">Exchange Demand Disapproval</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu8" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu8">
+          <i class="fa fa-cubes mr-2"></i>
+          <span>Scrap Item</span>
+        </a>
+        <div id="collapseMenu8" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/product-scrap/scrap-item-challan" routerLinkActive="is-active">Scrap Item Request</a>
+            <a class="collapse-item py-1" routerLink="/product-scrap/scrap-item-challan-approval" routerLinkActive="is-active">Scrap Item Request Approval</a>
+            <a class="collapse-item py-1" routerLink="/product-scrap/scrap-item" routerLinkActive="is-active">Scrap Item</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu9" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu9">
+          <i class="fa fa-minus-circle mr-2"></i>
+          <span>Item Lost</span>
+        </a>
+        <div id="collapseMenu9" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/product-missing/item-lost" routerLinkActive="is-active">Item Loss</a>
+            <a class="collapse-item py-1" routerLink="/product-missing/item-lost-approval" routerLinkActive="is-active">Item Loss Approval</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu10" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu10">
+          <i class="fa fa-wrench mr-2"></i>
+          <span>Installation</span>
+        </a>
+        <div id="collapseMenu10" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/installation/installation-planning" routerLinkActive="is-active">Installation Planning</a>
+            <a class="collapse-item py-1" routerLink="/installation/item-installation" routerLinkActive="is-active">Item Installation Claim</a>
+            <a class="collapse-item py-1" routerLink="/installation/item-installed-approval" routerLinkActive="is-active">Item Installed Approval</a>
+            <a class="collapse-item py-1" routerLink="/installation/installation-completion-claim-verification" routerLinkActive="is-active">Completion Claim Verification</a>
+            <a class="collapse-item py-1" routerLink="/installation/installation-completion-claim-self-approval" routerLinkActive="is-active">Completion Claim Self-Approval</a>
+            <a class="collapse-item py-1" routerLink="/installation/project-pre-completion" routerLinkActive="is-active">Project Pre-Completion</a>
+            <a class="collapse-item py-1" routerLink="/installation/project-completion" routerLinkActive="is-active">Project Completion</a>
+            <a class="collapse-item py-1" routerLink="/installation/project-completion-approval" routerLinkActive="is-active">Project Completion Approval</a>
+            <a class="collapse-item py-1" routerLink="/installation/project-completion-document-generation" routerLinkActive="is-active">Project Completion Document Generation</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed text-white" href="#collapseMenu11" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu11">
+          <i class="fa fa-thumbs-up mr-2"></i>
+          <span>Verification</span>
+        </a>
+        <div id="collapseMenu11" class="collapse m-0" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="collapse-inner p-0 m-0">
+            <a class="collapse-item py-1" routerLink="/verification/payments-collections" routerLinkActive="is-active">Verification-Payments & Collections</a>
+          </div>
+        </div>
+      </li>
+  </ul>
+  <ul class="navbar-nav accordion no-print custom-sidebar-items" id="accordionSidebar" *ngIf="selectedTab == 3">
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu1" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu1">
+        <i class="fa fa-external-link-square-alt mr-2"></i>
+        <span>Service Call Management</span>
+      </a>
+      <div id="collapseMenu1" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/call-management/call-registration" routerLinkActive="is-active">Call Registration</a>
+          <a class="collapse-item py-1" routerLink="/call-management/call-assign" routerLinkActive="is-active">Call Assign</a>
+          <a class="collapse-item py-1" routerLink="/call-management/call-closure" routerLinkActive="is-active">Call Closure</a>
+          <a class="collapse-item py-1" routerLink="/call-management/call-on-hold" routerLinkActive="is-active">Call On-Hold</a>
+          <a class="collapse-item py-1" routerLink="/call-management/call-transfer" routerLinkActive="is-active">Call Transfer</a>
+          <a class="collapse-item py-1" routerLink="/call-management/call-charge-collection" routerLinkActive="is-active">Call Charge Collection</a>
+          <a class="collapse-item py-1" routerLink="/call-management/dayend-reporting" routerLinkActive="is-active">Day end Reporting</a>
+        </div>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu2" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu2">
+        <i class="fa fa-wrench mr-2"></i>
+        <span>Repair</span>
+      </a>
+      <div id="collapseMenu2" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/repair/repair-in" routerLinkActive="is-active">Repair IN</a>
+          <a class="collapse-item py-1" routerLink="/repair/product-repair-history" routerLinkActive="is-active">Product Repair History</a>
+          <a class="collapse-item py-1" routerLink="/repair/in-house-repair-check" routerLinkActive="is-active">IN-House Repair Check</a>
+          <a class="collapse-item py-1" routerLink="/repair/in-house-repair-check-approval" routerLinkActive="is-active">IN-House Repair Check Approval</a>
+          <a class="collapse-item py-1" routerLink="/repair/repair" routerLinkActive="is-active">Repair</a>
+          <a class="collapse-item py-1" routerLink="/repair/repaired-returned-to-client" routerLinkActive="is-active">Repaired & Returned to Client</a>
+          <a class="collapse-item py-1" routerLink="/repair/not-repaired-returned-to-client" routerLinkActive="is-active">Not Repaired & Returned to Client</a>
+          <a class="collapse-item py-1" routerLink="/repair/repair-out" routerLinkActive="is-active">Repair OUT</a>
+          <a class="collapse-item py-1" routerLink="/repair/repair-dispatch-enlist" routerLinkActive="is-active">Repair DIspatch Enlist</a>
+          <a class="collapse-item py-1" routerLink="/repair/dispatch-confirmation" routerLinkActive="is-active">Dispatch Confirmation</a>
+          <a class="collapse-item py-1" routerLink="/repair/outside-repair-activity" routerLinkActive="is-active">Outside Repair Activity</a>
+        </div>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu3" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu3">
+        <i class="fa fa-bell mr-2"></i>
+        <span>SC Notification</span>
+      </a>
+      <div id="collapseMenu3" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/sc-notification/regular-client" routerLinkActive="is-active">Regular Client</a>
+          <a class="collapse-item py-1" routerLink="/sc-notification/sc-delivery" routerLinkActive="is-active">SC Notification Delivery</a>
+          <a class="collapse-item py-1" routerLink="/sc-notification/sc-approval" routerLinkActive="is-active">SC Notification Approval</a>
+          <a class="collapse-item py-1" routerLink="/sc-notification/sc-generation" routerLinkActive="is-active">SC Generation</a>
+          <a class="collapse-item py-1" routerLink="/sc-notification/non-regular-client" routerLinkActive="is-active">Non-Regular Client</a>
+        </div>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu4" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu4">
+        <i class="fa fa-file-alt mr-2"></i>
+        <span>Bill Generation</span>
+      </a>
+      <div id="collapseMenu4" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/bill-generation/service-bill-generatio" routerLinkActive="is-active">Service Bill Generation</a>
+          <a class="collapse-item py-1" routerLink="/bill-generation/call-charge-generation" routerLinkActive="is-active">Call Charge Generation</a>
+          <a class="collapse-item py-1" routerLink="/bill-generation/account-freezing-order" routerLinkActive="is-active">Account Freezing Order</a>
+          <a class="collapse-item py-1" routerLink="/bill-generation/zero-call-charge" routerLinkActive="is-active">Zero Call Charge</a>
+        </div>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu5" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu5">
+        <i class="fab fa-black-tie mr-2"></i>
+        <span>Marketing</span>
+      </a>
+      <div id="collapseMenu5" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/marketing/inquiry-receipt" routerLinkActive="is-active">Inquiry Receipt</a>
+          <a class="collapse-item py-1" routerLink="/marketing/inquiry-assign" routerLinkActive="is-active">Inquiry Assign</a>
+          <a class="collapse-item py-1" routerLink="/marketing/inquiry-followup" routerLinkActive="is-active">Inquiry Followup</a>
+          <a class="collapse-item py-1" routerLink="/marketing/daily-marketing-activity" routerLinkActive="is-active">Daily Marketing Activity</a>
+          <a class="collapse-item py-1" routerLink="/marketing/daily-marketing-report" routerLinkActive="is-active">Daily Marketing Report</a>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <ul class="navbar-nav accordion no-print custom-sidebar-items" id="accordionSidebar" *ngIf="selectedTab == 4">
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu1" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu1">
+        <i class="fa fa-file-alt mr-2"></i>
+        <span>Reports</span>
+      </a>
+      <div id="collapseMenu1" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-order" routerLinkActive="is-active">Item History Report (Item Tracking Report)</a>
+          <a class="collapse-item py-1" routerLink="/purchase/pi-information" routerLinkActive="is-active">Purchase Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/dispatch-detail" routerLinkActive="is-active">PSD Vs. Item delivered Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase" routerLinkActive="is-active">PO Vs. materials Received Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-approval" routerLinkActive="is-active">Business-Alliance Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-rate" routerLinkActive="is-active">Business-Product Vertical Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Account Master Reports</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Day Activity Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Sales Challan Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Product Performance Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Rate List Report (Pricelist)</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Stock Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Live Product Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">PSD vs. Stock Available</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Repairing Reporter</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Sales/Purchase Compare Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Installation Score Board</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Items Installed Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Items Pending Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Pre-Sales Demand Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">DC Vs. Payment Received Report</a>
+          <a class="collapse-item py-1" routerLink="/purchase/purchase-return" routerLinkActive="is-active">Sales Vs. Purchase Rate Comparision Report</a>
+        </div>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu2" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu2">
+        <i class="fa fa-car mr-2"></i>
+        <span>Vehicle</span>
+      </a>
+      <div id="collapseMenu2" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/vehicle/vehicle-driving-permission" routerLinkActive="is-active">Vehicle Driving Permission</a>
+          <a class="collapse-item py-1" routerLink="/vehicle/vehicle-return" routerLinkActive="is-active">Vehicle Return</a>
+        </div>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed text-white" href="#collapseMenu3" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseMenu3">
+        <i class="fa fa-tint mr-2"></i>
+        <span>Fuel Management</span>
+      </a>
+      <div id="collapseMenu3" class="collapse m-0" aria-labelledby="headingOne" data-parent="#accordionSidebar">
+        <div class="collapse-inner p-0 m-0">
+          <a class="collapse-item py-1" routerLink="/fuel-management/entry" routerLinkActive="is-active">Entry</a>
+          <a class="collapse-item py-1" routerLink="/fuel-management/user-approval" routerLinkActive="is-active">User Approval</a>
+          <a class="collapse-item py-1" routerLink="/fuel-management/admin-approval" routerLinkActive="is-active">Admin Approval</a>
+          <a class="collapse-item py-1" routerLink="/fuel-management/fuel-report" routerLinkActive="is-active">Fuel Report</a>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

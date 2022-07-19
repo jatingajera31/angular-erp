@@ -1,0 +1,197 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteOrder()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary text-uppercase">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} Instaltallation Completion Claim Approval</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-3 text-right control-label"><span class="text-danger">*</span>Type of Claim</label>
+									<div class="col-md-4 mt8">
+										<label class="mr-3 mb-0"><input type="radio" formControlName="claim_type" value="Pending"><span class="checkbox-text">Approval Pending</span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="claim_type" value="Approved"><span class="checkbox-text">Approved</span></label>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-md-3 text-right control-label"><span class="text-danger">*</span>Select Claim Day</label>
+									<div class="col-lg-4 col-md-8 col-sm-8 col-xs-12 mt8">
+										<label class="mr-3 mb-0"><input type="radio" formControlName="claim_day" value="Day"><span class="checkbox-text">Back by Day</span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="claim_day" value="Today"><span class="checkbox-text">Today</span></label>
+										<label class="mr-3 mb-0"><input type="radio" formControlName="claim_day" value="Period"><span class="checkbox-text">Select Period</span></label>
+									</div>
+									<div class="col-md-2 mt8" *ngIf="purchaseForm.value.claim_day == 'Period'">
+										<input type="text" class="form-control" placeholder="From Date">
+									</div>
+									<div class="col-md-2 mt8" *ngIf="purchaseForm.value.claim_day == 'Period'">
+										<input type="text" class="form-control" placeholder="To Date">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<div class="col-md-12 mt8 text-center">
+										<button type="button" class="btn btn-xs btn-save">Show</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+									<tr>
+										<td class="bg-white">#1</td>
+										<td class="bg-white" colspan="3">Client: Anc</td>
+										<td class="bg-white" colspan="2">Location: Anc</td>
+										<td class="bg-white" colspan="2">Project: Anc</td>
+										<td class="bg-white" colspan="2">Calim No: Anc</td>
+										<td class="bg-white"><button type="button" class="btn btn-xs btn-save">Approve</button></td>
+									</tr>
+							    <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th>Model No.</th>
+						        <th>Prod. Cat</th>
+						        <th>Del. Challan</th>
+						        <th>QR Code</th>
+						        <th>Qnty</th>
+						        <th>Supporting Exe.</th>
+						        <th>Time</th>
+						        <th>Unit Rate</th>
+						        <th>Total, Rs</th>
+						        <th>Yield, Rs</th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr>
+							    	<td class="text-center">1</td>
+							    	<td>Product Category</td>
+							    	<td>Model No</td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+									<tr>
+										<td class="bg-white">#1</td>
+										<td class="bg-white" colspan="3">Client: Anc</td>
+										<td class="bg-white" colspan="2">Location: Anc</td>
+										<td class="bg-white" colspan="3">Project: Anc</td>
+										<td class="bg-white" colspan="2">Calim No: Anc</td>
+										<td class="bg-white"><button type="button" class="btn btn-xs btn-save">Approve</button></td>
+									</tr>
+							    <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th>Model No.</th>
+						        <th>Prod. Cat</th>
+						        <th>Del. Challan</th>
+						        <th>QR Code</th>
+						        <th>Qnty</th>
+						        <th>Claim By</th>
+						        <th>Supporting Exe.</th>
+						        <th>Time</th>
+						        <th>Unit Rate</th>
+						        <th>Total, Rs</th>
+						        <th>Yield, Rs</th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr>
+							    	<td class="text-center">1</td>
+							    	<td>Product Category</td>
+							    	<td>Model No</td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    	<td></td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Purchase Rate</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Client
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Client --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Select
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Demand --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

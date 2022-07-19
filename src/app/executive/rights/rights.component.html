@@ -1,0 +1,75 @@
+<div class="card">
+    <div class="card-body p-0">
+    	<div class="form-horizontal">
+    		<div class="form-group row mr-0 mt-3">
+    			<label class="col-lg-2 col-md-2 col-sm-2 text-right col-xs-12 control-label">
+    				<span class="text-danger">*</span>Executive
+    			</label>
+    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+    				<select class="form-control" [(ngModel)]="selectedUser">
+						<option value="">-- Select Executive --</option>
+    					<option *ngFor="let usr of staffs" [value]="usr.id">{{usr.first_name}} {{usr.last_name}}</option>
+    				</select>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="table-responsive">
+	        <table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+			    <thead>
+			        <tr>
+			            <th class="text-center" valign="middle">Authority Name</th>
+			            <th class="text-center" valign="middle"><input class="th-checkbox" type="checkbox" (change)="changeAll()" [(ngModel)]="checkedAll"> All</th>
+			            <th class="text-center" valign="middle"><input class="th-checkbox" type="checkbox" (change)="changeOtherCheckBox()" [(ngModel)]="checkedAllView"> View</th>
+			            <th class="text-center" valign="middle"><input class="th-checkbox" type="checkbox" (change)="changeOtherCheckBox()" [(ngModel)]="checkedAllAdd"> Add</th>
+			            <th class="text-center" valign="middle"><input class="th-checkbox" type="checkbox" (change)="changeOtherCheckBox()" [(ngModel)]="checkedAllEdit"> Edit</th>
+			            <th class="text-center" valign="middle"><input class="th-checkbox" type="checkbox" (change)="changeOtherCheckBox()" [(ngModel)]="checkedAllDelete"> Delete</th>
+			            <th class="text-center" valign="middle"><input class="th-checkbox" type="checkbox" (change)="changeOtherCheckBox()" [(ngModel)]="checkedAllPrint"> Print</th>
+			            <th class="text-center" valign="middle"><input class="th-checkbox" type="checkbox" (change)="changeOtherCheckBox()" [(ngModel)]="checkedAllApprove"> Approve</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			    	<ng-container *ngFor="let itm of rights">	
+					    <tr class="bg-secondary">
+					        <td><b class="text-white">{{itm.name}}</b></td>
+					        <td class="text-center"></td>
+					        <td class="text-center"></td>
+					        <td class="text-center"></td>
+					        <td class="text-center"></td>
+					        <td class="text-center"></td>
+					        <td class="text-center"></td>
+					        <td class="text-center"></td>
+					    </tr>
+					    <tr *ngFor="let itm of itm.items">
+					        <td>{{itm.name}}</td>
+					        <td class="text-center">
+					            <input type="checkbox" [(ngModel)]="itm.All" (change)="changeAllRights()">
+					        </td>
+					        <td class="text-center">
+					            <input type="checkbox" [(ngModel)]="itm.View" (change)="changeRights()">
+					        </td>
+					        <td class="text-center">
+					            <input type="checkbox" [(ngModel)]="itm.Add" (change)="changeRights()">
+					        </td>
+					        <td class="text-center">
+					            <input type="checkbox" [(ngModel)]="itm.Edit" (change)="changeRights()">
+					        </td>
+					        <td class="text-center">
+					            <input type="checkbox" [(ngModel)]="itm.Delete" (change)="changeRights()">
+					        </td>
+					        <td class="text-center">
+					            <input type="checkbox" [(ngModel)]="itm.Print" (change)="changeRights()">
+					        </td>
+					        <td class="text-center">
+					            <input type="checkbox" [(ngModel)]="itm.Approve" (change)="changeRights()">
+					        </td>
+					    </tr>
+				    </ng-container>    
+				</tbody>
+			</table>
+		</div>
+		<div class="w-100 py-3 text-left border-top pl-3">
+			<button (click)="saveRights()" type="button" class="mr-2 btn btn-sm btn-save">Save</button>
+		</div>
+    </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

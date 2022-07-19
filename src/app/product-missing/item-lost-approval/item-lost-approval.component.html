@@ -1,0 +1,367 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<div class="float-right f-16 pt-1">You are in APPROVAL Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary">ITEM LOST APPROVAL</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Loser
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input type="text" value="Earth Control Systems" class="form-control" disabled>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Challan No.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<select class="form-control" formControlName="id" (change)="showData()">
+											<option [value]="null">-- Select Challan --</option>
+											<option *ngFor="let itm of itemLosts" [value]="itm.id">{{itm.challan_no}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Challan Prepared By.
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.disable-content-v]="editMode">
+										<select class="form-control" disabled [value]="purchaseForm.value.prepared_by">
+											<option [value]="null">-- Select Prepared By --</option>
+    									<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>I Am connected with
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8" [class.disable-content-v]="editMode">
+										<select class="form-control" disabled [value]="purchaseForm.value.connected_with">
+											<option [value]="null">-- Select Connected with--</option>
+    									<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Date | Time
+									</label>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" placeholder="Date" id="challan_date">
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pl-0 mt8">
+										<div class="input-group">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+											<input type="text" disabled class="form-control" [value]="purchaseForm.value.challan_time" id="challan_time" placeholder="Time">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label pr-1">
+										Remarks
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" style="padding-left: 9px;" [class.disable-content-v]="editMode">
+										<textarea disabled class="form-control" [value]="purchaseForm.value.remarks" rows="3" placeholder="Enter Remarks"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 text-uppercase">
+		    			List: Item Lost
+		    		</div>
+		    		<div class="table-responsive mb-3">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th width="100">QR Code</th>
+						        <th width="120">MAC | SR No.</th>
+						        <th width="100">Model No.</th>
+						        <th width="150">Prod. Category</th>
+						        <th width="160">Pur. Inv | Pur. Date</th>
+						        <th width="50">Qty</th>
+						        <th width="100">Purchase Cost</th>
+						        <th width="100">Tax Amount</th>
+						        <th width="100">Reason Of Loss</th>
+						        <th width="40"></th>
+							    </tr>
+								</thead>
+								<tbody>
+							    <tr *ngFor="let itm of productDetails; let i = index;">
+							    	<td class="text-center">{{(i+1)}}</td>
+							    	<td class="text-center">{{itm.qr_code || 0}}</td>
+										<td class="text-center">{{itm.mac_address}} <span *ngIf="itm.serial_no">| {{itm.serial_no}}</span></td>
+							    	<td class="text-center">{{itm.product_name}}</td>
+							    	<td class="text-center">{{itm.description}}</td>
+							    	<td class="text-center">{{itm.invoice_no}} <span *ngIf="itm.invoice_date">| {{itm.invoice_date | date : 'dd/MM/y'}}</span></td>
+							    	<td class="text-center">{{itm.qty}}</td>
+							    	<td class="text-center">{{itm.purchase_rate | number: '1.2-2'}}</td>
+							    	<td class="text-center">{{itm.gst_amount}}</td>
+							    	<td>{{itm.remarks}}</td>
+							    	<td class="text-center position-relative">
+							    		<div class="adminActions" id="adminActions">
+												<a class="adminButton" (click)="setFalseData(i);itm.show = !itm.show"><i class="fa fa-folder-open"></i></a>
+												<div class="adminButtons" [class.checked]="(itm.show)" *ngIf="itm.show && isFocus">
+													<a (click)="viewProductDetailModal(itm, i);itm.show = false" title="Product Info">Info <i class="fa fa-info"></i></a>
+												</div>
+											</div>
+							    	</td>
+							    </tr>
+							    <tr class="total">
+							    	<td class="text-right" colspan="7"></td>
+							    	<td class="text-center">
+							    		<span>{{totalAmount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-center">
+							    		<span>{{taxTotalAmount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td></td>
+							    	<td></td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+						<div class="row m-0">
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Approved
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<button [disabled]="!purchaseForm.value.id" (click)="verifyPassword()" type="button" class="btn btn-xs btn-info"><i class="fa fa-edit"></i></button>&nbsp;<b *ngIf="purchaseForm.value.status == 'Approved'">(Approved)</b>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										Remarks if, Any
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+										<textarea class="form-control" rows="2" placeholder="Remarks" formControlName="approved_remarks"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-6 col-md-6 col-sm-6 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Approved By
+									</label>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8">
+										<input disabled *ngIf="loginUser && (purchaseForm.value.status == 'Approved' || editMode)" type="text" class="form-control" value="{{loginUser.first_name}} {{loginUser.father_name}} {{loginUser.last_name}}" placeholder="Approved By">
+										<!-- <input disabled *ngIf="loginUser" type="text" name="" class="form-control" value="{{loginUser.first_name}} {{loginUser.father_name}} {{loginUser.last_name}}" placeholder="Approved By"> -->
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>To be Noticed by, Name
+									</label>
+									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && purchaseForm.controls.noticed_by.invalid" [class.invalid-box]="purchaseForm.controls.noticed_by.invalid">
+										<select class="form-control" formControlName="noticed_by">
+											<option [value]="null">-- Select Noticed By --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddItemModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Item to Loss</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddItemModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">QR Code</label>
+					<div class="col-md-3 mt8">
+						<input type="text" disabled class="form-control" placeholder="Enter QR Code">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">Prod. Group</label>
+					<div class="col-md-9 mt8">
+						<select class="form-control" formControlName="client_id">
+							<option [value]="null">-- Select Prod. Group --</option>
+							<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">Model No.</label>
+					<div class="col-md-9 mt8">
+						<select class="form-control" formControlName="client_id">
+							<option [value]="null">-- Select Model No. --</option>
+							<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">Prod. Category</label>
+					<div class="col-md-9 mt8">
+						<select class="form-control" formControlName="client_id">
+							<option [value]="null">-- Select Category. --</option>
+							<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">Qnty</label>
+					<div class="col-md-3 mt8">
+						<input type="text" disabled class="form-control" placeholder="Qnty">
+					</div>
+				</div>
+				<div class="form-group row mr-0">
+					<label class="col-md-3 text-right control-label">Reason for Sales Return</label>
+					<div class="col-md-9 mt8">
+						<textarea class="form-control" placeholder="Reason for Sales Return" rows="2"></textarea>
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showAddItemModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" data-dismiss="modal" (click)="showAddItemModal = false">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Purchase Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Purchase Order?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Purchase Rate</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Client
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Client --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-3 text-right control-label">
+								<span class="text-danger">*</span>Select
+							</label>
+							<div class="col-md-9">
+								<select class="form-control">
+									<option [value]="null">-- Select Demand --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.service_code}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="verifyLoginModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Enter Your Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="savePassword(false, null)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<div class="row">
+      			<div class="col-md-4 text-right">
+      				<label class="control-label"><span class="text-danger">*</span>Password</label>
+      			</div>
+      			<div class="col-md-6">
+      				<input type="password" class="form-control" name="passs" [(ngModel)]="myPassword">
+      			</div>
+      		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="savePassword(false, null)">Close</button>
+        <button type="button" *ngIf="purchaseForm.value.status == 'Pending'" class="btn btn-sm btn-save" [disabled]="!myPassword" (click)="savePassword(true, 'Approved')">Approve</button>
+        <button type="button" *ngIf="purchaseForm.value.status == 'Approved'" class="btn btn-sm btn-save" [disabled]="!myPassword" (click)="savePassword(true, 'Pending')">Disapprove</button>
+      </div>
+    </div>
+  </div>
+</div>
+<app-product-view *ngIf="selectedProductId" [ProductId]="selectedProductId" (closeView)="selectedProductId = null"></app-product-view>
+<ngx-ui-loader></ngx-ui-loader>

@@ -1,0 +1,192 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button type="button" class="mr-2 btn btn-sm btn-save"><i class="fa fa-eye mr-1"></i>VIEW</button>
+	<div class="float-right f-16 pt-1">You are in Complain Call Registration Mode Now</div>
+</div>
+<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+	<div class="col-lg-12 col-md-10">
+		<div class="card">
+			<div class="card-header py-1">
+					<h6 class="m-0 font-weight-bold text-primary text-uppercase">Complain Call Registration e-Form</h6>
+			</div>
+			<div class="card-body px-0 pb-3 pt-0">
+				<div class="form-horizontal card-body-scroll pt-3">
+					<div class="row mr-0">
+						<div class="col-md-9">
+							<div class="border-bottom text-uppercase text-center">Greetings!</div>
+							<div class="border-bottom text-uppercase text-center">{{timeMode}}, Sir/Madam !</div>
+							<div class="border-bottom text-center">Welcome to Earth Control Systems. i am [KOMAL] here, How can i help you?</div>
+							<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14 mt-3">
+			    			Client Info Search...
+			    		</div>
+			    		<div class="row">
+			    			<div class="col-md-7 pr-0">
+			    				<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+										<thead>
+									    <tr>
+								        <th width="240">Search By</th>
+								        <th>Enter Keyword for Search...</th>
+									    </tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>By Registered Caller Name</td>
+												<td>
+													<input type="text" class="form-control">
+												</td>
+											</tr>
+											<tr>
+												<td>By Registered Contact Number</td>
+												<td>
+													<input type="number" class="form-control">
+												</td>
+											</tr>
+											<tr>
+												<td>By Registered Campany Name</td>
+												<td>
+													<input type="text" class="form-control">
+												</td>
+											</tr>
+											<tr>
+												<td>By Registered Location Name</td>
+												<td>
+													<input type="text" class="form-control">
+												</td>
+											</tr>
+											<tr>
+												<td>By Registered Project Name</td>
+												<td>
+													<input type="text" class="form-control">
+												</td>
+											</tr>
+											<tr>
+												<td>By Registered City Name</td>
+												<td>
+													<input type="text" class="form-control">
+												</td>
+											</tr>
+										</tbody>
+									</table>
+			    			</div>
+			    			<div class="col-md-5">
+			    				<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+										<thead>
+									    <tr>
+								        <th>Registered Company/Client Name</th>
+									    </tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td rowspan="6" style="height: 210px;text-align: center;">
+													Registered Companies/Clients Name will display here. Select appropiate name as confirmed by Caller.
+												</td>
+											</tr>
+										</tbody>
+									</table>
+			    			</div>
+			    		</div>
+						</div>
+						<div class="col-md-3">
+							<div class="p-3 text-center bg-info">
+								<h2 class="mb-0">{{currentTime}}</h2>
+								<h5>{{currentDate | date : 'EE, d MMMM y' }}</h5>
+							</div>
+						</div>
+					</div>
+					<div class="row mr-0 mt-3">
+						<div class="col-md-5">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr>
+						        <th colspan="2">Registered Client Information</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td width="170" class="text-right">Client (Registered)</td>
+										<td>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Address</td>
+										<td>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Location</td>
+										<td>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Project</td>
+										<td>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Caller Name</td>
+										<td>
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Contact No</td>
+										<td>
+											
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="col-md-2 text-center" style="align-items: center;justify-content: center;display: flex;">
+							<button type="button" class="mr-2 btn btn-sm btn-save">Proceed</button>
+						</div>
+						<div class="col-md-5">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr>
+						        <th colspan="2">Call Registration Information</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td width="170" class="text-right">Complain Call No</td>
+										<td>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Call Registration Date</td>
+										<td>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Time</td>
+										<td>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="text-right">Away from us, Km</td>
+										<td>
+											
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="pt-3 text-left border-top pl-3">
+						<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+						<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+						<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+					</div>
+			</div>
+		</div>
+	</div>
+</div>

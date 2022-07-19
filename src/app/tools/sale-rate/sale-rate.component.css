@@ -1,0 +1,110 @@
+.main-title {max-width: 100%;}
+.main-title .left-title {
+	width: 80%;
+	display: inline-block;
+}
+.main-title .left-title span {
+	background-color: #b1d8f9 !important;
+    margin-bottom: 0;
+    padding: 6px;
+    border-radius: 0px !important;
+    color: #1c575d !important;
+    font-size: 13px;
+    font-family: Calibri;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin-top: 0;
+    display: inline-block;
+}
+.main-title .right-title {
+	color: #1c575d !important;
+    font-size: 13px;
+    font-family: Calibri;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 20%;
+    display: inline-block;
+}
+
+.bb {border-bottom: 1px solid #adadae !important;}
+.br {border-right: 1px solid #adadae !important;}
+.aic {align-items: center;}
+table th {
+	color: #1c575d !important;
+    font-size: 14px !important;
+    background-color: #b1d8f9 !important;
+    font-weight: normal !important;
+    padding: 0px !important;
+}
+table td {
+  padding: 0px !important;
+  min-height: 70px;
+}
+table td input {
+  text-align: center;
+}
+table td div {
+  min-height: 35px;
+}
+.btn-view {
+    color: #ffffff;
+    background-color: #068d7b !important;
+    border-color: #fff;
+}
+
+table tbody {
+  display: block;
+  height: calc(100vh - 267px);
+}
+
+table thead, table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table thead {
+  position: sticky; top: 0;
+}
+
+.table-responsive {
+  scrollbar-color: #f5f5f5 #555;
+  scrollbar-width: thin;
+  -ms-overflow-style: none;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 5px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  height: 5px;
+  background-color: #f5f5f5;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.table-responsive::-webkit-scrollbar:vertical {
+  display: none;
+}
+.m-115 {min-width: 110px;display: inline-block;}
+.m-80 {min-width: 57px;display: inline-block;}
+.m-50 {min-width: 60px;display: inline-block;}
+.max-70 {max-width: 70px;}
+.c-save-btn {
+  width: 31px !important;
+  min-width: 31px !important;
+  background: #f70d84 !important;
+  border-color: #f70d84 !important;
+  border-radius: 50% !important;
+}

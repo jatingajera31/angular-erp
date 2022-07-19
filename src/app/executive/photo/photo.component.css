@@ -1,0 +1,5 @@
+.photo-upload { max-width: 250px; margin: 0 auto;}
+.photo-upload img { max-width: 200px;max-height: 200px;display: block;margin: 0 auto;}
+.card-body-scroll {
+	height: calc(100vh - 115px);
+}

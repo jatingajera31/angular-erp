@@ -1,0 +1,3 @@
+.bg-pink {background-color: #f4e5f5 !important;}
+.table-bordered thead td, .table-bordered thead th{padding: 3px !important;line-height: 18px;}
+.table-bordered tbody td {padding: 3px !important;line-height: 18px;}

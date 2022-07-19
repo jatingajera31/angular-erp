@@ -1,0 +1,167 @@
+<div class="input-group">
+	<textarea class="form-control" [attr.disabled]="true" placeholder="{{placeholder}}" rows="2" value="{{FullAddress}}"></textarea>
+	<div class="input-group-append" *ngIf="!IsDisabled">
+		<span *ngIf="!FullAddress" class="input-group-text custom-info" (click)="showAddressOneModal()">ADD</span>
+		<span *ngIf="FullAddress" class="input-group-text custom-info" (click)="showAddressOneModal()">Edit</span>
+	</div>
+</div>
+
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddressOne">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+		<h5 class="modal-title">Address</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddressOne = false">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		</div>
+		<div class="modal-body">
+		<div class="form-group row mb-1">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				Address Line1
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="AddressOne" [(ngModel)]="AddressOne" placeholder="Address Line1">
+			</div>
+		</div>
+		<div class="form-group row mb-1">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				Address Line2
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="AddressTwo" [(ngModel)]="AddressTwo" placeholder="Address Line2">
+			</div>
+		</div>
+		<div class="form-group row mb-1">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				Pincode
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="AddressPincode" [(ngModel)]="AddressPincode" placeholder="Pincode">
+			</div>
+		</div>
+		<div class="form-group row mb-1" *ngIf="!showArea">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>Area
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<select class="form-control" name="AddressArea" [(ngModel)]="AddressArea">
+						<option [value]="0">-- Select Area --</option>
+						<option *ngFor="let itm of areaDrp" [value]="itm.id">{{itm.name}} ({{itm.city.name}}, {{itm.state.name}}, {{itm.country.name}})</option>
+					</select>
+					<div class="input-group-append">
+					<span class="input-group-text custom-info" (click)="showArea = true">ADD</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row mb-1" *ngIf="showArea">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>Area
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<input type="text" class="form-control" name="AddressAreaName" [(ngModel)]="AddressAreaName" placeholder="Area">
+					<div class="input-group-append">
+						<span class="input-group-text custom-info" (click)="showArea = false;showCity = false;showState = false;showCountry = false;">Close</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row mb-1" *ngIf="!showCity && showArea">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>City
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<select class="form-control" name="AddressCity" [(ngModel)]="AddressCity">
+						<option [value]="0">-- Select City --</option>
+						<option *ngFor="let itm of cityDrp" [value]="itm.id">{{itm.name}} ({{itm.state.name}}, {{itm.country.name}})</option>
+					</select>
+					<div class="input-group-append">
+					<span class="input-group-text custom-info" (click)="showCity = true">ADD</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row mb-1" *ngIf="showCity">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>City
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<input type="text" class="form-control" name="AddressCityName" [(ngModel)]="AddressCityName" placeholder="City">
+					<div class="input-group-append">
+						<span class="input-group-text custom-info" (click)="showCity = false;showState = false;showCountry = false;">Close</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row mb-1" *ngIf="!showState && showCity">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>State
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<select class="form-control" name="AddressState" [(ngModel)]="AddressState">
+						<option [value]="0">-- Select State --</option>
+						<option *ngFor="let itm of stateDrp" [value]="itm.id">{{itm.name}} ({{itm.country.name}})</option>
+					</select>
+					<div class="input-group-append">
+					<span class="input-group-text custom-info" (click)="showState = true">ADD</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row mb-1" *ngIf="showState">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>State
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<input type="text" class="form-control" name="AddressStateName" [(ngModel)]="AddressStateName" placeholder="State">
+					<div class="input-group-append">
+						<span class="input-group-text custom-info" (click)="showState = false;showCountry = false;">Close</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row mb-1" *ngIf="!showCountry && showState">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>Country
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<select class="form-control" name="AddressCountry" [(ngModel)]="AddressCountry">
+						<option [value]="0">-- Select Country --</option>
+						<option *ngFor="let itm of countryDrp" [value]="itm.id">{{itm.name}}</option>
+					</select>
+					<div class="input-group-append">
+					<span class="input-group-text custom-info" (click)="showCountry = true">ADD</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row mb-0" *ngIf="showCountry">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+				<span class="text-danger">*</span>Country
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<div class="input-group">
+					<input type="text" class="form-control" name="AddressCountryName" [(ngModel)]="AddressCountryName" placeholder="Country">
+					<div class="input-group-append">
+						<span class="input-group-text custom-info" (click)="showCountry = false">Close</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-sm btn-save" (click)="saveAddressOne()">Save</button>
+		<button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showAddressOne = false">Close</button>
+		</div>
+	</div>
+	</div>
+</div>

@@ -1,0 +1,36 @@
+<div class="card f-12">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary f-12">ACTION LIST</h6>
+    </div>
+    <div class="card-body p-0">
+    	<div class="table-responsive">
+	        <table class="table table-bordered mb-0 border-0 w-100 remove-r-border" cellspacing="0" rules="all">
+			    <thead>
+			        <tr>
+			            <th class="text-center" valign="middle" width="105">AREA of Action</th>
+			            <th class="text-center" valign="middle">Action Initiated FOR</th>
+			            <th class="text-center" valign="middle" width="190">Action REFERENCE</th>
+			            <th class="text-center" valign="middle">Action COMPLETED</th>
+			            <th class="text-center" valign="middle">NEXT Action to take</th>
+			            <th class="text-center" valign="middle" width="130">Action request FOR</th>
+			            <th class="text-center" valign="middle" width="90">Go for ACTION</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <tr *ngFor="let row of actions">
+			            <td class="text-center no-line" width="105">{{row.action_area}}</td>
+			            <td class="text-center no-line"><span *ngIf="row.client">{{row.client.account_name}}</span></td>
+			            <td class="text-center no-line" width="190">{{row.action_reference}}</td>
+			            <td class="text-center no-line">{{row.action_completed}}</td>
+			            <td class="text-center no-line">{{row.action_next}}</td>
+			            <td class="text-center no-line" width="130"><span *ngIf="row.actionby">{{row.actionby.first_name}} {{row.actionby.last_name}}</span><span *ngIf="!row.actionby">{{row.action_request_for}}</span></td>
+			            <td class="text-center no-line" align="left" width="90">
+			                <a class="text-primary pointer">Click Here</a>
+			            </td>
+			        </tr>
+			    </tbody>
+			</table>
+		</div>
+    </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

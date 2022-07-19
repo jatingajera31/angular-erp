@@ -1,0 +1,110 @@
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Yield On Installation</h6>
+    </div>
+    <div class="card-body p-0">
+    	<form (ngSubmit)="saveRate()">
+	    	<div class="form-horizontal card-body-scroll">
+	    		<div class="form-group row mr-0 mt-3">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 text-right">
+	    				Yield Applicable on, Value of
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+	    				<select class="form-control" [(ngModel)]="sourceType" [ngModelOptions]="{standalone: true}">
+							<option [value]="null">-- Select Yield Source Type --</option>
+							<option value="Sales">Sales</option>
+	    					<option value="Purchase">Purchase</option>
+	    				</select>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row mr-0">
+	    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 text-right">
+	    				Yield Rate, (%)
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+	    				<div class="input-group">
+						  	<input type="number" class="form-control" placeholder="Yield Rate" [(ngModel)]="yieldRate" [ngModelOptions]="{standalone: true}" (keyup)="calculateRate()" size="3" maxlength="3" appFormatInput>
+						  	<div class="input-group-append">
+						    	<span class="input-group-text custom-info">%</span>
+						  	</div>
+						</div>
+	    			</div>
+	    		</div>
+					<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14"><span>Benificiary Group Planning</span></div>
+					<div class="right-title float-right text-right pointer" style="padding-right: .75rem !important;">
+						<button type="button" (click)="addDis()" class="btn btn-xs btn-close"><i class="fa fa-plus"></i> ADD</button>
+					</div>
+				<div class="table-responsive" *ngFor="let ins of installations;let i = index;">
+					<div class="row mx-0 py-1 row-line">
+			        	<div class="col-md-4"><span class="control-label">Benificiary Group:</span> {{ins.benificiary_title}}</div>
+			        	<div class="col-md-2"><span class="control-label">Contribution, %:</span> {{ins.contribution}}</div>
+			        	<div class="col-md-3"><span class="control-label">Benificiary Type:</span> {{ins.benificiary_type}}</div>
+			        	<div class="col-md-3 text-right">
+			        		<button type="button" (click)="editItem(ins, i)" class="mr-2 btn btn-xs btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+							<button type="button" *ngIf="installations.length > 1" (click)="deleteItem(ins, i)" class="btn btn-xs btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+			        	</div>
+		    		</div>
+			        <div class="row mx-0 mt-2">
+			        	<div class="col-md-3 mb-1" *ngFor="let itm of ins.designations;let j = index;">
+			        		<label class="mb-0 text-right pt2 pl-3">
+								<input (change)="checkUncheckItem(i, j)" type="checkbox" name="service_engineer{{i}}{{j}}" [(ngModel)]="itm.checked"><span class="checkbox-text">{{itm.title}}</span>
+							</label>
+			        	</div>
+			        </div>
+				</div>
+			</div>
+			<div class="w-100 py-3 text-left border-top pl-3">
+				<button type="button" class="mr-2 btn btn-sm btn-undo" (click)="getInstallation()">Undo</button>
+				<!-- <button type="button" class="mr-2 btn btn-sm btn-close">Close</button> -->
+				<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+			</div>
+		</form>
+    </div>
+</div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showAddItemModal">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+		<h5 class="modal-title">{{(editMode) ? 'Edit': 'Add'}} Benificiary Group</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showAddItemModal = false">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		</div>
+		<div class="modal-body">
+			<div class="form-group row mb-0">
+				<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+					<span class="text-danger">*</span>Benificiary Group Title
+				</label>
+				<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+					<input type="text" class="form-control" name="Benificiary" [(ngModel)]="benificiaryTitle" placeholder="Benificiary Group Title">
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+					<span class="text-danger">*</span>Total Contribution, (%)
+				</label>
+				<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+					<input type="number" class="form-control" name="Contribution" [(ngModel)]="totalContribution" placeholder="Total Contribution" appFormatInput>
+				</div>
+			</div>
+			<div class="form-group row mb-0">
+				<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+					<span class="text-danger">*</span>Benificiary Type
+				</label>
+				<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+					<select class="form-control" [(ngModel)]="benificiaryType" [ngModelOptions]="{standalone: true}">
+						<option [value]="null">-- Select Benificiary Type --</option>
+						<option value="Major">Major</option>
+    					<option value="Minor">Minor</option>
+    				</select>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-sm btn-save" (click)="addItem()">{{(editMode) ? 'Update': 'Add'}}</button>
+		<button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showAddItemModal = false">Close</button>
+		</div>
+	</div>
+	</div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

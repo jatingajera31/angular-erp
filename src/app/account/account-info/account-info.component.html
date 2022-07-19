@@ -1,0 +1,92 @@
+<div class="action-btns">
+	<button (click)="openModal()" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="editRow()" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="removeRow()" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+</div>
+<div class="card-body-scroll bg-white mt-2">
+	<div class="table-responsive">
+		<table class="table table-bordered mb-0 border-0 w-100 remove-r-border" cellspacing="0" rules="all">
+			<thead>
+			    <tr>
+			        <th valign="middle">Information</th>
+			        <th valign="middle">Account Type</th>
+			    </tr>
+			</thead>
+			<tbody>
+			    <tr *ngFor="let infos of accountInfos" (click)="selectedRow = infos" [class.bg-secondary]="(selectedRow && selectedRow.id == infos.id)">
+			        <td>{{infos.name}}</td>
+			        <td>{{infos.text}}</td>
+			    </tr>
+		    </tbody>
+		</table>
+	</div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" [formGroup]="accountForm">
+      <div class="modal-header">
+        <h5 class="modal-title">{{(accountForm.value.id) ? 'EDIT': 'ADD' }} ACCOUNT INFO</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row">
+					<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+						<span class="text-danger">*</span>Information
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.invalid-box]="accountForm.controls.name.invalid">
+						<input type="text" class="form-control" formControlName="name" placeholder="Please Enter Info Name">
+					</div>
+				</div>
+        <div class="form-group row">
+					<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+						<span class="text-danger">*</span>Type
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<div class="d-block">
+							<label class="mr-3 mb-0"><input type="checkbox" formControlName="is_client"><span class="checkbox-text">Client</span></label>
+						</div>
+						<div class="d-block">
+							<label class="mr-3 mb-0"><input type="checkbox" formControlName="is_supplier"><span class="checkbox-text">Supplier</span></label>
+						</div>
+						<div class="d-block">
+							<label class="mr-3 mb-0"><input type="checkbox" formControlName="is_service_agency"><span class="checkbox-text">Service Agency</span></label>
+						</div>
+						<div class="d-block">
+							<label class="mr-3 mb-0"><input type="checkbox" formControlName="is_re_seller"><span class="checkbox-text">Re-Seller</span></label>
+						</div>
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer">
+        <button *ngIf="!accountForm.value.id" type="button" class="btn btn-sm btn-save" (click)="saveData()">Save</button>
+        <button *ngIf="accountForm.value.id" type="button" class="btn btn-sm btn-save" (click)="updateData()">Update</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Account Info</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Account Info?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <ngx-ui-loader [bgsType]="'rectangle-bounce'" [fgsType]="'rectangle-bounce'"></ngx-ui-loader> -->
+<ngx-ui-loader></ngx-ui-loader>

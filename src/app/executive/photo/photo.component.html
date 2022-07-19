@@ -1,0 +1,24 @@
+<div class="row">
+	<div class="col-lg-12 col-md-12">
+		<div class="card">
+		    <div class="card-header pb-1 pt-0">
+		        <h6 class="m-0 font-weight-bold text-primary">CHANGE PROFILE PICTURE</h6>
+		    </div>
+		    <div class="card-body px-0 pb-3 pt-0">
+		    	<div class="form-horizontal card-body-scroll pt-3">
+					<div class="photo-upload text-center border pb-2" (click)="productImage.click()">
+						<ng-container *ngIf="cardImageBase64">
+				            <img [src]="cardImageBase64" class="pointer" />
+				        </ng-container>
+				        <span>Click here to upload image</span>
+						<input class="d-none" #productImage type="file" accept="image/x-png,image/jpeg" (change)="fileChangeEvent($event)" />
+					</div>
+					<div class="photo-upload text-center">
+						<button (click)="updatePhoto()" type="button" class="mr-2 btn btn-sm btn-block btn-save">Upload</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

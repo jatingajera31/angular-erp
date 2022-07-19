@@ -1,0 +1,259 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteInfo()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form autocomplete="off">
+	<div class="row" [formGroup]="purchaseForm" [class.disable-content]="(!createMode && !editMode)">
+		<div class="col-lg-12 col-md-10">
+			<div class="card">
+				<div class="card-header py-1">
+						<h6 class="m-0 font-weight-bold text-primary">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} SALES RETURN RECEIVED</h6>
+				</div>
+				<div class="card-body px-0 pb-3 pt-0">
+					<div class="form-horizontal card-body-scroll pt-3">
+						<div class="row mr-0">
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sales Return No
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<select class="form-control" formControlName="sales_return_id" (change)="showSalesReturnReceived()">
+											<option [value]="null">-- Select Sales Return No --</option>
+											<option *ngFor="let itm of salesReturnReceived" [value]="itm.id">{{itm.sales_return_no}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Client
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" value="{{getClientName()}}" placeholder="Client">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group row mr-0">
+									<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Location
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<input type="text" disabled class="form-control" value="{{getLocationName()}}" placeholder="Location">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="bg-secondary text-white d-inline-block px-2 py-1 f-14">
+		    			SALES RETURNED ITEMS LIST
+		    		</div>
+		    		<div class="table-responsive mb-3" style="overflow-x: inherit;">
+							<table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+								<thead>
+							    <tr class="text-center">
+						        <th width="40">Srl</th>
+						        <th width="125">Model No.</th>
+						        <th>Product Description</th>
+						        <th width="80">QR Code</th>
+						        <th width="120">Serial No./MAC Address</th>
+						        <th width="120">Del. No./Del. Date</th>
+						        <th width="70">Qty</th>
+						        <th width="70">Amount, Rs</th>
+						        <th width="100">GST Amount, Rs.</th>
+						        <th width="150">Reason for Sales Return	</th>
+							    </tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let prod of productDetails;let i =index">
+										<td>{{(i+1)}}</td>
+						        <td>{{prod.product_name}}</td>
+						        <td><textarea disabled class="form-control" [innerHTML]="prod.description"></textarea></td>
+						        <td class="text-center">{{prod.qr_code}}</td>
+						        <td class="text-center">{{prod.serial_no}}/{{prod.mac_address}}</td>
+						        <td>{{prod.challan_no}}/{{prod.challan_date}}</td>
+						        <td class="text-center">{{prod.qty}}</td>
+						        <td class="text-center">{{prod.amount}}</td>
+						        <td class="text-center">{{prod.gst_amount}}</td>
+						        <td>{{prod.reason}}</td>
+									</tr>
+							    <tr class="total">
+							    	<td class="text-right" colspan="6"></td>
+							    	<td class="text-center">
+							    		<span>{{purchaseForm.value.total_qty}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.total_amount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td class="text-right">
+							    		<span>{{purchaseForm.value.total_gst_amount | number: '1.2-2'}}</span>
+							    	</td>
+							    	<td></td>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+		    		<div class="row m-0 border-top pt-3">
+		    			<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Sales Executive
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<select class="form-control" disabled [value]="purchaseForm.value.sales_executive_id">
+											<option [value]="null">-- Select Sales Executive --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+										Collected from Client, by
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<select class="form-control" disabled [value]="purchaseForm.value.collected_by">
+											<option [value]="null">-- Select Collected By --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Return STORE IN, by
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<select class="form-control" disabled [value]="purchaseForm.value.return_by">
+											<option [value]="null">-- Select Return By --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+		    			<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Remarks by STORE IN
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<textarea class="form-control" rows="2" disabled [value]="purchaseForm.value.remarks" placeholder="Remarks"></textarea>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Action taken by
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<select disabled class="form-control" [value]="purchaseForm.value.action_by">
+											<option [value]="null">-- Select Return By --</option>
+											<option *ngFor="let itm of staffs" [value]="itm.id">{{itm.first_name}} {{itm.father_name}} {{itm.last_name}}</option>
+										</select>
+									</div>
+								</div>
+							</div>
+		    			<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Action Taken Date
+									</label>
+									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8 pr-0">
+										<div class="input-group">
+											<input type="text" disabled class="form-control" [value]="purchaseForm.value.action_date | date : 'dd/MM/y'" placeholder="Date" id="action_date">
+											<div class="input-group-append">
+												<span class="input-group-text custom-info"><i class="f-12 fa fa-clock"></i></span>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mt8 pl-0">
+										<input disabled type="text" class="form-control" [value]="purchaseForm.value.action_time" id="action_time" placeholder="Time">
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row mr-0">
+									<label class="col-lg-5 col-md-5 col-sm-5 text-right col-xs-12 control-label">
+										<span class="text-danger">*</span>Detail of Actions Taken
+									</label>
+									<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12 mt8">
+										<textarea class="form-control" formControlName="action_detail" placeholder="Detail of Actions Taken" rows="2"></textarea>
+									</div>
+								</div>
+							</div>
+		    		</div>
+					</div>
+					<div class="pt-3 text-left border-top pl-3">
+							<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+							<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+							<button type="button" (click)="saveInfo()" class="mr-2 btn btn-sm btn-save">Save</button>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Purchase Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are You Sure to Delete this Purchase Order?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showEditModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Sales Return</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showEditModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+    			<div class="col-md-12">
+    				<div class="form-group row mr-0">
+      				<label class="col-md-4 text-right control-label">
+								<span class="text-danger">*</span>Sales Return No.
+							</label>
+							<div class="col-md-8">
+								<select class="form-control" [(ngModel)]="sales_return_id" name="sales_return_id">
+									<option [value]="null">-- Select Sales Return No. --</option>
+									<option *ngFor="let itm of salesReturnReceived" [value]="itm.id">{{itm.sales_return_no}}</option>
+								</select>
+							</div>
+						</div>
+    			</div>
+    		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" (click)="showEditModal = false">Close</button>
+        <button type="button" [disabled]="isNotValid(sales_return_id)" class="btn btn-sm btn-save" (click)="showData()">Show</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-ui-loader></ngx-ui-loader>

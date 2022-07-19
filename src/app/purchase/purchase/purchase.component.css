@@ -1,0 +1,17 @@
+.bg-pink {background-color: #f4e5f5 !important;}
+.pointer.bg-warning {
+	padding: 2px 4px;
+  font-size: 12px;
+  height: 24px;
+  min-width: 80px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}
+.invoic-list-div {
+  padding: 0px 5px;
+  border-bottom: 1px solid #ccc;
+}
+.invoic-list-div:hover {
+  background-color: #ccc;
+}

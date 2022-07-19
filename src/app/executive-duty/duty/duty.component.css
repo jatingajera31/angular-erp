@@ -1,0 +1,7 @@
+.count-stats { min-width: 40px;height: 30px; line-height: 30px; border: 1px solid #36b9cc; text-align: center;display: inline-block;color: #36b9cc;}
+.min-w-35 {min-width: 35px;}
+table thead th {
+  padding: 5px 0px 5px 0px !important;
+  position: sticky; top: 0;
+}
+.card-body-scroll { height: calc(100vh - 185px); }

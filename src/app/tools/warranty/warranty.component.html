@@ -1,0 +1,227 @@
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Additional Warranty-Rate Planner</h6>
+    </div>
+    <div class="card-body p-0">
+    	<form (ngSubmit)="saveRate()">
+    	<div class="form-horizontal">
+    		<div class="form-group row mr-0 mt-3">
+    			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 text-right">
+    				Product Group
+    			</label>
+    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+    				<select class="form-control" [(ngModel)]="group_id" (change)="getProducts()" [ngModelOptions]="{standalone: true}">
+				  		<option [value]="null">-- Select Product Group --</option>
+						<option *ngFor="let itm of productGroups" [value]="itm.id">{{itm.name}}</option>
+    				</select>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="table-content">
+			<!-- <div class="main-title">
+				<div class="left-title"><span>ADD-ON RATE MATRIX</span></div>
+			</div> -->
+			<div class="table-responsive">
+		        <table class="table table-bordered mb-0 border-0 w-100 remove-r-border" cellspacing="0" rules="all">
+				    <thead>
+				        <tr>
+				            <th class="text-center" valign="middle" width="60">SRL</th>
+				            <th class="text-center" valign="middle">PROD. CAT</th>
+				            <th class="text-center" valign="middle" width="200">MODEL NO.</th>
+				            <th class="text-center" valign="middle" width="150">UNIT RATE, Rs.</th>
+				            <th class="text-center" valign="middle" width="150">Rate ADD-ON, %</th>
+				            <th class="text-center" valign="middle" width="180">Increment Factor, %</th>
+				            <th class="text-center" valign="middle" width="80">Pre-View</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+					    <tr *ngFor="let ins of installations;let i = index;">
+					        <td class="text-center" width="60">{{ (i + 1) }}</td>
+					        <td class="text-center">{{ins.product_category}}</td>
+					        <td width="200" class="text-center">{{ins.model_no}}</td>
+					        <td width="150" class="text-center">{{ins.unit_rate | number: '1.2-2'}}</td>
+					        <td width="150"><input type="number" [disabled]="(!ins.extended_warranty)" class="form-control text-center" [(ngModel)]="ins.rate_addon" (keyup)="calculateRate()" placeholder="Enter Add On Rate" [ngModelOptions]="{standalone: true}" appFormatInput></td>
+					        <td width="180"><input type="number" [disabled]="(!ins.extended_warranty)" class="form-control text-center" [(ngModel)]="ins.year_increment" (keyup)="calculateRate()" placeholder="Enter Year Increment" [ngModelOptions]="{standalone: true}" appFormatInput></td>
+					        <td width="80" class="text-center">
+					        	<button type="button" (click)="viewDetail(ins)" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-sm btn-view"><i class="fa fa-bolt tooltips"></i></button>
+					        </td>
+					    </tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="w-100 py-3 text-left border-top pl-3">
+				<button type="button" class="mr-2 btn btn-sm btn-undo" (click)="undo()">Undo</button>
+				<!-- <button type="button" class="mr-2 btn btn-sm btn-close">Close</button> -->
+				<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+			</div>
+		</div>
+		</form>
+    </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showPreview">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">PRE-VIEW FOR ITEM UNIT RATE CALCULATION</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showPreview = false;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form class="w-100">
+      <div class="modal-body" *ngIf="selectedRow" style="max-height: calc(100vh - 200px);overflow-y: auto;">
+			<div class="form-group row mb-1">
+				<label class="col-md-3 text-right control-label px-0">
+					Product Category 
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="text" disabled class="form-control" [value]="selectedRow.product_category">
+				</div>
+			</div>
+			<div class="form-group row mb-1">
+				<label class="col-md-3 text-right control-label px-0">
+					Model No
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="text" disabled class="form-control" [value]="selectedRow.model_no">
+				</div>
+				<label class="col-md-3 text-right control-label px-0">
+					MRP rate, Rs
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="text" disabled class="form-control" [value]="selectedRow.unit_rate | number: '1.2-2'">
+				</div>
+			</div>
+			<div class="form-group row mb-1">
+				<label class="col-md-3 text-right control-label px-0">
+					Rate ADD-ON, %
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="text" disabled class="form-control" [value]="selectedRow.rate_addon">
+				</div>
+				<label class="col-md-3 text-right control-label px-0">
+					Increment Factor, %
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="text" disabled class="form-control" [value]="selectedRow.year_increment">
+				</div>
+			</div>
+			<div class="form-group row mb-1">
+				<label class="col-md-3 text-right control-label px-0">
+					Item's Standard Warranty
+				</label>
+				<div class="col-md-3 mt8">
+					<input type="text" disabled class="form-control" [value]="selectedRow.client_warranty">
+				</div>
+			</div>
+			<div class="table-content">
+				<div class="main-title">
+					<div class="left-title"><span>Additional Warranty Vs Unit Rate</span></div>
+				</div>
+				<div class="table-responsive">
+			        <table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+					    <thead>
+					        <tr>
+					            <th class="text-center" valign="middle">For Months</th>
+					            <th class="text-center" valign="middle">ADD-ON, %</th>
+					            <th class="text-center" valign="middle">ADD-ON Amt. Rs.</th>
+					            <th class="text-center" valign="middle">Unit Rate, Rs.</th>
+					        </tr>
+					    </thead>
+					    <tbody style="height: auto;">
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month)}} Months</td>
+						    	<td>{{toFixed(selectedRow.first_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.first_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.first_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month * 2)}} Months</td>
+						    	<td>{{toFixed(selectedRow.second_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.second_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.second_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month * 3)}} Months</td>
+						    	<td>{{toFixed(selectedRow.third_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.third_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.third_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month * 4)}} Months</td>
+						    	<td>{{toFixed(selectedRow.fourth_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.fourth_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.fourth_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month * 5)}} Months</td>
+						    	<td>{{toFixed(selectedRow.fifth_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.fifth_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.fifth_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month * 6)}} Months</td>
+						    	<td>{{toFixed(selectedRow.six_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.six_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.six_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month * 7)}} Months</td>
+						    	<td>{{toFixed(selectedRow.seven_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.seven_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.seven_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>{{(selectedRow.extended_month * 8)}} Months</td>
+						    	<td>{{toFixed(selectedRow.eight_colm)}}</td>
+						    	<td>{{(toFixed((selectedRow.unit_rate * selectedRow.eight_colm) / 100)) | number: '1.2-2'}}</td>
+						    	<td>{{(toFixed(makeRate(selectedRow, selectedRow.eight_colm))) | number: '1.2-2'}}</td>
+						    </tr>
+						</tbody>
+					</table>
+					<span>System allows Max. {{(selectedRow.extended_month * 8)}} Month's additional Warranty to offer.</span>
+				</div>
+				<!-- <div class="main-title mt-3">
+					<div class="left-title"><span>UNIT RATE WITH EXTENDED WARRANTY</span></div>
+				</div>
+				<div class="row my-3">
+					<label class="col-md-3 text-right control-label px-0">
+						Extended Warranty, Year
+					</label>
+					<div class="col-md-3 mt8">
+						<input type="number" [(ngModel)]="scYear" name="scYear" class="form-control" placeholder="Enter SC Year" min="1" max="5">
+					</div>
+				</div>
+				<div class="table-responsive">
+			        <table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+					    <thead>
+					        <tr>
+					            <th class="text-center" valign="middle">Year for Extended Warranty</th>
+					            <th class="text-center" valign="middle">Total Year of Warranty	</th>
+					            <th class="text-center" valign="middle">ADD-ON, %</th>
+					            <th class="text-center" valign="middle">ADD-ON Amt., Rs.</th>
+					            <th class="text-center" valign="middle">Unit Rate, Rs.</th>
+					        </tr>
+					    </thead>
+					    <tbody style="height: auto;">
+						    <tr class="text-center" *ngIf="scYear && fifthColumn">
+						    	<td>{{firstColumn}}</td>
+						    	<td>{{secondColumn}}</td>
+						    	<td>{{thirdColumn | number: '1.2-2'}}</td>
+						    	<td>{{fourthColumn | number: '1.2-2'}}</td>
+						    	<td>{{fifthColumn | number: '1.2-2'}} ({{selectedRow.unit_rate | number: '1.2-2'}})</td>
+						    </tr>
+						</tbody>
+					</table>
+				</div> -->
+			</div>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="submit" class="btn btn-sm btn-save">View Result</button> -->
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showPreview = false;">Back</button>
+      </div>
+  	</form>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

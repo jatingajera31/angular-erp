@@ -1,0 +1,764 @@
+<div class="action-btns">
+	<button (click)="viewCreateMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-secondary"><i class="fa fa-plus mr-1"></i>ADD</button>
+	<button (click)="viewEditMode()" [disabled]="(editMode || createMode)" type="button" class="mr-2 btn btn-sm btn-info"><i class="fa fa-edit mr-1"></i>EDIT</button>
+	<button (click)="deleteProduct()" [disabled]="(!editMode)" type="button" class="mr-2 btn btn-sm btn-warning"><i class="fa fa-trash mr-1"></i>DELETE</button>
+	<div *ngIf="createMode" class="float-right f-16 pt-1">You are in ADD NEW Mode</div>
+	<div *ngIf="editMode" class="float-right f-16 pt-1">You are in EDIT Mode</div>
+</div>
+<form (ngSubmit)="saveProduct()">
+<div class="row" [formGroup]="productForm" [class.disable-content]="(!createMode && !editMode)">
+	<div class="col-lg-2 col-md-2 pr-0">
+		<div class="border position-relative product-image">
+			<ng-container *ngIf="cardImageBase64">
+	            <img [src]="cardImageBase64" class="img-fluid pointer" (click)="productImage.click()" />
+	            <span class="text-uppercase" *ngIf="productForm.value.photo_name">{{productForm.value.photo_name}}</span>
+	        </ng-container>
+	        <span class="fa fa-edit edit-photo" (click)="productImage.click()"></span>
+			<input class="d-none" #productImage type="file" accept="image/x-png,image/jpeg" (change)="fileChangeEvent($event)" />
+		</div>
+	</div>
+	<div class="col-lg-10 col-md-10 pl-1">
+		<div class="card">
+		    <div class="card-header py-1">
+		        <h6 class="m-0 font-weight-bold text-primary">{{ (createMode) ? 'ADD': ''}}{{ (editMode) ? 'EDIT': ''}} PRODUCT</h6>
+		    </div>
+		    <div class="card-body px-0 pb-3 pt-0">
+		    	<div class="form-horizontal card-body-scroll pt-3">
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label"></label>
+		    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+		    				<label class="mr-3 mb-0"><input type="radio" formControlName="product_type" (change)="changeType()" value="General"><span class="checkbox-text">General</span></label>
+		    				<label class="mr-3 mb-0"><input type="radio" formControlName="product_type" (change)="changeType()" value="Special"><span class="checkbox-text">Special</span></label>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Product Group
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && productForm.controls.group_id.invalid" [class.invalid-box]="productForm.controls.group_id.invalid">
+							  	<select class="form-control" formControlName="group_id" (change)="getProductGroupCode();getBrand()">
+							  		<option [value]="null">-- Select Product Group --</option>
+									<option *ngFor="let itm of productListGroup" [value]="itm.id">{{itm.name}}</option>
+			    				</select>
+							  <div class="input-group-append" *ngIf="!isValid(productForm.value.group_id)">
+							    <span class="input-group-text custom-info" (click)="viewServiceGroupModal()">EDIT</span>
+							  </div>
+							  <div class="input-group-append" *ngIf="isValid(productForm.value.group_id)">
+							    <span class="input-group-text custom-info" (click)="viewServiceGroupModal()">ADD</span>
+							  </div>
+							</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="editMode">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Model No
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && productForm.controls.id.invalid" [class.invalid-box]="productForm.controls.id.invalid">
+							  	<select class="form-control" formControlName="id" (change)="setEditFormData()" *ngIf="productForm.value.product_type == 'General'">
+							  		<option [value]="null">-- Select Model No --</option>
+									<option *ngFor="let itm of productModelNoLists" [value]="itm.id">{{itm.model_no}}</option>
+			    				</select>
+			    				<select class="form-control" formControlName="id" (change)="setEditFormData()" *ngIf="productForm.value.product_type == 'Special'">
+							  		<option [value]="null">-- Select Model No --</option>
+									<option *ngFor="let itm of productLists" [value]="itm.id">{{itm.model_no}}</option>
+			    				</select>
+							  <div class="input-group-append" *ngIf="!isValid(productForm.value.id)">
+							    <span class="input-group-text custom-info" (click)="viewServiceCodeModal()">EDIT</span>
+							  </div>
+							</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="!editMode">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Model No
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.model_no.invalid" [class.invalid-box]="productForm.controls.model_no.invalid">
+		    				<input type="text" class="form-control" formControlName="model_no" placeholder="Enter Service Code">
+		    			</div>
+		    		</div>
+
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Product Category
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && productForm.controls.category_id.invalid" [class.invalid-box]="productForm.controls.category_id.invalid">
+							  	<select class="form-control" formControlName="category_id">
+		    						<option [value]="null">-- Select Category --</option>
+									<option *ngFor="let itm of categoryLists" [value]="itm.id">{{itm.name}}</option>
+			    				</select>
+			    				<div class="input-group-append" *ngIf="!isValid(productForm.value.category_id)">
+								    <span class="input-group-text custom-info" (click)="viewCategoryModal()">EDIT</span>
+								</div>
+								<div class="input-group-append" *ngIf="isValid(productForm.value.category_id)">
+								    <span class="input-group-text custom-info" (click)="viewCategoryModal()">ADD</span>
+								</div>
+							</div>
+		    			</div>
+		    		</div>
+
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				Product Code
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<input type="text" class="form-control" formControlName="product_code" placeholder="Enter Product Code">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				HSN Code
+		    			</label>
+		    			<div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<input type="text" class="form-control" formControlName="hsn_code" placeholder="HSN Code">
+		    			</div>
+		    			<label class="col-lg-3 col-md-4 col-sm-4 text-left col-xs-12 control-label pl-0 pr-1 lhpx">
+		    				<label class="mb-0">
+		    					<input type="checkbox" formControlName="hsn_code_allow"><span class="checkbox-text">HSN Code, allow to change.</span>
+		    				</label>
+		    			</label>
+		    			<label class="col-lg-3 col-md-4 col-sm-4 text-left col-xs-12 control-label pl-0 pr-1 lhpx">
+		    				<label class="mb-0">
+		    					<input type="checkbox" formControlName="hsn_code_alert"><span class="checkbox-text">HSN Code, alert required.</span>
+		    				</label>
+		    			</label>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Unit
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && productForm.controls.unit_id.invalid" [class.invalid-box]="productForm.controls.unit_id.invalid">
+							  	<select class="form-control" formControlName="unit_id">
+		    						<option [value]="null">-- Select Unit --</option>
+									<option *ngFor="let itm of unitLists" [value]="itm.id">{{itm.name}}</option>
+			    				</select>
+			    				<div class="input-group-append" *ngIf="!isValid(productForm.value.unit_id)">
+								    <span class="input-group-text custom-info" (click)="viewUnitModal()">EDIT</span>
+								</div>
+								<div class="input-group-append" *ngIf="isValid(productForm.value.unit_id)">
+								    <span class="input-group-text custom-info" (click)="viewUnitModal()">ADD</span>
+								</div>
+							</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Brand
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group" [class.form-invalid]="invalidForm && isValid(productForm.value.brand_id)" [class.invalid-box]="productForm.controls.brand_id.invalid">
+							  	<select class="form-control" formControlName="brand_id">
+		    						<option [value]="null">-- Select Brand --</option>
+									<option *ngFor="let itm of brandLists" [value]="itm.id">{{itm.name}}</option>
+			    				</select>
+			    				<div class="input-group-append" *ngIf="!isValid(productForm.value.brand_id)">
+								    <span class="input-group-text custom-info" (click)="viewBrandModal()">EDIT</span>
+								</div>
+								<div class="input-group-append" *ngIf="isValid(productForm.value.brand_id)">
+								    <span class="input-group-text custom-info" (click)="viewBrandModal()">ADD</span>
+								</div>
+							</div>
+		    			</div>
+		    		</div>
+
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				List of pProduct paired
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<div class="input-group">
+							  	<input type="text" disabled class="form-control" placeholder="" [value]="pairedProductNames">
+							  	<div class="input-group-append">
+							    	<span class="input-group-text custom-info" (click)="viewPairedModal()">ADD</span>
+							  	</div>
+								</div>
+		    			</div>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8 pl-0">
+		    				<span *ngIf="!isValid(pairedProductNames)" class="input-group-text custom-info cst-view" (click)="showPairedTable = !showPairedTable">{{ (!showPairedTable) ? 'VIEW': 'CLOSE'}}</span>
+		    			</div>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" *ngIf="showPairedTable">&nbsp;</div>
+		    			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mt8 mt-2" *ngIf="showPairedTable">
+		    				<table class="table mb-0">
+		    					<tr>
+		    						<th class="text-center" width="180">Group</th>
+		    						<th class="text-center">Model</th>
+		    						<th class="text-center" width="80">Qty</th>
+		    						<th class="text-center"></th>
+		    					</tr>
+		    					<tr *ngFor="let prt of pairedProducts;let i = index;">
+		    						<td class="text-center" width="180">{{prt.group_name}}</td>
+		    						<td class="text-center">{{prt.model_name}}</td>
+		    						<td class="text-center" width="80"><input type="number" name="prd_qty{{i}}" class="form-control max-70 mx-auto" [(ngModel)]="prt.qty" placeholder="Qty" [ngModelOptions]="{standalone: true}"></td>
+		    						<td class="text-center">
+		    							<i class="fa fa-trash text-danger pointer" (click)="removePrd(i)"></i>
+		    						</td>
+		    					</tr>
+		    				</table>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Supplier
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" [class.form-invalid]="invalidForm && isValid(productForm.value.supplier_id)" [class.invalid-box]="productForm.controls.supplier_id.invalid">
+		    				<select class="form-control" formControlName="supplier_id">
+		    					<option [value]="null">-- Supplier --</option>
+									<option *ngFor="let itm of suppliers" [value]="itm.id">{{itm.name}}</option>
+		    				</select>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Source of Purchase
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.source_id.invalid" [class.invalid-box]="productForm.controls.source_id.invalid">
+		    				<select class="form-control" formControlName="source_id" (change)="getDiscountMatrix()">
+		    					<option [value]="null">-- Select Source of Purchase --</option>
+								<option *ngFor="let itm of purchaseSources" [value]="itm.id">{{itm.name}}</option>
+		    				</select>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Purchase Rate, Rs.
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8"  [class.form-invalid]="invalidForm && productForm.controls.purchase_rate.invalid" [class.invalid-box]="productForm.controls.purchase_rate.invalid">
+		    				<input type="number"  class="form-control" formControlName="purchase_rate" placeholder="Purchase Rate, Rs." (keyup)="setRate()" appFormatInput>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'Special'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Sales Rate (Rs)
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.sales_rate.invalid" [class.invalid-box]="productForm.controls.sales_rate.invalid">
+		    				<input type="number" class="form-control" formControlName="sales_rate" placeholder="Enter Rate (Quotation)" appFormatInput>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Max. Retail Price (MRP), Rs.
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.max_retail_price.invalid" [class.invalid-box]="productForm.controls.max_retail_price.invalid">
+		    				<input type="text" disabled class="form-control" [value]="(toFixed(productForm.value.max_retail_price)) | number: '1.2-2'" placeholder="Max. Retail Price (MRP), Rs.">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Min. Selling Price (MSP), Rs.
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.max_selling_price.invalid" [class.invalid-box]="productForm.controls.max_selling_price.invalid">
+		    				<input type="text" disabled class="form-control" [value]="toFixed(productForm.value.max_selling_price) | number: '1.2-2'" placeholder="Min. Selling Price (MSP), Rs.">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>GST, % <span class="pl-5">Sales</span>
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 max-100 pr-0" [class.form-invalid]="invalidForm && productForm.controls.sale_gst.invalid" [class.invalid-box]="productForm.controls.sale_gst.invalid">
+		    				<input type="number" class="form-control" formControlName="sale_gst" placeholder="Enter Tax" appFormatInput>
+		    			</div>
+		    			<label class="col-lg-1 col-md-1 col-sm-1 text-right col-xs-12 control-label pl-0 min-100">
+		    				<span>Purchase</span>
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 max-100 pr-0" [class.form-invalid]="invalidForm && productForm.controls.gst_rate.invalid" [class.invalid-box]="productForm.controls.gst_rate.invalid">
+		    				<input type="number" class="form-control" formControlName="gst_rate" placeholder="Enter Tax" appFormatInput>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<label class="mr-3 mb-0">
+		    					<input type="checkbox" (change)="changeItc()" formControlName="is_itc"><span class="checkbox-text">ITC Rate, Rs</span>
+		    				</label>
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.itc_rate.invalid" [class.invalid-box]="productForm.controls.itc_rate.invalid">
+		    				<input type="number" class="form-control" formControlName="itc_rate" placeholder="ITC Rate" appFormatInput>
+		    			</div>
+		    			<label class="col-lg-1 col-md-1 col-sm-1 text-right col-xs-12 p-0 control-label min-100" *ngIf="productForm.value.is_itc">
+		    				<span class="text-danger">*</span>GST Rate(%)
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 max-125" *ngIf="productForm.value.is_itc" [class.form-invalid]="invalidForm && productForm.controls.itc_gst_rate.invalid" [class.invalid-box]="productForm.controls.itc_gst_rate.invalid">
+		    				<input type="number" class="form-control" formControlName="itc_gst_rate" placeholder="Enter GST Rate" appFormatInput>
+		    			</div>
+		    			<label class="col-lg-1 col-md-1 col-sm-1 text-right col-xs-12 p-0 control-label" *ngIf="productForm.value.is_itc">
+		    				<span class="text-danger">*</span>HSN Code
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 max-125" *ngIf="productForm.value.is_itc" [class.form-invalid]="invalidForm && productForm.controls.itc_hsncode.invalid" [class.invalid-box]="productForm.controls.itc_hsncode.invalid">
+		    				<input type="text" class="form-control" formControlName="itc_hsncode" placeholder="Enter HSN Code">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				Weight
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8">
+		    				<div class="input-group">
+							  <input type="text" class="form-control" formControlName="weight_gram" placeholder="0" (keyup)="changeGmWeight()">
+							  <div class="input-group-append">
+							    <span class="input-group-text">Gram</span>
+							  </div>
+							</div>
+		    			</div>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8">
+		    				<div class="input-group">
+							  <input type="text" class="form-control" formControlName="weight_kg" placeholder="Enter Weight In KG" (keyup)="changeKgWeight()">
+							  <div class="input-group-append">
+							    <span class="input-group-text">KG</span>
+							  </div>
+							</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">Product Availibility</label>
+		    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8 lhpx">
+		    				<label class="mr-3 mb-0"><input type="radio" formControlName="availibility" value="1"><span class="checkbox-text">Yes</span></label>
+		    				<label class="mr-3 mb-0"><input type="radio" formControlName="availibility" value="0"><span class="checkbox-text">No</span></label>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Product Description
+		    			</label>
+		    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8"  [class.form-invalid]="invalidForm && productForm.controls.description.invalid" [class.invalid-box]="productForm.controls.description.invalid">
+		    				<div class="input-group">
+		    					<textarea class="form-control" formControlName="description" placeholder="Product Description" rows="2"></textarea>
+							  	<div class="input-group-append">
+							    	<span class="input-group-text custom-info"><i class="fa fa-info-circle"></i></span>
+							  	</div>
+							</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<span class="text-danger">*</span>Short Description
+		    			</label>
+		    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.sort_description.invalid" [class.invalid-box]="productForm.controls.sort_description.invalid">
+		    				<textarea class="form-control" formControlName="sort_description" placeholder="Short Description" rows="2"></textarea>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				Opening Stock
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8">
+		    				<input type="number" class="form-control" formControlName="opening_stock" placeholder="Opening Stock">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<label class="mr-3 mb-0"><input type="checkbox" (change)="changeStock()" formControlName="stock_reminder"><span class="checkbox-text">Min. Stock Reminder, Qnty</span></label>
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8"  [class.form-invalid]="invalidForm && productForm.controls.stock_reminder_qty.invalid" [class.invalid-box]="productForm.controls.stock_reminder_qty.invalid">
+		    				<input type="text" class="form-control" formControlName="stock_reminder_qty" placeholder="Min. Stock Reminder, Qnty">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label"><span class="text-danger">*</span>Standard Warranty</label>
+		    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+		    				<div class="d-flex">
+			    				<div class="mr-2 control-label">Supplier</div>
+			    				<div class="mr-2">
+			    					<div class="input-group" [class.form-invalid]="invalidForm && productForm.controls.supplier_warranty.invalid" [class.invalid-box]="productForm.controls.supplier_warranty.invalid">
+									  <input type="text" class="form-control" formControlName="supplier_warranty" placeholder="Enter Warrantee">
+									  <div class="input-group-append">
+									    <span class="input-group-text">Months</span>
+									  </div>
+									</div>
+			    				</div>
+			    				<div class="mr-2 control-label">Client</div>
+			    				<div>
+			    					<div class="input-group" [class.form-invalid]="invalidForm && productForm.controls.client_warranty.invalid" [class.invalid-box]="productForm.controls.client_warranty.invalid">
+									  <input type="text" formControlName="client_warranty" class="form-control" placeholder="Enter Warrantee">
+									  <div class="input-group-append">
+									    <span class="input-group-text">Months</span>
+									  </div>
+									</div>
+			    				</div>
+			    			</div>
+		    				<div class="d-block mt-2">
+								<label class="mr-3 mt-2 mb-0"><input type="checkbox" formControlName="extended_warranty" (change)="changeWarranty()"><span class="checkbox-text">Additional Warranty</span></label>
+								<label class="text-right control-label d-inline-block ml-2 mr-2 add-align"  *ngIf="productForm.value.extended_warranty">
+			    				Additional Warranty Split-up Months
+			    			</label>
+			    			<div class="max-100 d-inline-block mb-1 add-align"  *ngIf="productForm.value.extended_warranty"  [class.form-invalid]="invalidForm && productForm.controls.extended_month.invalid" [class.invalid-box]="productForm.controls.extended_month.invalid">
+			    				<input type="number" class="form-control" formControlName="extended_month" placeholder="Months">
+			    			</div>
+								<div class="d-flex pl-3" *ngIf="productForm.value.extended_warranty">
+				    			<div class="mr-2 control-label">Rate ADD-ON</div>
+			    				<div class="mr-2">
+			    					<div class="input-group w100px"  [class.form-invalid]="invalidForm && productForm.controls.extended_warranty_rate.invalid" [class.invalid-box]="productForm.controls.extended_warranty_rate.invalid">
+										  <input type="number" formControlName="extended_warranty_rate" class="form-control" placeholder="Rate" appFormatInput>
+										  <div class="input-group-append">
+										    <span class="input-group-text">%</span>
+										  </div>
+										</div>
+			    				</div>
+			    				<div class="mr-2 control-label">Increment Factor</div>
+			    				<div class="w125px">
+			    					<div class="input-group"  [class.form-invalid]="invalidForm && productForm.controls.extended_warranty_yearly_increment.invalid" [class.invalid-box]="productForm.controls.extended_warranty_yearly_increment.invalid">
+										  <input type="number" formControlName="extended_warranty_yearly_increment" class="form-control" placeholder="Increment" appFormatInput>
+										  <div class="input-group-append">
+										    <span class="input-group-text">%</span>
+										  </div>
+										</div>
+			    				</div>
+			    			</div>
+							</div>
+							<div class="d-block">
+								<label class="mr-3 mt-2 mb-0"><input type="checkbox" formControlName="sc_rate" (change)="changeContract()"><span class="checkbox-text">Service Contract (SC)</span></label>
+								<label class="text-right control-label d-inline-block ml-2 mr-2"  *ngIf="productForm.value.sc_rate">
+			    				Service Contract Split-up Months
+			    			</label>
+			    			<div class="max-125 d-inline-block mb-1"  *ngIf="productForm.value.sc_rate"  [class.form-invalid]="invalidForm && productForm.controls.sc_month.invalid" [class.invalid-box]="productForm.controls.sc_month.invalid">
+			    				<input type="number" class="form-control" formControlName="sc_month" placeholder="Months">
+			    			</div>
+								<div class="d-block pl-3" *ngIf="productForm.value.sc_rate">
+									<label class="control-label">Comprehensive SC</label>
+									<div class="d-flex">
+					    				<div class="mr-2 control-label">Rate ADD-ON</div>
+					    				<div class="mr-2">
+					    					<div class="input-group w100px"  [class.form-invalid]="invalidForm && productForm.controls.sc_rate_comprehensive_rate.invalid" [class.invalid-box]="productForm.controls.sc_rate_comprehensive_rate.invalid">
+											  <input type="number" formControlName="sc_rate_comprehensive_rate" class="form-control" placeholder="Rate" appFormatInput>
+											  <div class="input-group-append">
+											    <span class="input-group-text">%</span>
+											  </div>
+											</div>
+					    				</div>
+					    				<div class="mr-2 control-label">Increment Factor</div>
+					    				<div class="w125px">
+					    					<div class="input-group"  [class.form-invalid]="invalidForm && productForm.controls.sc_rate_comprehensive_yearly_increment.invalid" [class.invalid-box]="productForm.controls.sc_rate_comprehensive_yearly_increment.invalid">
+											  <input type="number" formControlName="sc_rate_comprehensive_yearly_increment" class="form-control" placeholder="Increment" appFormatInput>
+											  <div class="input-group-append">
+											    <span class="input-group-text">%</span>
+											  </div>
+											</div>
+					    				</div>
+					    			</div>
+								</div>
+								<div class="d-block pl-3" *ngIf="productForm.value.sc_rate">
+									<label class="mt-2 control-label">Non-Comprehensive SC</label>
+									<div class="d-flex">
+					    				<div class="mr-2 control-label">Rate ADD-ON</div>
+					    				<div class="mr-2">
+					    					<div class="input-group w100px"  [class.form-invalid]="invalidForm && productForm.controls.sc_rate_non_comprehensive_rate.invalid" [class.invalid-box]="productForm.controls.sc_rate_non_comprehensive_rate.invalid">
+											  <input type="number" formControlName="sc_rate_non_comprehensive_rate" class="form-control" placeholder="Rate" appFormatInput>
+											  <div class="input-group-append">
+											    <span class="input-group-text">%</span>
+											  </div>
+											</div>
+					    				</div>
+					    				<div class="mr-2 control-label">Increment Factor</div>
+					    				<div class="w125px">
+					    					<div class="input-group"  [class.form-invalid]="invalidForm && productForm.controls.sc_rate_non_comprehensive_yearly_increment.invalid" [class.invalid-box]="productForm.controls.sc_rate_non_comprehensive_yearly_increment.invalid">
+											  <input type="number" formControlName="sc_rate_non_comprehensive_yearly_increment" class="form-control" placeholder="Increment" appFormatInput>
+											  <div class="input-group-append">
+											    <span class="input-group-text">%</span>
+											  </div>
+											</div>
+					    				</div>
+					    			</div>
+								</div>
+							</div>
+							<div class="d-block mt-2" [class.disable-content]="isUsed">
+								<label class="mr-3 mb-0"><input type="checkbox" formControlName="qr_code"><span class="checkbox-text">QR Code</span></label>
+								<label class="mr-3 mb-0" *ngIf="productForm.value.qr_code"><input type="checkbox" formControlName="mac_address"><span class="checkbox-text">MAC Address</span></label>
+								<label class="mr-3 mb-0" *ngIf="productForm.value.qr_code"><input type="checkbox" formControlName="serial_no"><span class="checkbox-text">Serial No</span></label>
+							</div>
+							<div class="d-block mt-2 mb-2">
+								<label class="mr-3 mb-0"><input type="checkbox" formControlName="yield_by_installation"><span class="checkbox-text">Yield By Installation</span></label>
+							</div>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<label class="mr-3 mb-0">
+		    					<input type="checkbox" (change)="changeHand()" formControlName="is_handling_charge"><span class="checkbox-text">Handling (Service) Charge, Rs.</span>
+		    				</label>
+		    			</label>
+		    			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 mt8"  [class.form-invalid]="invalidForm && productForm.controls.handling_charge_rate.invalid" [class.invalid-box]="productForm.controls.handling_charge_rate.invalid">
+		    				<input type="number" class="form-control" formControlName="handling_charge_rate" placeholder="Handling (Service) Rate"  appFormatInput>
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				<label class="mr-3 mb-0">
+		    					<input type="checkbox" (change)="changeRepair()" formControlName="is_repair"><span class="checkbox-text">Repairing Charge, Rs</span>
+		    				</label>
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8" [class.form-invalid]="invalidForm && productForm.controls.repair_rate.invalid" [class.invalid-box]="productForm.controls.repair_rate.invalid">
+		    				<input type="number" class="form-control" formControlName="repair_rate" placeholder="Repair Rate" appFormatInput>
+		    			</div>
+		    			<label class="col-lg-1 col-md-1 col-sm-1 text-right col-xs-12 p-0 control-label min-100" *ngIf="productForm.value.is_repair">
+		    				<span class="text-danger">*</span>GST Rate(%)
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 max-125" *ngIf="productForm.value.is_repair" [class.form-invalid]="invalidForm && productForm.controls.repair_gst_rate.invalid" [class.invalid-box]="productForm.controls.repair_gst_rate.invalid">
+		    				<input type="number" class="form-control" formControlName="repair_gst_rate" placeholder="Enter GST Rate" appFormatInput>
+		    			</div>
+		    			<label class="col-lg-1 col-md-1 col-sm-1 text-right col-xs-12 p-0 control-label" *ngIf="productForm.value.is_repair">
+		    				<span class="text-danger">*</span>HSN Code
+		    			</label>
+		    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8 max-125" *ngIf="productForm.value.is_repair" [class.form-invalid]="invalidForm && productForm.controls.repair_hsncode.invalid" [class.invalid-box]="productForm.controls.repair_hsncode.invalid">
+		    				<input type="text" class="form-control" formControlName="repair_hsncode" placeholder="Enter HSN Code">
+		    			</div>
+		    		</div>
+		    		<div class="form-group row mr-0" *ngIf="productForm.value.product_type == 'General'">
+		    			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+		    				Remark
+		    			</label>
+		    			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+		    				<input type="text" class="form-control" formControlName="remarks" placeholder="Remark">
+		    			</div>
+		    		</div>
+				</div>
+					<div class="pt-3 text-left border-top pl-3">
+    				<button type="button" class="mr-2 btn btn-sm btn-undo" (click)="undoForm()">Undo</button>
+    				<button type="button" (click)="closeForm()" class="mr-2 btn btn-sm btn-close">Close</button>
+						<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+	    		</div>
+		    </div>
+		</div>
+	</div>
+</div>
+</form>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showDeleteModal = false">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      		<h6>Are you sure to delete this product?</h6>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showDeleteModal = false">No</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="deleteData()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showPairedModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showPairedModal = false;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+						<span class="text-danger">*</span>Product Group
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<select class="form-control" [(ngModel)]="ProductAccessoryGroup" (change)="getModels()">
+					  		<option [value]="null">-- Product Group --</option>
+							<option *ngFor="let itm of productListGroup" [value]="itm.id">{{itm.name}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group row mb-0 mt-2">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+						<span class="text-danger">*</span>Model No
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<select class="form-control" [(ngModel)]="ProductAccessoryModel" (change)="checkExist()">
+					  		<option [value]="null">-- Select Model No --</option>
+							<option *ngFor="let itm of modelLists" [value]="itm.id">{{itm.model_no}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group row mb-0 mt-2">
+					<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+						<span class="text-danger">*</span>Quantity
+					</label>
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+						<input type="text" name="ProductAccessoryQty" class="form-control" [(ngModel)]="ProductAccessoryQty" placeholder="Quantity">
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer position-relative">
+        <button type="button" class="btn btn-sm btn-danger min-70" *ngIf="showRemoveButton" (click)="removeProductAccessory()">Delete</button>
+        <button type="button" class="btn btn-sm btn-save" (click)="saveProductAccessory()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showPairedModal = false;">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showServiceGroupModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Product Group</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showServiceGroupModal = false;serviceGroupName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Product Group
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="serviceGroupName" [(ngModel)]="serviceGroupName" placeholder="Product Group">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveServiceGroup()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showServiceGroupModal = false;serviceGroupName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showServiceCodeModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Service Code</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showServiceCodeModal = false;serviceCodeName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-4 col-md-4 col-sm-4 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Service Code
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="serviceCodeName" [(ngModel)]="serviceCodeName" placeholder="Service Code">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveServiceGroupCode()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showServiceCodeModal = false;serviceCodeName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showUnitModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Units</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showUnitModal = false;unitName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Unit
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="unitName" [(ngModel)]="unitName" placeholder="Unit">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveUnit()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showUnitModal = false;unitName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showCategoryModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Category</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showCategoryModal = false;categoryName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Category
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="categoryName" [(ngModel)]="categoryName" placeholder="Category">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveCategory()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showCategoryModal = false;categoryName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showBrandModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Brands</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showBrandModal = false;brandName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row mb-0">
+			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label">
+				<span class="text-danger">*</span>Brand
+			</label>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 mt8">
+				<input type="text" class="form-control" name="brandName" [(ngModel)]="brandName" placeholder="Brand">
+			</div>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="saveBrand()">Save</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showBrandModal = false;brandName = null">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showItcConfirm">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+      	<p>ITC Charge will be Zero for this item, are you sure?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save" (click)="yesItcModal()">Yes</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="noItcModal()">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showQrConfirm">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="border-color: #e74a3b !important;">
+      <div class="modal-header border-danger bg-danger">
+        <h5 class="modal-title">QR Code Alert!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showQrConfirm = false;brandName = null">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<p>Do you want QR Code label to print for this item for stock management? if not selected now, you may not be able to add QR code in future for this item. Please add item only after deciding the need of QR Code label Print requirement.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-save"  style="border-color: #70a8e0 !important;background-color: #e74a3b !important;" (click)="showQrConfirm = false;">Yes</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="confirmQrCode()">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>

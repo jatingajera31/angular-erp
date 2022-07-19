@@ -1,0 +1,178 @@
+<div class="card">
+    <div class="card-header pb-1 pt-0">
+        <h6 class="m-0 font-weight-bold text-primary text-uppercase">Sale Rate Discount Planner</h6>
+    </div>
+    <div class="card-body p-0">
+    	<form (ngSubmit)="saveRate()">
+    	<div class="card-body-scroll" [formGroup]="rateForm">
+	    	<div class="form-horizontal">
+	    		<div class="form-group row mr-0 mt-3">
+	    			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 text-right">
+	    				Source of Purchase
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+	    				<select class="form-control" formControlName="source_id" (change)="getDiscountMatrix()">
+	    					<option [value]="null">-- Select Source of Purchase --</option>
+							<option *ngFor="let itm of purchaseSources" [value]="itm.id">{{itm.name}}</option>
+	    				</select>
+	    			</div>
+	    		</div>
+	    		<div class="form-group row mr-0">
+	    			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 text-right">
+	    				Max. Profit Margin, %
+	    			</label>
+	    			<div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+						<input type="number" class="form-control" placeholder="Enter Max. Profit Margin, %" formControlName="max_profit" (change)="calculateRate()" appFormatInput>
+	    			</div>
+	    		</div>
+	    	</div>
+	    	<div class="table-content">
+				<div class="table-responsive">
+			        <table class="table table-bordered mb-0 border-0 w-100 remove-r-border" cellspacing="0" rules="all">
+					    <thead>
+					        <tr>
+					            <th class="text-center" valign="middle">Discount Type</th>
+					            <th class="text-center" valign="middle">Disc. Slab On Profit-Margin, %</th>
+					            <th class="text-center" valign="middle">Total Disc. Slab On Profit-Margin, %</th>
+					            <th class="text-center" valign="middle">Max. Disc on Profit-Margin, %</th>
+					            <th class="text-center" valign="middle">Profit Margin after Disc, %</th>
+					        </tr>
+					    </thead>
+					    <tbody>
+						    <tr *ngFor="let itm of rates; let i = index"  class="text-center">
+						    	<td>{{itm.discount_type}}</td>
+						    	<td>{{itm.discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{itm.max_discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{itm.max_discount_on_margin | number : '1.2-2'}}</td>
+						    	<td>{{itm.profit_margin_discount | number : '1.2-2'}}</td>
+						    </tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="w-100 text-right py-3">
+					<button type="button" [disabled]="!(rateForm.value.max_profit)" class="mr-2 btn btn-sm btn-save" (click)="viewPreview()">Pre-View</button>
+				</div>
+			</div>
+		</div>
+		<div class="w-100 py-3 text-left border-top pl-3">
+			<button type="button" (click)="resetForm()" class="mr-2 btn btn-sm btn-undo">Undo</button>
+			<button type="submit" class="mr-2 btn btn-sm btn-save">Save</button>
+		</div>
+		</form>
+    </div>
+</div>
+
+
+<div class="modal fade show" tabindex="-1" role="dialog" style="display: block;background: #000000a1;" *ngIf="showPreview">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-uppercase">Discount & Rates Pre-View</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="showPreview = false;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form (ngSubmit)="viewResult()" class="w-100">
+      <div class="modal-body">
+    	<div class="form-horizontal">
+    		<div class="form-group row mr-0 mt-3">
+    			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 text-right">
+    				Source of Purchase:
+    			</label>
+    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pr-0">
+  				<input disabled type="text" class="form-control" name="srs" [(ngModel)]="sourceName">
+    			</div>
+    			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 control-label px-0">
+						Prospective Purchase Rate, Rs:
+					</label>
+					<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 mt8">
+						<input type="number" class="form-control" name="purchaseRate" [(ngModel)]="purchaseRate" placeholder="Enter Purchase Rate" appFormatInput>
+					</div>
+    		</div>
+    		<div class="form-group row mr-0">
+    			<label class="col-lg-3 col-md-3 col-sm-3 text-right col-xs-12 text-right">
+    				Profit Margin, %:
+    			</label>
+    			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 pr-0">
+						<input disabled type="number" class="form-control" placeholder="Enter Profit Margin, %" [value]="rateForm.value.max_profit">
+    			</div>
+    		</div>
+    	</div>
+			<div class="table-content">
+				<div class="table-responsive">
+			        <table class="table table-bordered mb-0 border-0 w-100" cellspacing="0" rules="all">
+					    <thead>
+					        <tr>
+					            <th class="text-center" valign="middle">Discount Type</th>
+					            <th class="text-center" valign="middle">Disc. Slab On Profit-Margin, %</th>
+					            <th class="text-center" valign="middle">Total Disc. Slab On Profit-Margin, %</th>
+					            <th class="text-center" valign="middle">Max. Disc on Profit-Margin, %</th>
+					            <th class="text-center" valign="middle">Profit Margin after Disc, %</th>
+					            <th class="text-center" valign="middle">Disc. On MUR</th>
+					            <th class="text-center" valign="middle">Final Selling Rate, Rs</th>
+					        </tr>
+					    </thead>
+					    <tbody *ngIf="maxUnitRate && purchaseRate && rates && rates.length">
+						    <tr class="text-center">
+						    	<td>No Discount.</td>
+						    	<td>{{rates[0].discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[0].max_discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[0].max_discount_on_margin | number : '1.2-2'}}</td>
+						    	<td>{{rates[0].profit_margin_discount | number : '1.2-2'}}</td>
+						    	<td>{{maxUnitdiscount | number : '1.2-2'}}</td>
+						    	<td>{{maxUnitRate | number : '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>Executive</td>
+						    	<td>{{rates[1].discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[1].max_discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[1].max_discount_on_margin | number : '1.2-2'}}</td>
+						    	<td>{{rates[1].profit_margin_discount | number : '1.2-2'}}</td>
+						    	<td>{{maxExUnitdiscount | number : '1.2-2'}}</td>
+						    	<td>{{maxExUnitRate | number : '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>Manager</td>
+						    	<td>{{rates[2].discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[2].max_discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[2].max_discount_on_margin | number : '1.2-2'}}</td>
+						    	<td>{{rates[2].profit_margin_discount | number : '1.2-2'}}</td>
+						    	<td>{{maxMgUnitdiscount | number : '1.2-2'}}</td>
+						    	<td>{{maxMgUnitRate | number : '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-center">
+						    	<td>Project</td>
+						    	<td>{{rates[3].discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[3].max_discount_on_profit | number : '1.2-2'}}</td>
+						    	<td>{{rates[3].max_discount_on_margin | number : '1.2-2'}}</td>
+						    	<td>{{rates[3].profit_margin_discount | number : '1.2-2'}}</td>
+						    	<td>{{maxPrUnitdiscount | number : '1.2-2'}}</td>
+						    	<td>{{maxPrUnitRate | number : '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-right">
+						    	<td colspan="6">Pre-View Result:</td>
+						    	<td></td>
+						    </tr>
+						    <tr class="text-right">
+						    	<td colspan="6">Max. Unit Rate(MUR), Rs:</td>
+						    	<td>{{maxUnitRate | number : '1.2-2'}}</td>
+						    </tr>
+						    <tr class="text-right">
+						    	<td colspan="6">Min. Selling Rate(MSR), Rs:</td>
+						    	<td>{{maxPrUnitRate | number : '1.2-2'}}</td>
+						    </tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-undo" (click)="purchaseRate = null">Undo</button>
+        <button type="submit" class="btn btn-sm btn-save">View Result</button>
+        <button type="button" class="btn btn-sm btn-close" data-dismiss="modal" (click)="showPreview = false;">Close</button>
+      </div>
+  	</form>
+    </div>
+  </div>
+</div>
+<ngx-ui-loader></ngx-ui-loader>
